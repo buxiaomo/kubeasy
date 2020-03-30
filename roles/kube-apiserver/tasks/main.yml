@@ -11,6 +11,26 @@
     - kube-apiserver
   notify: Start the service
 
+- name: Distribution of certificate
+  copy: 
+    src: '{{ca.kubernetes.location }}/{{ item }}'
+    dest: '{{ca.kubernetes.location }}'
+    owner: root
+    group: root
+  with_items:
+    - '{{ca.kubernetes.location }}/ca.crt'
+    - '{{ca.kubernetes.location }}/etcd/ca.crt'
+    - '{{ca.kubernetes.location }}/apiserver-etcd-client.crt'
+    - '{{ca.kubernetes.location }}/apiserver-etcd-client.key'
+    - '{{ca.kubernetes.location }}/apiserver-kubelet-client.crt'
+    - '{{ca.kubernetes.location }}/apiserver-kubelet-client.key'
+    - '{{ca.kubernetes.location }}/sa.pub'
+    - '{{ca.kubernetes.location }}/apiserver.crt'
+    - '{{ca.kubernetes.location }}/apiserver.key'
+    - '{{ca.kubernetes.location }}/front-proxy-ca.crt'
+    - '{{ca.kubernetes.location }}/front-proxy-client.crt'
+    - '{{ca.kubernetes.location }}/front-proxy-client.key'
+
 - name: Install systemd file
   template: 
     src: kube-apiserver.service.j2
