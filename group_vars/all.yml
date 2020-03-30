@@ -104,3 +104,21 @@ kubernetes:
       logDir: /var/log/kubernetes/kube-scheduler
       logSize: 200M
       logRotate: 7
+
+  controllerManager:
+    bind: 0.0.0.0
+    PodCidr: 10.244.0.0/16
+    SvcCidr: 10.96.0.0/12
+    terminatedPodGcThreshold: 12500
+    nodeStatusUpdate: Medium
+    #nodeStatusUpdateFrequency: 10s
+    #nodeMonitorPeriod: 5s     # 如果改它确保它小于下面的值
+    #nodeMonitorGracePeriod: 40s
+    #podEvictionTimeout: 5m
+    logLevel: 2
+    logrotate:
+      log: true
+      confTemplate: logrotate/kube-controller-manager
+      logDir: /var/log/kubernetes/kube-controller-manager
+      logSize: 200M
+      logRotate: 7

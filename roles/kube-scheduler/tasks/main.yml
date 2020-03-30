@@ -26,7 +26,7 @@
     kubectl config set-cluster {{ kubernetes.name }} \
       --certificate-authority=/etc/kubernetes/pki/ca.crt \
       --embed-certs=true \
-      --server={{ ansible_default_ipv4.address }} \
+      --server={{ ansible_default_ipv4.address }}:6443 \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
      kubectl config set-credentials {{ item.KUBE_USER }} \
       --client-certificate=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.crt \
