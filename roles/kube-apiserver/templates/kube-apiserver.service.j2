@@ -1,46 +1,58 @@
+{%- set etcdnode=[],[] -%}
+{%- if groups['kube-etcd'] is not defined %}
+    {%- for host in groups['kube-master'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- else%}
+    {%- for host in groups['kube-etcd'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- endif %}
+
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-apiserver \
+  --authorization-mode=Node,RBAC \
+  --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset \
   --advertise-address={{ ansible_default_ipv4.address }} \
+  --bind-address={{ ansible_default_ipv4.address }}  \
+  --insecure-port=0 \
+  --secure-port=6443 \
   --allow-privileged=true \
-  --apiserver-count={{ groups['kube-master'] | length }} \
   --audit-log-maxage=30 \
   --audit-log-maxbackup=3 \
   --audit-log-maxsize=100 \
   --audit-log-path=/var/log/audit.log \
-  --audit-policy-file=/var/lib/kubernetes/audit-policy-minimal.yaml \
-  --authorization-mode=Node,RBAC \
-  --bind-address=0.0.0.0 \
-  --client-ca-file={{ ca.kubernetes.location }}/ca.crt \
-  --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ValidatingAdmissionWebhook,ResourceQuota \
-  --admission-control-config-file=/var/lib/kubernetes/admission-control-config.yaml \
-  --enable-swagger-ui=true \
-  --etcd-cafile={{ ca.etcd.location }}/ca.crt \
+  --storage-backend=etcd3 \
+  --etcd-cafile={{ ca.kubernetes.location }}/etcd/ca.crt \
   --etcd-certfile={{ ca.kubernetes.location }}/apiserver-etcd-client.crt \
   --etcd-keyfile={{ ca.kubernetes.location }}/apiserver-etcd-client.key \
-  --etcd-servers=https://{{ ansible_default_ipv4.address }}:2379 \
-  --event-ttl=24h \
-  --experimental-encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \
+  --etcd-servers={% for host in etcdnode %}https://{{ host }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
+  --event-ttl=1h \
+  --enable-bootstrap-token-auth \
+  --client-ca-file={{ ca.kubernetes.location }}/ca.crt \
   --kubelet-https \
   --kubelet-client-certificate={{ ca.kubernetes.location }}/apiserver-kubelet-client.crt \
   --kubelet-client-key={{ ca.kubernetes.location }}/apiserver-kubelet-client.key \
   --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname \
+  --runtime-config=api/all,settings.k8s.io/v1alpha1=true \
+  --service-cluster-ip-range=10.96.0.0/12 \
+  --service-node-port-range=30000-32767 \
   --service-account-key-file={{ ca.kubernetes.location }}/sa.pub \
-  --service-cluster-ip-range={{ kubernetes.apiserver.service_cluster_ip_range }} \
-  --service-node-port-range={{ kubernetes.apiserver.service_node_port_range }} \
   --tls-cert-file={{ ca.kubernetes.location }}/apiserver.crt \
   --tls-private-key-file={{ ca.kubernetes.location }}/apiserver.key \
   --requestheader-client-ca-file={{ ca.kubernetes.location }}/front-proxy-ca.crt \
-  --requestheader-extra-headers-prefix="X-Remote-Extra-" \
-  --requestheader-group-headers=X-Remote-Group \
   --requestheader-username-headers=X-Remote-User \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-allowed-names=front-proxy-client \
+  --requestheader-extra-headers-prefix=X-Remote-Extra- \
   --proxy-client-cert-file={{ ca.kubernetes.location }}/front-proxy-client.crt \
   --proxy-client-key-file={{ ca.kubernetes.location }}/front-proxy-client.key \
-  --enable-aggregator-routing=true \
-  --feature-gates=PodShareProcessNamespace=true \
+  --logtostderr=false \
+  --log-dir={{ kubernetes.apiserver.logdir }} \
   --v=2
 
 Restart=on-failure

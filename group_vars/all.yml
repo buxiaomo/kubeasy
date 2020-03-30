@@ -89,6 +89,7 @@ kubernetes:
     image_pull_progress_deadline: 2m
 
   apiserver: 
+    logdir: /var/log/kubernetes/kube-apiserver
     authorization_mode: Node,RBAC
     enable_admission_plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset
     service_cluster_ip_range: 10.24.0.0/16
