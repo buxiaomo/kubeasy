@@ -1,6 +1,6 @@
 ---
 # tasks file for etcd
-- name: Install the Etcd binary
+- name: Install the binary
   copy: 
     src: '{{ item }}'
     dest: /usr/local/bin/

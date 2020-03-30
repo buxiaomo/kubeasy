@@ -22,3 +22,10 @@
     - etcd
   tags:
     - etcd
+
+- name: Kube Master
+  hosts: kube-master
+  roles:
+    - docker
+  tags:
+    - kube-master

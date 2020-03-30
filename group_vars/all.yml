@@ -59,11 +59,6 @@ ca:
 kubernetes:
   vip: 172.16.13.10
 
-  docker:
-    datadir: /var/lib/docker
-    execOpts:
-      - 'native.cgroupdriver=systemd'
-
   etcd: 
     enablepprof: true
     autocompactionretention: 1
@@ -71,3 +66,8 @@ kubernetes:
     datadir: /var/lib/etcd
     initialclustertoken: 'kubernetes'
     initialclusterstate: 'new'
+
+  docker:
+    datadir: /var/lib/docker
+    execOpts:
+      - 'native.cgroupdriver=systemd'
