@@ -17,6 +17,25 @@
     state: directory
     mode: '0755'
 
+- name: Create certificate directory
+  file: 
+    name: '{{ ca.etcd.location }}'
+    state: directory
+    mode: '0755'
+
+- name: Distribution of certificate
+  copy: 
+    src: '{{ ca.etcd.location }}/{{ item }}'
+    dest: '{{ ca.etcd.location }}'
+    owner: root
+    group: root
+  with_items:
+    - ca.crt
+    - server.crt
+    - server.key
+    - peer.crt
+    - peer.key
+
 - name: Install systemd file
   template: 
     src: etcd.service.j2
