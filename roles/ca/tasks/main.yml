@@ -1,0 +1,10 @@
+---
+# tasks file for ca
+- name: Create certificate directory
+  file: 
+    name: '{{ item }}'
+    state: directory
+    mode: '0755'
+  with_items:
+  - '{{ ca.kubernetes.location }}'
+  - '{{ ca.etcd.location }}'
