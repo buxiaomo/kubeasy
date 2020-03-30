@@ -57,8 +57,9 @@ ca:
     location: /etc/kubernetes/pki/etcd
 
 kubernetes:
+  name: 'kubernetes'
   vip: 172.16.13.10
-
+  
   etcd: 
     enablepprof: true
     autocompactionretention: 1
