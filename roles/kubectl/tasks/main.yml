@@ -9,3 +9,11 @@
     group: root
   with_items:
     - kubectl
+
+- name: Install kubectl completion
+  copy: 
+    src: kubectl.sh
+    dest: /etc/profile.d/
+    mode: 0755
+    owner: root
+    group: root

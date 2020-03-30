@@ -11,7 +11,6 @@ ExecStart=/usr/local/bin/kubelet \
   --config=/etc/kubernetes/kubelet-conf.yml \
   --pod-infra-container-image={{ kubernetes.kubelet.pod_infra_container_image }} \
   --image-pull-progress-deadline={{ kubernetes.kubelet.image_pull_progress_deadline }} \
-  --allow-privileged=true \
   --network-plugin=cni \
   --cni-conf-dir=/etc/cni/net.d \
   --cni-bin-dir=/opt/cni/bin \

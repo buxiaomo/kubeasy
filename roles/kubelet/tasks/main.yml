@@ -10,6 +10,12 @@
   with_items:
     - kubelet
 
+- name: Install config file
+  template: 
+    src: kubelet-conf.yml.j2
+    dest: /etc/kubernetes/kubelet-conf.yml
+  notify: Start the service
+
 - name: Install systemd file
   template: 
     src: kubelet.service.j2

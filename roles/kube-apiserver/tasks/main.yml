@@ -26,6 +26,7 @@
     - '{{ca.kubernetes.location }}/apiserver-kubelet-client.crt'
     - '{{ca.kubernetes.location }}/apiserver-kubelet-client.key'
     - '{{ca.kubernetes.location }}/sa.pub'
+    - '{{ca.kubernetes.location }}/sa.crt'
     - '{{ca.kubernetes.location }}/apiserver.crt'
     - '{{ca.kubernetes.location }}/apiserver.key'
     - '{{ca.kubernetes.location }}/front-proxy-ca.crt'
