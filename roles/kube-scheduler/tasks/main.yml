@@ -44,4 +44,4 @@
 - name: Install systemd file
   template: 
     src: kube-scheduler.service.j2
-    dest: /etc/systemd/system/kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
