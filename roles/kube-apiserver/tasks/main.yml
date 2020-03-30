@@ -13,7 +13,7 @@
 
 - name: Distribution of certificate
   copy: 
-    src: '{{ca.kubernetes.location }}/{{ item }}'
+    src: '{{ item }}'
     dest: '{{ca.kubernetes.location }}'
     owner: root
     group: root
