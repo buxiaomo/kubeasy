@@ -50,7 +50,7 @@ sysctl:
     vm.panic_on_oom: 0
 
 ca:
-  days: 1000
+  days: 100000
   kubernetes:
     location: /etc/kubernetes/pki
   etcd:

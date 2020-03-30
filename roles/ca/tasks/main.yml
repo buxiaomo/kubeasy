@@ -50,7 +50,7 @@
 - name: Create front-proxy-ca
   shell: |
     openssl genrsa -out front-proxy-ca.key 2048 && \
-      openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ days }}
+      openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ ca.days }}
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
