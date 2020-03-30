@@ -1,2 +1,36 @@
 ---
 # tasks file for kube-scheduler
+- name: Install the binary
+  copy: 
+    src: '{{ item }}'
+    dest: /usr/local/bin/
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - kube-scheduler
+
+- name: Create kubeconfig
+  shell: |
+    kubectl config set-cluster {{ kubernetes.name }} \
+      --certificate-authority=/etc/kubernetes/pki/ca.crt \
+      --embed-certs=true \
+      --server={{ ansible_default_ipv4.address }} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
+     kubectl config set-credentials {{ item.KUBE_USER }} \
+      --client-certificate=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.crt \
+      --client-key=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.key \
+      --embed-certs=true \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
+     kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name }} \
+      --cluster={{ kubernetes.name }} \
+      --user={{ item.KUBE_USER }} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
+     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} 
+  with_items:
+    - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.kubeconfig'}
+
+- name: Install systemd file
+  template: 
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service.j2

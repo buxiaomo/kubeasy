@@ -94,3 +94,13 @@ kubernetes:
     enable_admission_plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset
     service_cluster_ip_range: 10.24.0.0/16
     service_node_port_range: 30000-32767
+
+  scheduler: 
+    bind: 0.0.0.0
+    logLevel: 2
+    logrotate:
+      log: true
+      confTemplate: logrotate/kube-scheduler
+      logDir: /var/log/kubernetes/kube-scheduler
+      logSize: 200M
+      logRotate: 7

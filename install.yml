@@ -30,5 +30,7 @@
     - kubectl
     - kubelet
     - kube-apiserver
+    - kube-scheduler
+    - kube-controller-manager
   tags:
     - kube-master
