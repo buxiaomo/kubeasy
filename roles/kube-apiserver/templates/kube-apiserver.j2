@@ -1,0 +1,51 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-apiserver \
+  --advertise-address={{ ansible_default_ipv4.address }} \
+  --allow-privileged=true \
+  --apiserver-count={{ groups['kube-master'] | length }} \
+  --audit-log-maxage=30 \
+  --audit-log-maxbackup=3 \
+  --audit-log-maxsize=100 \
+  --audit-log-path=/var/log/audit.log \
+  --audit-policy-file=/var/lib/kubernetes/audit-policy-minimal.yaml \
+  --authorization-mode=Node,RBAC \
+  --bind-address=0.0.0.0 \
+  --client-ca-file={{ ca.kubernetes.location }}/ca.crt \
+  --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ValidatingAdmissionWebhook,ResourceQuota \
+  --admission-control-config-file=/var/lib/kubernetes/admission-control-config.yaml \
+  --enable-swagger-ui=true \
+  --etcd-cafile={{ ca.etcd.location }}/ca.crt \
+  --etcd-certfile={{ ca.kubernetes.location }}/apiserver-etcd-client.crt \
+  --etcd-keyfile={{ ca.kubernetes.location }}/apiserver-etcd-client.key \
+  --etcd-servers=https://53.99.100.71:2379 \
+  --event-ttl=24h \
+  --experimental-encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \
+  --kubelet-https \
+  --kubelet-client-certificate={{ ca.kubernetes.location }}/apiserver-kubelet-client.crt \
+  --kubelet-client-key={{ ca.kubernetes.location }}/apiserver-kubelet-client.key \
+  --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname \
+  --runtime-config=api/all \
+  --service-account-key-file={{ ca.kubernetes.location }}/sa.pub \
+  --service-cluster-ip-range={{ kubernetes.kube-apiserver.location }} \
+  --service-node-port-range={{ kubernetes.kube-apiserver.service_node_port_range }} \
+  --tls-cert-file={{ ca.kubernetes.location }}/apiserver.crt \
+  --tls-private-key-file={{ ca.kubernetes.location }}/apiserver.key \
+  --requestheader-client-ca-file={{ ca.kubernetes.location }}/front-proxy-ca.crt \
+  --requestheader-extra-headers-prefix="X-Remote-Extra-" \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-username-headers=X-Remote-User \
+  --proxy-client-cert-file={{ ca.kubernetes.location }}/front-proxy-client.crt \
+  --proxy-client-key-file={{ ca.kubernetes.location }}/front-proxy-client.key \
+  --enable-aggregator-routing=true \
+  --feature-gates=PodShareProcessNamespace=true \
+  --v=2
+
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target
