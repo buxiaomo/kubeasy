@@ -10,6 +10,17 @@
   with_items:
     - kube-scheduler
 
+- name: Distribution of certificate
+  copy: 
+    src: '{{ item }}'
+    dest: '{{ca.kubernetes.location }}'
+    owner: root
+    group: root
+  with_items:
+    - '{{ca.kubernetes.location }}/ca.crt'
+    - '{{ca.kubernetes.location }}/kube-scheduler.crt'
+    - '{{ca.kubernetes.location }}/kube-scheduler.key'
+
 - name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
