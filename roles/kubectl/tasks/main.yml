@@ -18,7 +18,7 @@
     owner: root
     group: root
 
-- name: 生成kubeconfig
+- name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ CLUSTER_NAME }} \
       --certificate-authority=/etc/kubernetes/pki/ca.crt \

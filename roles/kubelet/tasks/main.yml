@@ -14,7 +14,6 @@
   template: 
     src: kubelet-conf.yml.j2
     dest: /etc/kubernetes/kubelet-conf.yml
-  notify: Start the service
 
 - name: Install bootstrap kubeconfig
   shell: 
@@ -24,11 +23,8 @@
     --server={{ ansible_default_ipv4.address }} \
     --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
 
-    dest: /etc/kubernetes/kubelet-conf.yml
-  notify: Start the service
 
 - name: Install systemd file
   template: 
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
-  notify: Start the service
