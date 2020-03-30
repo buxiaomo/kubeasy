@@ -21,7 +21,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --etcd-cafile={{ ca.etcd.location }}/ca.crt \
   --etcd-certfile={{ ca.kubernetes.location }}/apiserver-etcd-client.crt \
   --etcd-keyfile={{ ca.kubernetes.location }}/apiserver-etcd-client.key \
-  --etcd-servers=https://53.99.100.71:2379 \
+  --etcd-servers=https://{{ ansible_default_ipv4.address }}:2379 \
   --event-ttl=24h \
   --experimental-encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \
   --kubelet-https \
@@ -30,7 +30,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname \
   --runtime-config=api/all \
   --service-account-key-file={{ ca.kubernetes.location }}/sa.pub \
-  --service-cluster-ip-range={{ kubernetes.apiserver.location }} \
+  --service-cluster-ip-range={{ kubernetes.apiserver.service_cluster_ip_range }} \
   --service-node-port-range={{ kubernetes.apiserver.service_node_port_range }} \
   --tls-cert-file={{ ca.kubernetes.location }}/apiserver.crt \
   --tls-private-key-file={{ ca.kubernetes.location }}/apiserver.key \
