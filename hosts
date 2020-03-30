@@ -1,4 +1,4 @@
-[etcd]
+[kube-etcd]
 
 [kube-master]
 172.16.13.11 hostname=kube-master01

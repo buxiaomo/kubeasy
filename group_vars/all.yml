@@ -57,6 +57,8 @@ ca:
     location: /etc/kubernetes/pki/etcd
 
 kubernetes:
+  vip: 172.16.13.10
+
   docker:
     dataDir: /var/lib/docker
     execOpts:

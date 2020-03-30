@@ -14,6 +14,9 @@ upgrade:
 download:
 	@scripts/download.sh
 
+runtime:
+	@scripts/runtime.sh
+
 check:
 	@ansible -i hosts all -m ping
 	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null

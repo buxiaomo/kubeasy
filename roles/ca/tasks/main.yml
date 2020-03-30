@@ -8,3 +8,8 @@
   with_items:
   - '{{ ca.kubernetes.location }}'
   - '{{ ca.etcd.location }}'
+
+- name: Create openssl template
+  template: 
+    src: openssl.cnf.j2
+    dest: '{{ ca.kubernetes.location }}/openssl.cnf'

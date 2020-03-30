@@ -1,3 +1,26 @@
+{%- set allnode,etcdnode=[],[] -%}
+
+{%- if kubernetes.vip is defined %}
+{{ etcdnode.append(kubernetes.vip) }}
+{%- endif %}
+
+{%- for host in groups['kube-master'] -%}
+    {{ allnode.append(host) }}
+{%- endfor%}
+{%- for host in groups['kube-minion'] -%}
+    {{ allnode.append(host) }}
+{%- endfor%}
+
+{%- if groups['kube-etcd'] is not defined %}
+    {%- for host in groups['kube-master'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- else%}
+        {%- for host in groups['kube-etcd'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- endif %}
+
 [ req ]
 default_bits = 2048
 default_md = sha256
@@ -39,7 +62,24 @@ DNS.4 = kubernetes.default.svc.cluster.local
 DNS.5 = localhost
 IP.1 = 10.96.0.1
 IP.2 = 127.0.0.1
+{% if  allnode | length > 0 %}
+{% for host in allnode %}IP.{{ loop.index + 2 }} = {{ host }}
+{% endfor %}
+{% endif %}
+
+{% for host in groups['all'] %}IP.{{ apiIP  | length + loop.index + 2 }} = {{ hostvars[host].inventory_hostname }}
+{% endfor %}
+{% if groups['master'] | length !=1 %}IP.{{ groups['all'] | length + apiIP | length + 3}} = {{ VIP }}{% endif %}
+
+IP.3 = 172.16.13.10
+IP.4 = 172.16.13.11
+IP.5 = 172.16.13.12
+IP.6 = 172.16.13.13
+IP.7 = 172.16.13.14
 
 [ alt_names_etcd ]
 DNS.1 = localhost
 IP.1 = 127.0.0.1
+IP.2 = 172.16.13.11
+IP.3 = 172.16.13.12
+IP.4 = 172.16.13.13
