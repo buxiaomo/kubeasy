@@ -18,7 +18,6 @@ uninstall:
 upgrade:
 	@ansible-playbook upgrade.yml
 
-
 download:
 	@echo 'Download the binaries package to ./scripts/binaries directory...'
 	@export DEBUG=$(DEBUG) \

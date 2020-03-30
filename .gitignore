@@ -1,6 +1,7 @@
 # OSX files
 **/.DS_Store
-tests/binaries
+scripts/binaries
+
 # docker
 roles/docker/files/containerd
 roles/docker/files/containerd-shim
