@@ -28,7 +28,6 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --kubelet-client-certificate={{ ca.kubernetes.location }}/apiserver-kubelet-client.crt \
   --kubelet-client-key={{ ca.kubernetes.location }}/apiserver-kubelet-client.key \
   --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname \
-  --runtime-config=api/all \
   --service-account-key-file={{ ca.kubernetes.location }}/sa.pub \
   --service-cluster-ip-range={{ kubernetes.apiserver.service_cluster_ip_range }} \
   --service-node-port-range={{ kubernetes.apiserver.service_node_port_range }} \
