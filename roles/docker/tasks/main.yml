@@ -20,9 +20,12 @@
 
 - name: Create data directory
   file: 
-    name: '{{ kubernetes.docker.datadir }}'
+    name: '{{ item }}'
     state: directory
     mode: '0755'
+  with_items:
+    - /etc/docker
+    - '{{ kubernetes.docker.datadir }}'
 
 - name: Configuration daemon
   template: 
