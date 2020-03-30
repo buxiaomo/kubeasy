@@ -9,7 +9,6 @@
     group: root
   with_items:
     - kube-apiserver
-    - kubectl
   notify: Start the service
 
 - name: Distribution of certificate
@@ -32,6 +31,7 @@
     - '{{ca.kubernetes.location }}/front-proxy-ca.crt'
     - '{{ca.kubernetes.location }}/front-proxy-client.crt'
     - '{{ca.kubernetes.location }}/front-proxy-client.key'
+    - '{{ca.kubernetes.location }}/admin.crt
 
 - name: Create kubeconfig
   shell: |
