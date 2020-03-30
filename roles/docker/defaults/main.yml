@@ -1,2 +1,3 @@
 ---
 # defaults file for docker
+docker_config_custom: {}
