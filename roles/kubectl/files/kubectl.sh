@@ -1,0 +1,1 @@
+source <(kubectl completion bash)
