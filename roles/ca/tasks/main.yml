@@ -52,7 +52,7 @@
 - name: Create front-proxy-ca
   shell: |
     openssl genrsa -out front-proxy-ca.key 2048 && \
-      openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ ca.days }}
+    openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ ca.days }}
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
@@ -79,7 +79,7 @@
 - name: Create kube etcd --- part.1
   shell: |
     openssl genrsa -out {{ ca.etcd.location }}/server.key 2048 && \
-      openssl req -new -key {{ ca.etcd.location }}/server.key -subj "/CN=etcd-server" -out {{ ca.etcd.location }}/server.csr
+    openssl req -new -key {{ ca.etcd.location }}/server.key -subj "/CN=etcd-server" -out {{ ca.etcd.location }}/server.csr
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
@@ -97,7 +97,7 @@
 - name: kube-etcd-peer --- part.1
   shell: |
     openssl genrsa -out {{ ca.etcd.location }}/peer.key 2048 && \
-      openssl req -new -key {{ ca.etcd.location }}/peer.key -subj "/CN=etcd-peer" -out {{ ca.etcd.location }}/peer.csr
+    openssl req -new -key {{ ca.etcd.location }}/peer.key -subj "/CN=etcd-peer" -out {{ ca.etcd.location }}/peer.csr
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
@@ -115,7 +115,7 @@
 - name: kube-etcd-healthcheck-client --- part.1
   shell: |
     openssl genrsa -out {{ ca.etcd.location }}/healthcheck-client.key 2048 && \
-      openssl req -new -key {{ ca.etcd.location }}/healthcheck-client.key -subj "/CN=etcd-client" -out {{ ca.etcd.location }}/healthcheck-client.csr
+    openssl req -new -key {{ ca.etcd.location }}/healthcheck-client.key -subj "/CN=etcd-client" -out {{ ca.etcd.location }}/healthcheck-client.csr
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
@@ -187,7 +187,7 @@
 - name: kube-scheduler --- part.1
   shell: |
     openssl genrsa -out  kube-scheduler.key 2048 && \
-      openssl req -new -key kube-scheduler.key -subj "/CN=system:kube-scheduler" -out kube-scheduler.csr
+    openssl req -new -key kube-scheduler.key -subj "/CN=system:kube-scheduler" -out kube-scheduler.csr
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash

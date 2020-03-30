@@ -1,6 +1,11 @@
 SHELL := /bin/bash
-GIT_SHA = $(shell git log --pretty=oneline | head -n1 | cut -c1-8)
-SHASUM = $(shell test `uname` == 'Darwin' && echo shasum -a 256 || echo sha256sum)
+
+KUBE_VERSION := "1.17.4"
+DOCKER_VERSION := "19.03.8"
+FLANNEL_VERSION := "0.12.0"
+ETCD_VERSION := "3.4.5"
+SALTSTACK_VERSION := "2019.2.3"
+DEBUG := true
 
 install:
 	@ansible-playbook -i hosts install.yml
@@ -12,7 +17,13 @@ upgrade:
 	@ansible-playbook upgrade.yml
 
 download:
-	@scripts/download.sh
+	@echo 'Download the binaries package to ./tests/binaries directory...'
+	@export DEBUG=$(DEBUG) \
+	&& export KUBE_VERSION=$(KUBE_VERSION) \
+	&& export DOCKER_VERSION=$(DOCKER_VERSION) \
+	&& export FLANNEL_VERSION=$(FLANNEL_VERSION) \
+	&& export ETCD_VERSION=$(ETCD_VERSION) \
+	&& bash scripts/download.sh
 
 runtime:
 	@scripts/runtime.sh
