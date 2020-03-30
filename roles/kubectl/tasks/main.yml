@@ -18,6 +18,17 @@
     owner: root
     group: root
 
+- name: Distribution of certificate
+  copy: 
+    src: '{{ item }}'
+    dest: '{{ca.kubernetes.location }}'
+    owner: root
+    group: root
+  with_items:
+    - '{{ca.kubernetes.location }}/ca.crt'
+    - '{{ca.kubernetes.location }}/admin.crt'
+    - '{{ca.kubernetes.location }}/admin.key'
+
 - name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
@@ -36,6 +47,4 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
      kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} 
   with_items:
-    # - { KUBE_USER: 'system:kube-controller-manager', KUBE_CERT: "sa", KUBE_CONFIG: 'controller-manager.kubeconfig' }
-    # - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.kubeconfig'}
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
