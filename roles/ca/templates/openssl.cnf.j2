@@ -67,9 +67,8 @@ IP.2 = 127.0.0.1
 {% endfor %}
 {% endif %}
 
-{% for host in groups['all'] %}IP.{{ apiIP  | length + loop.index + 2 }} = {{ hostvars[host].inventory_hostname }}
-{% endfor %}
-{% if groups['master'] | length !=1 %}IP.{{ groups['all'] | length + apiIP | length + 3}} = {{ VIP }}{% endif %}
+
+{% if groups['kube-master'] | length !=1 %}IP.{{ groups['all'] | length + apiIP | length + 3}} = {{ VIP }}{% endif %}
 
 IP.3 = 172.16.13.10
 IP.4 = 172.16.13.11
