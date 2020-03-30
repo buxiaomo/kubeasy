@@ -34,11 +34,28 @@
     - '{{ca.kubernetes.location }}/admin.crt'
     - '{{ca.kubernetes.location }}/admin.key'
 
+    
+
+- name: Install audit policy minimal
+  template: 
+    src: audit-policy-minimal.yaml.j2
+    dest: /var/lib/kubernetes/audit-policy-minimal.yaml
+
+- name: register encryption key
+  command: head -c 32 /dev/urandom | base64
+  register: ENCRYPTION_KEY
+  run_once: true
+
+- name: Install encryption config
+  template: 
+    src: encryption-config.yaml.j2
+    dest: /var/lib/kubernetes/encryption-config.yaml.j2
+
 - name: Install systemd file
   template: 
     src: kube-apiserver.service.j2
     dest: /etc/systemd/system/kube-apiserver.service
-
+    
 - name: Start the service
   systemd:
     name: kube-apiserver
