@@ -60,10 +60,12 @@ kubernetes:
   vip: 172.16.13.10
 
   docker:
-    dataDir: /var/lib/docker
+    datadir: /var/lib/docker
     execOpts:
       - 'native.cgroupdriver=systemd'
 
   etcd: 
-    dataDir: /var/lib/etcd
-    initialClusterToken: 'kubernetes'
+    debug: false
+    datadir: /var/lib/etcd
+    initialclustertoken: 'kubernetes'
+    initialclusterstate: 'new'
