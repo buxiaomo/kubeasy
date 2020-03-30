@@ -9,6 +9,7 @@
     group: root
   with_items:
     - kube-apiserver
+    - kubectl
   notify: Start the service
 
 - name: Distribution of certificate
