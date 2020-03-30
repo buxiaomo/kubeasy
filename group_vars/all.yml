@@ -72,12 +72,12 @@ kubernetes:
     daemon: 
       registry-mirrors:
         - "https://i3jtbyvy.mirror.aliyuncs.com"
-      storage-driver: "overlay2",
+      storage-driver: "overlay2"
       storage-opts: 
         - "overlay2.override_kernel_check=true"
-      log-driver: "json-file",
+      log-driver: "json-file"
       log-opts: 
-        max-size: 500m",
+        max-size: "500m"
         max-file: "2"
       insecure-registries:
         - 127.0.0.1
