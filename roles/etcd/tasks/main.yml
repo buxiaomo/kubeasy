@@ -11,6 +11,12 @@
     - etcd
     - etcdctl
 
+- name: Create data directory
+  file: 
+    name: '{{ kubernetes.etcd.datadir }}'
+    state: directory
+    mode: '0755'
+
 - name: Install systemd file
   template: 
     src: etcd.service.j2
