@@ -1,2 +1,11 @@
 ---
 # tasks file for kubectl
+- name: Install the binary
+  copy: 
+    src: '{{ item }}'
+    dest: /usr/local/bin/
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - kubectl
