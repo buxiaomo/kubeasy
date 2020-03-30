@@ -13,3 +13,45 @@
   template: 
     src: openssl.cnf.j2
     dest: '{{ ca.kubernetes.location }}/openssl.cnf'
+
+- name: Detection of kubernetes ca
+  stat: 
+    path: '{{ ca.kubernetes.location }}/ca.key'
+  register: kubernetes_ca
+
+- name: Create kubernetes ca
+  shell: |
+    openssl genrsa -out ca.key 2048 && \
+    openssl req -x509 -new -nodes -key ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out ca.crt -days {{ ca.days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+  when: not kubernetes_ca.stat.exists
+
+- name: Detection of etcd ca
+  stat: 
+    path: '{{ ca.etcd.location }}/ca.key'
+  register: etcd_ca
+
+- name: Create etcd ca
+  shell: |
+    openssl genrsa -out etcd/ca.key 2048 && \
+    openssl req -x509 -new -nodes -key etcd/ca.key -config openssl.cnf -subj "/CN=etcd-ca" -extensions v3_ca -out etcd/ca.crt -days {{ ca.days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+  when: not etcd_ca.stat.exists
+
+- name: Detection front-proxy-ca
+  stat: 
+    path: '{{ ca.etcd.location }}/front-proxy-ca.key'
+  register: front_proxy_ca
+
+- name: Create front-proxy-ca
+  shell: |
+    openssl genrsa -out front-proxy-ca.key 2048 && \
+      openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+  when: not front_proxy_ca.stat.exists
