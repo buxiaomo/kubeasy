@@ -1,0 +1,7 @@
+---
+# handlers file for chrony
+- name: Start the service
+  service:
+    name: "{{ chrony.svc_name }}"
+    state: restarted
+    enabled: yes

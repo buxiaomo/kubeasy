@@ -1,0 +1,24 @@
+---
+- name: Base environment configuration
+  hosts: all
+  vars:
+    kernel_upgrade: True
+  roles:
+    - common
+    - chrony
+  tags:
+    - common
+
+- name: Certificate of the cluster
+  hosts: localhost
+  roles:
+    - ca
+  tags:
+    - ca
+
+# - name: "Etcd Cluster"
+#   hosts: etcd
+#   roles:
+#     - etcd
+#   tags:
+#     - etcd

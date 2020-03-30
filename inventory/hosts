@@ -1,0 +1,13 @@
+[etcd]
+
+[kube-master]
+172.16.13.11 hostname=kube-master01
+172.16.13.12 hostname=kube-master02
+172.16.13.13 hostname=kube-master03
+
+[kube-minion]
+172.16.13.14 hostname=kube-minion01
+
+[kubernetes:children]
+kube-master
+kube-minion

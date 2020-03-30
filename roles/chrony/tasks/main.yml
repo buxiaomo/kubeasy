@@ -1,0 +1,17 @@
+---
+# tasks file for chrony
+- name: Set OS dependent variables
+  include_vars: '{{ item }}'
+  with_first_found:
+   - '{{ ansible_os_family }}.yml'
+
+- name: Installation package
+  package:
+    name: '{{ chrony.pkg_name }}'
+
+- name: Update configuration file
+  template:
+    src: chrony.conf.j2
+    dest: '{{ chrony.config }}'
+    backup: yes
+  notify: Start the service

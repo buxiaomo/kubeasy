@@ -1,0 +1,49 @@
+---
+# tasks file for common
+- name: Set OS dependent variables
+  include_vars: '{{ item }}'
+  with_first_found:
+   - '{{ ansible_os_family }}.yml'
+
+- name: Set the Hostname
+  hostname: 
+    name: '{{ hostname }}'
+  when: hostname is defined
+
+- name: Close firewalld
+  systemd: 
+    name: '{{ svc_name }}'
+    enabled: no
+    state: stopped
+
+- name: Close SeLinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Load kernel modules
+  modprobe:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ modprobe.params }}'
+  when: modprobe.params is defined
+
+- name: Write kernel modules to file
+  lineinfile:
+    path: '{{ modprobe.filename }}'
+    line: '{{ item }}'
+    create: yes
+  with_items: '{{ modprobe.params }}'
+  when: modprobe.params is defined
+
+- name: Manage entries in sysctl.conf
+  sysctl:
+    name: '{{ item.0 }}'
+    value: '{{ item.1 }}'
+    sysctl_file: '{{ sysctl.filename }}'
+    reload: yes
+    ignoreerrors: yes
+  loop: '{{ sysctl.params | dictsort }}'
+  when: sysctl.params is defined
