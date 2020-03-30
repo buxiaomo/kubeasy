@@ -8,6 +8,8 @@ SALTSTACK_VERSION := "2019.2.3"
 DEBUG := true
 
 install:
+	@rsync -a ./scripts/binaries/docker/$(DOCKER_VERSION)/* ./roles/docker/files/ --delete
+	@rsync -a ./scripts/binaries/etcd/$(ETCD_VERSION)/* ./roles/etcd/files/ --delete
 	@ansible-playbook -i hosts install.yml
 
 uninstall:
@@ -16,8 +18,9 @@ uninstall:
 upgrade:
 	@ansible-playbook upgrade.yml
 
+
 download:
-	@echo 'Download the binaries package to ./tests/binaries directory...'
+	@echo 'Download the binaries package to ./scripts/binaries directory...'
 	@export DEBUG=$(DEBUG) \
 	&& export KUBE_VERSION=$(KUBE_VERSION) \
 	&& export DOCKER_VERSION=$(DOCKER_VERSION) \
