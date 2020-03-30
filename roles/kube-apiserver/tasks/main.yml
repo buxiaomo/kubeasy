@@ -59,10 +59,41 @@
   template: 
     src: kube-apiserver.service.j2
     dest: /etc/systemd/system/kube-apiserver.service
-    
-- name: Start the service
-  systemd:
-    name: kube-apiserver
-    state: restarted
-    enabled: yes
-    daemon_reload: yes
+
+# - name: Start the service
+#   systemd:
+#     name: kube-apiserver
+#     state: restarted
+#     enabled: yes
+#     daemon_reload: yes
+
+# - name: Wait ApiServer
+#   wait_for:
+#     port: 6443
+#     delay: 30
+#     state: started
+#     host: '{{ ansible_ssh_host }}'
+
+# - name: Health check
+#   uri: 
+#     url: https://{{ ansible_default_ipv4.address }}:6443/healthz
+#     validate_certs: no
+#     return_content: yes
+#   register: this
+#   until: "'ok' in this.content"
+#   retries: 10
+#   delay: 4
+#   connection: local
+#   ignore_errors: True
+
+# - name: Create .kube directory
+#   file: 
+#     path: /root/.kube
+#     state: directory 
+#     mode: 0655
+
+# - name: Set admin kubeconfig
+#   copy: 
+#     src: /etc/kubernetes/admin.kubeconfig
+#     dest: /root/.kube/config
+#     remote_src: true

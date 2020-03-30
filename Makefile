@@ -37,6 +37,11 @@ download:
 runtime:
 	@scripts/runtime.sh
 
+auto: 
+	@make runtime
+	@make download
+	@make install
+
 check:
 	@ansible -i hosts all -m ping
 	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null
