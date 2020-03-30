@@ -32,6 +32,7 @@ ExecStart=/usr/local/bin/etcd --name {{ inventory_hostname }} \
   --initial-cluster {% for host in etcdnode %}{{ hostvars[host].hostname }}=https://{{ host }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
   --initial-cluster-token {{ kubernetes.etcd.initialclustertoken }} \
   --initial-cluster-state {{ kubernetes.etcd.initialclusterstate }} \
+  --auto-compaction-retention {{ kubernetes.etcd.autocompactionretention }} \
   --client-cert-auth \
   --trusted-ca-file {{ ca.etcd.location }}/ca.crt \
   --cert-file {{ ca.etcd.location }}/server.crt \
@@ -39,7 +40,8 @@ ExecStart=/usr/local/bin/etcd --name {{ inventory_hostname }} \
   --peer-client-cert-auth \
   --peer-trusted-ca-file {{ ca.etcd.location }}/ca.crt \
   --peer-cert-file {{ ca.etcd.location }}/peer.crt \
-  --peer-key-file {{ ca.etcd.location }}/peer.key {% if kubernetes.etcd.debug %} --debug {% endif %}
+  --peer-key-file {{ ca.etcd.location }}/peer.key {% if kubernetes.etcd.debug %} --debug {% endif %} {% if kubernetes.etcd.enablepprof %} --enable-pprof {% endif %}
+
 
 [Install]
 WantedBy=multi-user.target

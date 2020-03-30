@@ -65,7 +65,9 @@ kubernetes:
       - 'native.cgroupdriver=systemd'
 
   etcd: 
-    debug: false
+    enablepprof: true
+    autocompactionretention: 1
+    debug: true
     datadir: /var/lib/etcd
     initialclustertoken: 'kubernetes'
     initialclusterstate: 'new'

@@ -40,3 +40,10 @@
   template: 
     src: etcd.service.j2
     dest: /etc/systemd/system/etcd.service
+
+- name: Start the service
+  systemd:
+    name: etcd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
