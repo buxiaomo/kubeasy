@@ -18,8 +18,8 @@
     group: root
   with_items:
     - '{{ca.kubernetes.location }}/ca.crt'
-    - '{{ca.kubernetes.location }}/kube-controller-manager.crt'
-    - '{{ca.kubernetes.location }}/kube-controller-manager.key'
+    - '{{ca.kubernetes.location }}/sa.crt'
+    - '{{ca.kubernetes.location }}/sa.key'
 
 - name: Create kubeconfig
   shell: |
