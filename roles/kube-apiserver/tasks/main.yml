@@ -31,7 +31,7 @@
     - '{{ca.kubernetes.location }}/front-proxy-ca.crt'
     - '{{ca.kubernetes.location }}/front-proxy-client.crt'
     - '{{ca.kubernetes.location }}/front-proxy-client.key'
-    - '{{ca.kubernetes.location }}/admin.crt
+    - '{{ca.kubernetes.location }}/admin.crt'
 
 - name: Create kubeconfig
   shell: |
