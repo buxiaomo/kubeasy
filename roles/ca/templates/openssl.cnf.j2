@@ -1,7 +1,7 @@
 {%- set allnode,etcdnode=[],[] -%}
 
 {%- if kubernetes.vip is defined %}
-{{ etcdnode.append(kubernetes.vip) }}
+{{ allnode.append(kubernetes.vip) }}
 {%- endif %}
 
 {%- for host in groups['kube-master'] -%}
@@ -76,7 +76,7 @@ IP.7 = 172.16.13.14
 [ alt_names_etcd ]
 DNS.1 = localhost
 IP.1 = 127.0.0.1
-{% if  allnode | length > 0 %}
+{% if  etcdnode | length > 0 %}
 {% for host in etcdnode %}IP.{{ loop.index + 1 }} = {{ host }}
 {% endfor %}
 {% endif %}
