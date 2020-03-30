@@ -4,7 +4,6 @@ Documentation=http://docs.docker.com
 After=network.target
 
 [Service]
-Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin"
 ExecStart=/usr/local/bin/dockerd
 ExecReload=/bin/kill -s HUP $MAINPID
 Restart=on-failure
