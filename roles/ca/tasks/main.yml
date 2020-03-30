@@ -21,7 +21,6 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: not kubernetes_ca.stat.exists
 
 
 - name: Create etcd ca
@@ -31,7 +30,6 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: not etcd_ca.stat.exists
 
 
 - name: Create front-proxy-ca
@@ -41,7 +39,6 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: not front_proxy_ca.stat.exists
 
 
 - name: Create apiserver etcd client --- part.1
