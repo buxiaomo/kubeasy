@@ -1,5 +1,7 @@
 SHELL := /bin/bash
 
+DOWNLOAD_WAY := "official"
+
 KUBE_VERSION := "1.17.4"
 DOCKER_VERSION := "19.03.8"
 FLANNEL_VERSION := "0.12.0"
@@ -28,7 +30,7 @@ download:
 	&& export DOCKER_VERSION=$(DOCKER_VERSION) \
 	&& export FLANNEL_VERSION=$(FLANNEL_VERSION) \
 	&& export ETCD_VERSION=$(ETCD_VERSION) \
-	&& bash scripts/download.sh
+	&& bash scripts/$(DOWNLOAD_WAY)-download.sh
 
 runtime:
 	@scripts/runtime.sh
