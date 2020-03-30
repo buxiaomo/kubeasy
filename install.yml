@@ -27,6 +27,8 @@
   hosts: kube-master
   roles:
     - docker
+    - kubelet
+    - kubectl
     - kube-apiserver
   tags:
     - kube-master

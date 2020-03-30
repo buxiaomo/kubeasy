@@ -84,6 +84,10 @@ kubernetes:
         - 127.0.0.1
       debug: true
 
+  kubelet: 
+    pod_infra_container_image: harbor.cn.svc.corpintra.net/google_containers/pause-amd64:3.1
+    image_pull_progress_deadline: 2m
+
   apiserver: 
     authorization_mode: Node,RBAC
     enable_admission_plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset
