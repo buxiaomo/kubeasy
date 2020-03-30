@@ -28,6 +28,7 @@
     executable: /bin/bash
   when: not kubernetes_ca.stat.exists
 
+
 - name: Detection of etcd ca
   stat: 
     path: '{{ ca.etcd.location }}/ca.key'
@@ -35,12 +36,13 @@
 
 - name: Create etcd ca
   shell: |
-    openssl genrsa -out etcd/ca.key 2048 && \
-    openssl req -x509 -new -nodes -key etcd/ca.key -config openssl.cnf -subj "/CN=etcd-ca" -extensions v3_ca -out etcd/ca.crt -days {{ ca.days }}
+    openssl genrsa -out {{ ca.etcd.location }}/ca.key 2048 && \
+    openssl req -x509 -new -nodes -key {{ ca.etcd.location }}/ca.key -config openssl.cnf -subj "/CN=etcd-ca" -extensions v3_ca -out {{ ca.etcd.location }}/ca.crt -days {{ ca.days }}
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
   when: not etcd_ca.stat.exists
+
 
 - name: Detection front-proxy-ca
   stat: 
@@ -55,3 +57,170 @@
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
   when: not front_proxy_ca.stat.exists
+
+
+- name: Create apiserver etcd client --- part.1
+  shell: |
+    openssl genrsa -out apiserver-etcd-client.key 2048 && \
+    openssl req -new -key apiserver-etcd-client.key -subj "/CN=apiserver-etcd-client/O=system:masters" -out apiserver-etcd-client.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+- name: Create apiserver-etcd-client --- part.2
+  shell: |
+    openssl x509 -in apiserver-etcd-client.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out apiserver-etcd-client.crt -days {{ ca.days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: Create kube etcd --- part.1
+  shell: |
+    openssl genrsa -out {{ ca.etcd.location }}/server.key 2048 && \
+      openssl req -new -key {{ ca.etcd.location }}/server.key -subj "/CN=etcd-server" -out {{ ca.etcd.location }}/server.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: Create kube etcd --- part.2
+  shell: |
+    openssl x509 -in {{ ca.etcd.location }}/server.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out {{ ca.etcd.location }}/server.crt -days {{ ca.days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: kube-etcd-peer --- part.1
+  shell: |
+    openssl genrsa -out {{ ca.etcd.location }}/peer.key 2048 && \
+      openssl req -new -key {{ ca.etcd.location }}/peer.key -subj "/CN=etcd-peer" -out {{ ca.etcd.location }}/peer.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: kube-etcd-peer --- part.2
+  shell: |
+    openssl x509 -in {{ ca.etcd.location }}/peer.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out {{ ca.etcd.location }}/peer.crt -days {{ ca.days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: kube-etcd-healthcheck-client --- part.1
+  shell: |
+    openssl genrsa -out {{ ca.etcd.location }}/healthcheck-client.key 2048 && \
+      openssl req -new -key {{ ca.etcd.location }}/healthcheck-client.key -subj "/CN=etcd-client" -out {{ ca.etcd.location }}/healthcheck-client.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: kube-etcd-healthcheck-client --- part.2
+  shell: |
+    openssl x509 -in {{ ca.etcd.location }}/healthcheck-client.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out {{ ca.etcd.location }}/healthcheck-client.crt -days {{ ca.days }}
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: kube-apiserver --- part.1
+  shell: |
+    openssl genrsa -out apiserver.key 2048 && \
+    openssl req -new -key apiserver.key -subj "/CN=kube-apiserver" -config openssl.cnf -out apiserver.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: kube-apiserver --- part.2
+  shell: |
+    openssl x509 -req -in apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ ca.days }} -extensions v3_req_apiserver -extfile openssl.cnf -out apiserver.crt
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: apiserver-kubelet-client --- part.1
+  shell: |
+    openssl genrsa -out  apiserver-kubelet-client.key 2048 && \
+    openssl req -new -key apiserver-kubelet-client.key -subj "/CN=apiserver-kubelet-client/O=system:masters" -out apiserver-kubelet-client.csr;
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: apiserver-kubelet-client --- part.2
+  shell: |
+    openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ ca.days }} -extensions v3_req_client -extfile openssl.cnf -out apiserver-kubelet-client.crt
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: front-proxy-client --- part.1
+  shell: |
+    openssl genrsa -out  front-proxy-client.key 2048 && \
+    openssl req -new -key front-proxy-client.key -subj "/CN=front-proxy-client" -out front-proxy-client.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: front-proxy-client --- part.2
+  shell: |
+    openssl x509 -req -in front-proxy-client.csr -CA front-proxy-ca.crt -CAkey front-proxy-ca.key -CAcreateserial -days {{ ca.days }} -extensions v3_req_client -extfile openssl.cnf -out front-proxy-client.crt
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: kube-scheduler --- part.1
+  shell: |
+    openssl genrsa -out  kube-scheduler.key 2048 && \
+      openssl req -new -key kube-scheduler.key -subj "/CN=system:kube-scheduler" -out kube-scheduler.csr
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+- name: kube-scheduler --- part.2
+  shell: |
+    openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ ca.days }} -extensions v3_req_client -extfile openssl.cnf -out kube-scheduler.crt
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+- name: sa.pub sa.key
+  shell: |
+    openssl genrsa -out  sa.key 2048 && \
+    openssl ecparam -name secp521r1 -genkey -noout -out sa.key && \
+    openssl ec -in sa.key -outform PEM -pubout -out sa.pub && \
+    openssl req -new -sha256 -key sa.key -subj "/CN=system:kube-controller-manager" -out sa.csr && \
+    openssl x509 -req -in sa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ ca.days }} -extensions v3_req_client -extfile openssl.cnf -out sa.crt
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
+
+
+
+
+- name: admin
+  shell: |
+    openssl genrsa -out  admin.key 2048 && \
+    openssl req -new -key admin.key -subj "/CN=kubernetes-admin/O=system:masters" -out admin.csr && \
+    openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ ca.days }} -extensions v3_req_client -extfile openssl.cnf -out admin.crt
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
