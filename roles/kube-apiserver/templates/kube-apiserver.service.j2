@@ -19,7 +19,6 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset \
   --advertise-address={{ ansible_default_ipv4.address }} \
   --bind-address={{ ansible_default_ipv4.address }}  \
-  --insecure-port=0 \
   --secure-port=6443 \
   --allow-privileged=true \
   --audit-log-maxage=30 \

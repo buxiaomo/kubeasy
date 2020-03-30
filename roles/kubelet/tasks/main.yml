@@ -16,6 +16,17 @@
     dest: /etc/kubernetes/kubelet-conf.yml
   notify: Start the service
 
+- name: Install bootstrap kubeconfig
+  shell: 
+    kubectl config set-cluster {{ kubernetes.name }} \
+    --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
+    --embed-certs=true \
+    --server={{ ansible_default_ipv4.address }} \
+    --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
+
+    dest: /etc/kubernetes/kubelet-conf.yml
+  notify: Start the service
+
 - name: Install systemd file
   template: 
     src: kubelet.service.j2
