@@ -46,7 +46,7 @@
     dest: /var/lib/kubernetes/audit-policy-minimal.yaml
 
 - name: register encryption key
-  command: head -c 32 /dev/urandom | base64
+  shell: head -c 32 /dev/urandom | base64
   register: ENCRYPTION_KEY
   run_once: true
 
