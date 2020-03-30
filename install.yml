@@ -27,5 +27,6 @@
   hosts: kube-master
   roles:
     - docker
+    - kube-apiserver
   tags:
     - kube-master
