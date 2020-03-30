@@ -12,6 +12,6 @@
     - etcdctl
 
 - name: Install systemd file
-  templates: 
+  template: 
     src: etcd.service.j2
     dest: /etc/systemd/system/etcd.service
