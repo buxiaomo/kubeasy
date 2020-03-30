@@ -83,7 +83,7 @@ kubernetes:
         - 127.0.0.1
       debug: true
 
-  kube-apiserver: 
+  apiserver: 
     authorization_mode: Node,RBAC
     enable_admission_plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset
     service_cluster_ip_range: 10.24.0.0/16
