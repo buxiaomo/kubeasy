@@ -28,7 +28,7 @@
   roles:
     - docker
     - kubectl
-    - cni
+    # - cni
     - kubelet
     - kube-apiserver
     - kube-scheduler
