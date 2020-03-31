@@ -49,10 +49,11 @@
   when: sysctl.params is defined
 
 - name: Remove swapfile from /etc/fstab
-  mount:
-    fstype: swap
-    state: absent
-    backup: yes
+  lineinfile:
+    dest: /etc/fstab     
+    regexp: "(^\\s*[^#].+swap)"
+    line: '#\1'
+    backrefs: yes
  
 - name: Disable swap
   command: swapoff -a
