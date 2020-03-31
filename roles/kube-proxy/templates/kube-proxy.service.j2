@@ -1,0 +1,21 @@
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/kubernetes/kubernetes
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/kube-proxy \
+  --hostname-override={{ hostvars[inventory_hostname].hostname }} \
+  --config=/etc/kubernetes/kube-proxy.conf \
+{% if kubernetes.proxy.log is defined %}
+  --logtostderr=false \
+  --log-dir={{ kubernetes.proxy.log.logDir }} \
+  --log-file={{ kubernetes.proxy.log.logDir }}/{{ kubernetes.proxy.log.logFile }} \
+{% endif %}
+  --v={{ kubernetes.proxy.log.logLevel | default(2) }}
+
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

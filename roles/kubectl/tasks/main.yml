@@ -12,8 +12,8 @@
 
 - name: Install kubectl completion
   copy: 
-    src: kubectl.sh
-    dest: /etc/profile.d/
+    src: kubectl
+    dest: /etc/bash_completion.d/kubectl.sh
     mode: 0755
     owner: root
     group: root
@@ -32,19 +32,32 @@
 - name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
-      --certificate-authority=/etc/kubernetes/pki/ca.crt \
-      --embed-certs=true \
-      --server=https://{{ ansible_default_ipv4.address }}:6443 \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
-     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --client-certificate=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.crt \
-      --client-key=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.key \
-      --embed-certs=true \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
-     kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name }} \
+      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
+      --server=${KUBE_APISERVER} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+    kubectl config set-credentials {{ item.KUBE_USER }} \
+      --client-certificate={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.crt \
+      --client-key={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.key \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+    
+    kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name }} \
       --cluster={{ kubernetes.name }} \
       --user={{ item.KUBE_USER }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
-     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} 
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+    kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
+
+- name: Create user kube directory
+  file: 
+    name: ~/.kube/
+    state: directory
+    mode: '0755'
+
+- name: Create user kube directory
+  copy: 
+    src: /etc/kubernetes/admin.kubeconfig
+    dest: ~/.kube/config
+    remote_src: yes

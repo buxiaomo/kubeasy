@@ -120,3 +120,9 @@ kubernetes:
       logLevel: 2
       logDir: /var/log/kubernetes
       logFile: kube-controller-manager.log
+
+  proxy:
+    log:
+      logLevel: 2
+      logDir: /var/log/kubernetes
+      logFile: kube-proxy.log

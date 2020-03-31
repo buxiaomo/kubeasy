@@ -1,4 +1,4 @@
-address: 0.0.0.0
+address: {{ ansible_default_ipv4.address }}
 apiVersion: kubelet.config.k8s.io/v1beta1
 authentication:
   anonymous:
@@ -41,7 +41,7 @@ evictionPressureTransitionPeriod: 5m0s
 failSwapOn: true
 fileCheckFrequency: 20s
 hairpinMode: promiscuous-bridge
-healthzBindAddress: 127.0.0.1
+healthzBindAddress: {{ ansible_default_ipv4.address }}
 healthzPort: 10248
 httpCheckFrequency: 20s
 imageGCHighThresholdPercent: 85

@@ -1,2 +1,33 @@
 ---
 # tasks file for kube-proxy
+
+- name: Register secret
+  command: "kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'"
+  register: SECRET
+  run_once: true
+
+- name: Register jwt token
+  command: "kubectl -n kube-system get secret {{ SECRET }} --output=jsonpath='{.data.token}' | base64 -d"
+  register: JWT_TOKEN
+  run_once: true
+
+- name: Create kubeconfig
+  shell: |
+    kubectl config set-cluster {{ kubernetes.name }} \
+      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
+      --embed-certs=true \
+      --server=https://{{ ansible_default_ipv4.address }}:6443 \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+    kubectl config set-context {{ kubernetes.name }} \
+      --cluster={{ kubernetes.name }} \
+      --user={{ kubernetes.name }} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+    kubectl config set-credentials {{ kubernetes.name }} \
+      --token={{ JWT_TOKEN }} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+    kubectl config use-context {{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+  with_items:
+    - { KUBE_CONFIG: 'kube-proxy.kubeconfig'}

@@ -33,5 +33,17 @@
     - kube-scheduler
     - kube-controller-manager
     - kubelet
+    - kube-proxy
   tags:
     - kube-master
+
+- name: Deployment Kube Minion
+  hosts: kube-minion
+  roles:
+    - docker
+    - cni
+    - kubectl
+    - kubelet
+    - kube-proxy
+  tags:
+    - kube-minion

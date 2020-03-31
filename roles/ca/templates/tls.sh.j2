@@ -71,6 +71,9 @@ openssl genrsa -out  admin.key 2048
 openssl req -new -key admin.key -subj "/CN=kubernetes-admin/O=system:masters" -out admin.csr
 openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days 10000 -extensions v3_req_client -extfile openssl.cnf -out admin.crt
 
+# 清理 csr srl
+find . -name "*.csr" -o -name "*.srl" -exec  rm -f {} \;
+
 # # kubeconfig
 # KUBE_APISERVER=https://172.16.13.11:6443
 # # kube-controller-manager

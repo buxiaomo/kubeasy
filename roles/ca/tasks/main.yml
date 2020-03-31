@@ -18,11 +18,11 @@
 - name: Create ca template
   template: 
     src: tls.sh.j2
-    dest: '{{ ca.kubernetes.location }}/tls.sh.j2'
+    dest: '{{ ca.kubernetes.location }}/tls.sh'
     mode: 755
 
 - name: Create ca
-  command: '{{ ca.kubernetes.location }}/tls.sh.j2'
+  command: '{{ ca.kubernetes.location }}/tls.sh'
 
 # - name: Create kubernetes ca
 #   shell: |

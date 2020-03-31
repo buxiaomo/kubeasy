@@ -91,18 +91,6 @@
   connection: local
   ignore_errors: True
 
-# - name: Create .kube directory
-#   file: 
-#     path: /root/.kube
-#     state: directory 
-#     mode: 0655
-
-# - name: Set admin kubeconfig
-#   copy: 
-#     src: /etc/kubernetes/admin.kubeconfig
-#     dest: /root/.kube/config
-#     remote_src: true
-
 # - name: Create auto-approve --- part.1
 #   copy: 
 #     src: '{{ item }}'

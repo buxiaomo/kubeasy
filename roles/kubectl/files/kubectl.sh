@@ -1,1 +1,1 @@
-source <(kubectl completion bash)
+kubectl completion bash
