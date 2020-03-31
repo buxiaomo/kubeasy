@@ -34,11 +34,13 @@
     kubectl config set-cluster {{ kubernetes.name }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --server=${KUBE_APISERVER} \
+      --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
       --client-certificate={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.crt \
       --client-key={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.key \
+      --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
     
     kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name }} \
