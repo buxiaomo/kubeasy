@@ -18,6 +18,12 @@
   with_items:
     - /etc/kubernetes/manifests
 
+- name: Create log directory
+  file: 
+    name: '{{ kubernetes.kubelet.log.logDir }}'
+    state: directory
+    mode: '0755'
+
 - name: Install config file
   template: 
     src: kubelet-conf.yml.j2

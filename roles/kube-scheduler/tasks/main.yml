@@ -10,6 +10,12 @@
   with_items:
     - kube-scheduler
 
+- name: Create log directory
+  file: 
+    name: '{{ kubernetes.scheduler.log.logDir }}'
+    state: directory
+    mode: '0755'
+
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
