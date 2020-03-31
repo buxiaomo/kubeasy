@@ -55,7 +55,13 @@
     state: started
     host: '{{ ansible_ssh_host }}'
 
+- name: Health check command
+  template: 
+    src: etcd-health-check.sh.j2
+    dest: /usr/local/bin/etcd-health-check.sh
+    mode: 755
+
 - name: Health check
   shell: |
-    ETCDCTL_API=3 
+    ETCDCTL_API=3 && \
     /usr/local/bin/etcdctl --endpoints {{ ansible_default_ipv4.address }}:2379 --cacert {{ ca.etcd.location }}/ca.crt --cert {{ ca.etcd.location }}/server.crt --key {{ ca.etcd.location }}/server.key endpoint health

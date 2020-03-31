@@ -1,0 +1,1 @@
+ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {{ ansible_default_ipv4.address }}:2379 --cacert {{ ca.etcd.location }}/ca.crt --cert {{ ca.etcd.location }}/server.crt --key {{ ca.etcd.location }}/server.key endpoint health
