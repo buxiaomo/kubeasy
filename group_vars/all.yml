@@ -57,9 +57,12 @@ ca:
     location: /etc/kubernetes/pki/etcd
 
 kubernetes:
+  # cluster name
   name: 'kubernetes'
+
   vip: 172.16.13.10
   
+  # etcd parameter configuration
   etcd: 
     enablepprof: true
     autocompactionretention: 1
@@ -67,7 +70,8 @@ kubernetes:
     datadir: /var/lib/etcd
     initialclustertoken: 'kubernetes'
     initialclusterstate: 'new'
-
+  
+  # docker parameter configuration
   docker:
     datadir: /var/lib/docker
     daemon: 
@@ -84,6 +88,7 @@ kubernetes:
         - 127.0.0.1
       debug: true
 
+  # kubelet parameter configuration
   kubelet: 
     log:
       logLevel: 2
@@ -92,6 +97,7 @@ kubernetes:
     pod_infra_container_image: gcr.azk8s.cn/google_containers/pause-amd64:3.1
     image_pull_progress_deadline: 2m
 
+  # kube-apiserver parameter configuration
   apiserver: 
     bind: 0.0.0.0
     log:
@@ -99,6 +105,7 @@ kubernetes:
       logDir: /var/log/kubernetes
       logFile: kube-apiserver.log
 
+  # kube-scheduler parameter configuration
   scheduler: 
     bind: 0.0.0.0
     log:
@@ -106,6 +113,7 @@ kubernetes:
       logDir: /var/log/kubernetes
       logFile: kube-scheduler.log
 
+  # kube-controller-manager parameter configuration
   controllerManager:
     bind: 0.0.0.0
     PodCidr: 10.244.0.0/16
@@ -121,6 +129,7 @@ kubernetes:
       logDir: /var/log/kubernetes
       logFile: kube-controller-manager.log
 
+  # kube-proxy parameter configuration
   proxy:
     log:
       logLevel: 2

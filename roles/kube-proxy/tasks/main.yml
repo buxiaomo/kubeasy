@@ -1,6 +1,5 @@
 ---
 # tasks file for kube-proxy
-
 - name: Register secret
   command: "kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'"
   register: SECRET
@@ -15,7 +14,6 @@
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --embed-certs=true \
       --server=https://{{ ansible_default_ipv4.address }}:6443 \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
