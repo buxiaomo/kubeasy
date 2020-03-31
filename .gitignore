@@ -15,3 +15,11 @@ roles/docker/files/runc
 # etcd
 roles/etcd/files/etcd
 roles/etcd/files/etcdctl
+
+# kubernetes
+roles/kube-apiserver/files/kube-apiserver
+roles/kubectl/files/kubectl
+roles/kubelet/files/kubelet
+roles/kube-controller-manager/files/kube-controller-manager
+roles/kube-scheduler/files/kube-scheduler
+roles/kube-proxy/files/kube-proxy
