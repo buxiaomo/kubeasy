@@ -16,17 +16,24 @@
   tags:
     - ca
 
-- name: Deployment etcd Cluster
+- name: Deployment etcd cluster
   hosts: "{% if groups['kube-etcd'] is not defined %}kube-master{% else %}kube-etcd{% endif %}"
   roles:
     - etcd
   tags:
     - etcd
 
-- name: Deployment Kube Master
-  hosts: kube-master
+- name: Init all kubernetes node
+  hosts: kubernetes
   roles:
     - docker
+    - ipvs
+  tags:
+    - kubernetes-init
+
+- name: Deployment kube master
+  hosts: kube-master
+  roles:
     - cni-plugins
     - kubectl
     - kube-apiserver
@@ -37,10 +44,9 @@
   tags:
     - kube-master
 
-- name: Deployment Kube Minion
+- name: Deployment kube minion
   hosts: kube-minion
   roles:
-    - docker
     - cni-plugins
     - kubectl
     - kubelet

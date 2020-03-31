@@ -1,0 +1,24 @@
+---
+# tasks file for ipvs
+- name: Install package
+  package:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - ipset
+    - ipvsadm
+
+- name: Load kernel modules
+  modprobe:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ ipvs.params }}'
+  when: ipvs.params is defined
+
+- name: Write kernel modules to file
+  lineinfile:
+    path: '{{ ipvs.filename }}'
+    line: '{{ item }}'
+    create: yes
+  with_items: '{{ ipvs.params }}'
+  when: ipvs.params is defined
