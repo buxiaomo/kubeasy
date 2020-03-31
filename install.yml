@@ -27,10 +27,11 @@
   hosts: kube-master
   roles:
     - docker
+    - cni
     - kubectl
     - kube-apiserver
-    - kubelet
-    # - kube-scheduler
+    - kube-scheduler
     # - kube-controller-manager
+    # - kubelet
   tags:
     - kube-master

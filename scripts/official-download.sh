@@ -44,11 +44,21 @@ KUBE_VERSION=${KUBE_VERSION:-"1.18.0"}
 echo "Prepare kubernetes ${KUBE_VERSION} release ..."
 mkdir -p binaries/kubernetes/${KUBE_VERSION}
 grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/dev/null || {
- curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-apiserver" -o binaries/kubernetes/${KUBE_VERSION}/kube-apiserver
- curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager" -o binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager
- curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-scheduler" -o binaries/kubernetes/${KUBE_VERSION}/kube-scheduler
- curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" -o binaries/kubernetes/${KUBE_VERSION}/kubectl
- curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-proxy" -o binaries/kubernetes/${KUBE_VERSION}/kube-proxy
- curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubelet" -o binaries/kubernetes/${KUBE_VERSION}/kubelet
- echo ${KUBE_VERSION} > binaries/kubernetes/${KUBE_VERSION}/.kubernetes
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-apiserver" -o binaries/kubernetes/${KUBE_VERSION}/kube-apiserver
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager" -o binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-scheduler" -o binaries/kubernetes/${KUBE_VERSION}/kube-scheduler
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" -o binaries/kubernetes/${KUBE_VERSION}/kubectl
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-proxy" -o binaries/kubernetes/${KUBE_VERSION}/kube-proxy
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubelet" -o binaries/kubernetes/${KUBE_VERSION}/kubelet
+  echo ${KUBE_VERSION} > binaries/kubernetes/${KUBE_VERSION}/.kubernetes
+}
+
+CNI_VERSION=${CNI_VERSION:-"0.8.5"}
+echo "Prepare cni ${CNI_VERSION} release ..."
+mkdir -p binaries/cni/${CNI_VERSION}
+grep -q "^${CNI_VERSION}\$" binaries/cni/${CNI_VERSION}/.cni 2>/dev/null || {
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+  tar -zxf binaries/cni/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz --strip-components 1 -C binaries/cni/${CNI_VERSION}/
+  rm -rf binaries/cni/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+  echo ${CNI_VERSION} > binaries/cni/${CNI_VERSION}/.cni
 }

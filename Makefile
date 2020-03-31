@@ -6,6 +6,7 @@ KUBE_VERSION := "1.14.1"
 DOCKER_VERSION := "19.03.8"
 FLANNEL_VERSION := "0.12.0"
 ETCD_VERSION := "3.4.5"
+CNI_VERSION := "0.8.5"
 DEBUG := true
 
 auto: runtime download sync
@@ -27,6 +28,7 @@ download:
 	&& export DOCKER_VERSION=$(DOCKER_VERSION) \
 	&& export FLANNEL_VERSION=$(FLANNEL_VERSION) \
 	&& export ETCD_VERSION=$(ETCD_VERSION) \
+	&& export CNI_VERSION=$(CNI_VERSION) \
 	&& bash scripts/$(DOWNLOAD_WAY)-download.sh
 
 runtime:
@@ -41,6 +43,7 @@ sync:
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-controller-manager ./roles/kube-controller-manager/files/kube-controller-manager --delete
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-scheduler ./roles/kube-scheduler/files/kube-scheduler --delete
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-proxy ./roles/kube-proxy/files/kube-proxy --delete
+	@rsync -a ./scripts/binaries/cni/$(CNI_VERSION)/* ./roles/cni/files/ --delete
 	@echo "Playbook is ready. Enjoy!"
 
 check:

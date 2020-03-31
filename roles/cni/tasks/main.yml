@@ -1,0 +1,24 @@
+---
+# tasks file for cni
+- name: Install the binary
+  copy: 
+    src: '{{ item }}'
+    dest: /opt/cni/bin/
+    mode: 0755
+  with_items:
+    - bandwidth
+    - bridge
+    - dhcp
+    - firewall
+    - flannel
+    - host-device
+    - host-local
+    - ipvlan
+    - loopback
+    - macvlan
+    - portmap
+    - ptp
+    - sbr
+    - static
+    - tuning
+    - vlan
