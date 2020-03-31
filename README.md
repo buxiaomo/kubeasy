@@ -19,9 +19,12 @@ make runtime
 ```
 # default version
 make download
+make sync
 make install
 
 # custom version
 make download KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
+
+systemctl stop kube-apiserver.service kube-scheduler.service kube-controller-manager.service

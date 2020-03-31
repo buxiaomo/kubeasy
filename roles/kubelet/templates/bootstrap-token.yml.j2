@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+type: bootstrap.kubernetes.io/token
+data:
+  description: Y2x1c3RlciBib290c3RyYXAgdG9rZW4=
+  token-id: {{ TOKEN_ID }}
+  token-secret: {{ TOKEN_SECRET }}
+  usage-bootstrap-authentication: dHJ1ZQ==
+  usage-bootstrap-signing: dHJ1ZQ==
+metadata:
+  name: bootstrap-token-{{ TOKEN_ID }}
+  namespace: kube-system
