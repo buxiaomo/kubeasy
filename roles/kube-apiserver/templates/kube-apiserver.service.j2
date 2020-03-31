@@ -52,10 +52,10 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --proxy-client-key-file={{ ca.kubernetes.location }}/front-proxy-client.key \
 {% if kubernetes.apiserver.log is defined %}
   --logtostderr=false \
-  --log-dir={{ kubernetes.apiserver.logDir }} \
-  --log-file={{ kubernetes.apiserver.logDir }}/{{ kubernetes.apiserver.logFile }} \
+  --log-dir={{ kubernetes.apiserver.log.logDir }} \
+  --log-file={{ kubernetes.apiserver.log.logDir }}/{{ kubernetes.apiserver.log.logFile }} \
 {% endif %}
-  --v=2
+  --v={{ kubernetes.apiserver.log.logLevel | default(2) }}
 
 Restart=on-failure
 RestartSec=5
