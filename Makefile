@@ -45,4 +45,5 @@ sync:
 
 check:
 	@ansible -i hosts all -m ping
+	# @ansible-playbook -i hosts --check install.yml
 	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null

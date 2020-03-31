@@ -5,6 +5,13 @@
   with_first_found:
    - '{{ ansible_os_family }}.yml'
 
+- name: Install some applications
+  package: 
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - python-apt
+
 - name: Set the Hostname
   hostname: 
     name: '{{ hostname }}'

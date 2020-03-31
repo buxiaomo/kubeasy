@@ -75,24 +75,6 @@
     - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
   when: not bootstrap_kubeconfig.stat.exists
 
-- name: Create auto-approve --- part.1
-  copy: 
-    src: '{{ item }}'
-    dest: '/etc/kubernetes/{{ item }}'
-  run_once: true
-  with_items:
-    - auto-approve-csrs-for-group.yml
-    - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
-  
-- name: Create auto-approve --- part.2
-  command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
-  run_once: true
-  with_items:
-    - auto-approve-csrs-for-group.yml
-    - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
-
 - name: Install systemd file
   template: 
     src: kubelet.service.j2
