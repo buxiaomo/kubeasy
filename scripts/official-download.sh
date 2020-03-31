@@ -54,11 +54,11 @@ grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/
 }
 
 CNI_VERSION=${CNI_VERSION:-"0.8.5"}
-echo "Prepare cni ${CNI_VERSION} release ..."
-mkdir -p binaries/cni/${CNI_VERSION}
-grep -q "^${CNI_VERSION}\$" binaries/cni/${CNI_VERSION}/.cni 2>/dev/null || {
-  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
-  tar -zxf binaries/cni/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz --strip-components 1 -C binaries/cni/${CNI_VERSION}/
-  rm -rf binaries/cni/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
-  echo ${CNI_VERSION} > binaries/cni/${CNI_VERSION}/.cni
+echo "Prepare cni-plugins ${CNI_VERSION} release ..."
+mkdir -p binaries/cni-plugins/${CNI_VERSION}
+grep -q "^${CNI_VERSION}\$" binaries/cni-plugins/${CNI_VERSION}/.cni 2>/dev/null || {
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+  tar -zxf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz --strip-components 1 -C binaries/cni-plugins/${CNI_VERSION}/
+  rm -rf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+  echo ${CNI_VERSION} > binaries/cni-plugins/${CNI_VERSION}/.cni
 }
