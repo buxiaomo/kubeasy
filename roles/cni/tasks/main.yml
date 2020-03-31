@@ -1,5 +1,11 @@
 ---
 # tasks file for cni
+- name: Create binary directory
+  file: 
+    name: /opt/cni/bin
+    state: directory
+    mode: '0755'
+
 - name: Install the binary
   copy: 
     src: '{{ item }}'
