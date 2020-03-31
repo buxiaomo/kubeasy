@@ -8,6 +8,7 @@
   with_items:
   - '{{ ca.kubernetes.location }}'
   - '{{ ca.etcd.location }}'
+  - /root/.rnd
 
 - name: Create openssl template
   template: 
