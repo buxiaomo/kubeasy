@@ -27,7 +27,7 @@
   hosts: kube-master
   roles:
     - docker
-    - cni
+    - cni-plugins
     - kubectl
     - kube-apiserver
     - kube-scheduler
@@ -41,7 +41,7 @@
   hosts: kube-minion
   roles:
     - docker
-    - cni
+    - cni-plugins
     - kubectl
     - kubelet
     - kube-proxy
