@@ -53,6 +53,7 @@
     name: swap
     fstype: swap
     state: absent
+    backup: yes
  
 - name: Disable swap
   command: swapoff -a
