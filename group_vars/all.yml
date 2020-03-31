@@ -85,6 +85,10 @@ kubernetes:
       debug: true
 
   kubelet: 
+    log:
+      logLevel: 2
+      logDir: /var/log/kubernetes
+      logFile: kubelet.log
     pod_infra_container_image: gcr.azk8s.cn/google_containers/pause-amd64:3.1
     image_pull_progress_deadline: 2m
 

@@ -32,6 +32,6 @@
     - kube-apiserver
     - kube-scheduler
     - kube-controller-manager
-    # - kubelet
+    - kubelet
   tags:
     - kube-master
