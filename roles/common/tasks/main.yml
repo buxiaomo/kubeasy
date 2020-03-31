@@ -50,7 +50,6 @@
 
 - name: Remove swapfile from /etc/fstab
   mount:
-    name: swap
     fstype: swap
     state: absent
     backup: yes
