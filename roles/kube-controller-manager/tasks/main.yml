@@ -24,13 +24,13 @@
 - name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
-      --certificate-authority=/etc/kubernetes/pki/ca.crt \
+      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --embed-certs=true \
       --server=https://{{ ansible_default_ipv4.address }}:6443 \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
      kubectl config set-credentials {{ item.KUBE_USER }} \
-      --client-certificate=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.crt \
-      --client-key=/etc/kubernetes/pki/{{ item.KUBE_CERT }}.key \
+      --client-certificate={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.crt \
+      --client-key={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.key \
       --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \
      kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name }} \
@@ -45,3 +45,22 @@
   template: 
     src: kube-controller-manager.service.j2
     dest: /etc/systemd/system/kube-controller-manager.service
+
+- name: Start the service
+  systemd:
+    name: kube-controller-manager
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: Health check
+  uri: 
+    url: http://{{ ansible_default_ipv4.address }}:10252/healthz
+    validate_certs: no
+    return_content: yes
+  register: this
+  until: "'ok' in this.content"
+  retries: 10
+  delay: 4
+  connection: local
+  ignore_errors: True

@@ -7,12 +7,14 @@ After=network.target
 ExecStart=/usr/local/bin/kube-scheduler \
   --leader-elect=true \
   --kubeconfig=/etc/kubernetes/scheduler.kubeconfig \
-  --bind-address={{ kubernetes.scheduler.bind }} \
-{% if kubernetes.scheduler.logrotate.log is defined and kubernetes.scheduler.logrotate.log %}
+  --bind-address={{ kubernetes.scheduler.bind | default('0.0.0.0') }} \
+{% if kubernetes.scheduler.log is defined %}
   --logtostderr=false \
-  --log-dir={{ kubernetes.scheduler.logrotate.logDir }} \
+  --log-dir={{ kubernetes.scheduler.logDir }} \
+  --log-file={{ kubernetes.scheduler.logDir }}/{{ kubernetes.scheduler.logFile }} \
 {% endif %}
   --v={{ kubernetes.scheduler.logLevel | default(2)}}
+
 Restart=always
 RestartSec=10s
 

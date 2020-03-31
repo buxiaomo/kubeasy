@@ -64,9 +64,10 @@ ExecStart=/usr/local/bin/kube-controller-manager \
              5m
     {%- endif -%}
 {%- endif %} \
-{% if kubernetes.controllerManager.logrotate.log is defined and kubernetes.controllerManager.logrotate.log %}
+{% if kubernetes.controllerManager.log is defined %}
   --logtostderr=false \
-  --log-dir={{ kubernetes.controllerManager.logrotate.logDir }} \
+  --log-dir={{ kubernetes.controllerManager.logDir }} \
+  --log-file={{ kubernetes.controllerManager.logDir }}/{{ kubernetes.controllerManager.logFile }} \
 {% endif %}
   --v={{ kubernetes.controllerManager.logLevel | default(2) }}
 

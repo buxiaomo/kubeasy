@@ -9,7 +9,6 @@
     group: root
   with_items:
     - kube-apiserver
-  notify: Start the service
 
 - name: Distribution of certificate
   copy: 
@@ -86,32 +85,32 @@
   connection: local
   ignore_errors: True
 
-- name: Create .kube directory
-  file: 
-    path: /root/.kube
-    state: directory 
-    mode: 0655
+# - name: Create .kube directory
+#   file: 
+#     path: /root/.kube
+#     state: directory 
+#     mode: 0655
 
-- name: Set admin kubeconfig
-  copy: 
-    src: /etc/kubernetes/admin.kubeconfig
-    dest: /root/.kube/config
-    remote_src: true
+# - name: Set admin kubeconfig
+#   copy: 
+#     src: /etc/kubernetes/admin.kubeconfig
+#     dest: /root/.kube/config
+#     remote_src: true
 
-- name: Create auto-approve --- part.1
-  copy: 
-    src: '{{ item }}'
-    dest: '/etc/kubernetes/{{ item }}'
-  run_once: true
-  with_items:
-    - auto-approve-csrs-for-group.yml
-    - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
+# - name: Create auto-approve --- part.1
+#   copy: 
+#     src: '{{ item }}'
+#     dest: '/etc/kubernetes/{{ item }}'
+#   run_once: true
+#   with_items:
+#     - auto-approve-csrs-for-group.yml
+#     - auto-approve-renewals-for-nodes.yml
+#     - kubeadm-kubelet-bootstrap.yml
 
-- name: Create auto-approve --- part.2
-  command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
-  run_once: true
-  with_items:
-    - auto-approve-csrs-for-group.yml
-    - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
+# - name: Create auto-approve --- part.2
+#   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
+#   run_once: true
+#   with_items:
+#     - auto-approve-csrs-for-group.yml
+#     - auto-approve-renewals-for-nodes.yml
+#     - kubeadm-kubelet-bootstrap.yml

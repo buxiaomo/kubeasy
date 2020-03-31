@@ -59,7 +59,7 @@
 - name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
-      --certificate-authority=/etc/kubernetes/pki/ca.crt \
+      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --embed-certs=true \
       --server=https://{{ ansible_default_ipv4.address }}:6443 \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} && \

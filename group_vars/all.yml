@@ -89,21 +89,18 @@ kubernetes:
     image_pull_progress_deadline: 2m
 
   apiserver: 
-    logdir: /var/log/kubernetes/kube-apiserver
-    authorization_mode: Node,RBAC
-    enable_admission_plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset
-    service_cluster_ip_range: 10.24.0.0/16
-    service_node_port_range: 30000-32767
+    bind: 0.0.0.0
+    log:
+      logLevel: 2
+      logDir: /var/log/kubernetes
+      logFile: kube-apiserver.log
 
   scheduler: 
     bind: 0.0.0.0
-    logLevel: 2
-    logrotate:
-      log: true
-      confTemplate: logrotate/kube-scheduler
-      logDir: /var/log/kubernetes/kube-scheduler
-      logSize: 200M
-      logRotate: 7
+    log:
+      logLevel: 2
+      logDir: /var/log/kubernetes
+      logFile: kube-scheduler.log
 
   controllerManager:
     bind: 0.0.0.0
@@ -115,10 +112,7 @@ kubernetes:
     #nodeMonitorPeriod: 5s     # 如果改它确保它小于下面的值
     #nodeMonitorGracePeriod: 40s
     #podEvictionTimeout: 5m
-    logLevel: 2
-    logrotate:
-      log: true
-      confTemplate: logrotate/kube-controller-manager
-      logDir: /var/log/kubernetes/kube-controller-manager
-      logSize: 200M
-      logRotate: 7
+    log:
+      logLevel: 2
+      logDir: /var/log/kubernetes
+      logFile: kube-controller-manager.log

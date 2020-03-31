@@ -18,7 +18,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --authorization-mode=Node,RBAC \
   --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset \
   --advertise-address={{ ansible_default_ipv4.address }} \
-  --bind-address={{ ansible_default_ipv4.address }}  \
+  --bind-address={{ kubernetes.apiserver.bind | default('0.0.0.0') }}  \
   --secure-port=6443 \
   --allow-privileged=true \
   --audit-log-maxage=30 \
@@ -50,8 +50,11 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --requestheader-extra-headers-prefix=X-Remote-Extra- \
   --proxy-client-cert-file={{ ca.kubernetes.location }}/front-proxy-client.crt \
   --proxy-client-key-file={{ ca.kubernetes.location }}/front-proxy-client.key \
+{% if kubernetes.apiserver.log is defined %}
   --logtostderr=false \
-  --log-dir={{ kubernetes.apiserver.logdir }} \
+  --log-dir={{ kubernetes.apiserver.logDir }} \
+  --log-file={{ kubernetes.apiserver.logDir }}/{{ kubernetes.apiserver.logFile }} \
+{% endif %}
   --v=2
 
 Restart=on-failure
