@@ -28,13 +28,13 @@
   roles:
     - docker
     - ipvs
+    - cni-plugins
   tags:
     - kubernetes-init
 
 - name: Deployment kube master
   hosts: kube-master
   roles:
-    - cni-plugins
     - kubectl
     - kube-apiserver
     - kube-scheduler
@@ -47,7 +47,6 @@
 - name: Deployment kube minion
   hosts: kube-minion
   roles:
-    - cni-plugins
     - kubectl
     - kubelet
     - kube-proxy
