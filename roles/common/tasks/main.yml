@@ -47,3 +47,13 @@
     ignoreerrors: yes
   loop: '{{ sysctl.params | dictsort }}'
   when: sysctl.params is defined
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+ 
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
