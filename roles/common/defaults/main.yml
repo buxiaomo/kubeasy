@@ -7,10 +7,6 @@ modprobe:
     - nf_conntrack_ipv4
     - br_netfilter
     - overlay
-    - ip_vs
-    - ip_vs_rr
-    - ip_vs_wrr
-    - ip_vs_sh
 
 sysctl:
   filename: /etc/sysctl.d/100-kubernetes.conf

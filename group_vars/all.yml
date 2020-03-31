@@ -12,10 +12,23 @@ modprobe:
     - nf_conntrack_ipv4
     - br_netfilter
     - overlay
+
+ipvs:
+  filename: /etc/modules
+  params:
     - ip_vs
+    - ip_vs_lc
+    - ip_vs_wlc
     - ip_vs_rr
     - ip_vs_wrr
+    - ip_vs_lblc
+    - ip_vs_lblcr
+    - ip_vs_dh
     - ip_vs_sh
+    - ip_vs_fo
+    - ip_vs_nq
+    - ip_vs_sed
+    - ip_vs_ftp
 
 sysctl:
   filename: /etc/sysctl.d/100-kubernetes.conf
