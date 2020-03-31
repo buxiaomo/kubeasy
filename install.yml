@@ -28,10 +28,9 @@
   roles:
     - docker
     - kubectl
-    # - cni
-    - kubelet
     - kube-apiserver
-    - kube-scheduler
-    - kube-controller-manager
+    - kubelet
+    # - kube-scheduler
+    # - kube-controller-manager
   tags:
     - kube-master
