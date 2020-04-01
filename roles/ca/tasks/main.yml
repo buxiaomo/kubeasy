@@ -27,6 +27,9 @@
 
 - name: Create ca
   shell: 'bash {{ ca.kubernetes.location }}/tls.sh'
+  args:
+    chdir: '{{ ca.kubernetes.location }}'
+    executable: /bin/bash
 
 # - name: Create kubernetes ca
 #   shell: |
