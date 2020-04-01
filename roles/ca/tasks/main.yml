@@ -26,8 +26,7 @@
     mode: 755
 
 - name: Create ca
-  shell: |
-    '{{ ca.kubernetes.location }}/tls.sh' | tee /tmp/k8s-ca.log
+  shell: "{{ ca.kubernetes.location }}/tls.sh | tee /tmp/k8s-ca.log"
 
 # - name: Create kubernetes ca
 #   shell: |

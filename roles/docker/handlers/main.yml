@@ -1,6 +1,6 @@
 ---
 # handlers file for docker
-- name: Start the service
+- name: Start docker
   systemd:
     name: docker
     state: restarted
