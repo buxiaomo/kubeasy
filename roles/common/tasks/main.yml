@@ -3,8 +3,6 @@
 - name: Set OS dependent variables
   debug: 
     msg: '{{ group_names }}'
-  when: "'kube-master' in group_names"
-  
 
 - name: Set OS dependent variables
   include_vars: '{{ item }}'
