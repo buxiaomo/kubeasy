@@ -1,4 +1,5 @@
 #!/bin/bash
+
 {%- set etcdnode=[] -%}
 {%- if groups['kube-etcd'] is not defined %}
     {%- for host in groups['kube-master'] -%}
@@ -9,4 +10,9 @@
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- endif %}
-ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}{{ host }}:2379{% if not loop.last %},{% endif %}{% endfor %} --cacert {{ ca.etcd.location }}/ca.crt --cert {{ ca.etcd.location }}/server.crt --key {{ ca.etcd.location }}/server.key endpoint health
+
+ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}{{ host }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
+--cacert {{ ca.etcd.location }}/ca.crt \
+--cert {{ ca.etcd.location }}/server.crt \
+--key {{ ca.etcd.location }}/server.key \
+endpoint health
