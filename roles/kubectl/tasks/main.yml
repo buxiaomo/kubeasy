@@ -75,8 +75,8 @@
 #     remote_src: yes
 #   when: "'kube-master' in group_names"
 
-- name: Create user kube directory
-  copy: 
-    src: /etc/kubernetes/admin.kubeconfig
-    dest: /etc/kubernetes/admin.kubeconfig
-  when: "'kube-minion' in group_names"
+# - name: Create user kube directory
+#   copy: 
+#     src: /etc/kubernetes/admin.kubeconfig
+#     dest: /etc/kubernetes/admin.kubeconfig
+#   when: "'kube-minion' in group_names"
