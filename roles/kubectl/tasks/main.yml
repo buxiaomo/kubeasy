@@ -10,6 +10,14 @@
   with_items:
     - kubectl
 
+- name: Create data directory
+  file: 
+    name: '{{ item }}'
+    state: directory
+    mode: '0755'
+  with_items:
+    - /etc/kubernetes
+
 - name: Install kubectl completion
   copy: 
     src: kubectl
