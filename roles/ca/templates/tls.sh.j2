@@ -1,10 +1,6 @@
 #!/bin/bash
 set -xe
 
-mkdir -p {{ ca.kubernetes.location }} {{ ca.etcd.location }}
-
-cd {{ ca.kubernetes.location }}
-
 # kubernetes-ca
 openssl genrsa -out ca.key 2048
 openssl req -x509 -new -nodes -key ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out ca.crt -days 10000
