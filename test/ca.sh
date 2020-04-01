@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 DIR="/etc/kubernetes/pki"
-mkdir -p ${DIR}
+mkdir -p ${DIR}/etcd
 
 cp openssl.cnf ${DIR}
 
