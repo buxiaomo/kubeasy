@@ -39,26 +39,26 @@
     - '{{ca.kubernetes.location }}/admin.crt'
     - '{{ca.kubernetes.location }}/admin.key'
 
-- name: Create yaml directory
-  file: 
-    name: /var/lib/kubernetes
-    state: directory
-    mode: '0755'
+# - name: Create yaml directory
+#   file: 
+#     name: /var/lib/kubernetes
+#     state: directory
+#     mode: '0755'
 
-- name: Install audit policy minimal
-  template: 
-    src: audit-policy-minimal.yaml.j2
-    dest: /var/lib/kubernetes/audit-policy-minimal.yaml
+# - name: Install audit policy minimal
+#   template: 
+#     src: audit-policy-minimal.yaml.j2
+#     dest: /var/lib/kubernetes/audit-policy-minimal.yaml
 
-- name: register encryption key
-  shell: head -c 32 /dev/urandom | base64
-  register: ENCRYPTION_KEY
-  run_once: true
+# - name: register encryption key
+#   shell: head -c 32 /dev/urandom | base64
+#   register: ENCRYPTION_KEY
+#   run_once: true
 
-- name: Install encryption config
-  template: 
-    src: encryption-config.yaml.j2
-    dest: /var/lib/kubernetes/encryption-config.yaml
+# - name: Install encryption config
+#   template: 
+#     src: encryption-config.yaml.j2
+#     dest: /var/lib/kubernetes/encryption-config.yaml
 
 - name: Install systemd file
   template: 
