@@ -73,8 +73,8 @@ kubernetes:
   # cluster name
   name: 'kubernetes'
 
-  vip: 172.16.13.10
-  
+  # vip: 172.16.13.10/16
+
   # etcd parameter configuration
   etcd: 
     enablepprof: true
@@ -88,6 +88,8 @@ kubernetes:
   docker:
     datadir: /var/lib/docker
     daemon: 
+      exec-opts:
+        - "native.cgroupdriver=systemd"
       registry-mirrors:
         - "https://i3jtbyvy.mirror.aliyuncs.com"
       storage-driver: "overlay2"

@@ -1,3 +1,4 @@
+#!/bin/bash
 {%- set etcdnode=[] -%}
 {%- if groups['kube-etcd'] is not defined %}
     {%- for host in groups['kube-master'] -%}
