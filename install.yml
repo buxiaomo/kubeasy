@@ -37,7 +37,7 @@
   roles:
     - kubectl
     - kube-apiserver
-    # - kube-scheduler
+    - kube-scheduler
     # - kube-controller-manager
     # - kubelet
     # - kube-proxy
