@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
+DIR="/etc/kubernetes/pki"
+mkdir -p ${DIR}
 
-mkdir -p /etc/kubernetes/pki
+cp openssl.cnf ${DIR}
 
-cp openssl.cnf $DIR
-
-cd $DIR
+cd ${DIR}
 
 # kubernetes-ca
 openssl genrsa -out ca.key 2048
