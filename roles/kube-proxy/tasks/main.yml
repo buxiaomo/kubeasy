@@ -17,7 +17,8 @@
     mode: '0755'
 
 - name: Register secret
-  command: "kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'"
+  shell: |
+    kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'
   register: SECRET
   run_once: true
 
