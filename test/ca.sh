@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
+rm -rf /root/.rnd
+touch /root/.rnd
 DIR="/etc/kubernetes/pki"
 mkdir -p ${DIR}/etcd
 
