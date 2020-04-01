@@ -72,85 +72,85 @@ openssl genrsa -out  admin.key 2048
 openssl req -new -key admin.key -subj "/CN=kubernetes-admin/O=system:masters" -out admin.csr
 openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days 10000 -extensions v3_req_client -extfile openssl.cnf -out admin.crt
 
-# kubeconfig
-KUBE_APISERVER=https://172.16.13.11:6443
-# kube-controller-manager
-CLUSTER_NAME="kubernetes"
-KUBE_USER="system:kube-controller-manager"
-KUBE_CERT="sa"
-KUBE_CONFIG="controller-manager.kubeconfig"
-# 设置集群参数
-kubectl config set-cluster ${CLUSTER_NAME} \
-  --certificate-authority=/etc/kubernetes/pki/ca.crt \
-  --embed-certs=true \
-  --server=${KUBE_APISERVER} \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置客户端认证参数
-kubectl config set-credentials ${KUBE_USER} \
-  --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
-  --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
-  --embed-certs=true \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置上下文参数
-kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
-  --cluster=${CLUSTER_NAME} \
-  --user=${KUBE_USER} \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置当前使用的上下文
-kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 查看生成的配置文件
-kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # kubeconfig
+# KUBE_APISERVER=https://172.16.13.11:6443
+# # kube-controller-manager
+# CLUSTER_NAME="kubernetes"
+# KUBE_USER="system:kube-controller-manager"
+# KUBE_CERT="sa"
+# KUBE_CONFIG="controller-manager.kubeconfig"
+# # 设置集群参数
+# kubectl config set-cluster ${CLUSTER_NAME} \
+#   --certificate-authority=/etc/kubernetes/pki/ca.crt \
+#   --embed-certs=true \
+#   --server=${KUBE_APISERVER} \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置客户端认证参数
+# kubectl config set-credentials ${KUBE_USER} \
+#   --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
+#   --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
+#   --embed-certs=true \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置上下文参数
+# kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
+#   --cluster=${CLUSTER_NAME} \
+#   --user=${KUBE_USER} \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置当前使用的上下文
+# kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 查看生成的配置文件
+# kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
 
-# kube-scheduler
-CLUSTER_NAME="kubernetes"
-KUBE_USER="system:kube-scheduler"
-KUBE_CERT="kube-scheduler"
-KUBE_CONFIG="scheduler.kubeconfig"
-# 设置集群参数
-kubectl config set-cluster ${CLUSTER_NAME} \
-  --certificate-authority=/etc/kubernetes/pki/ca.crt \
-  --embed-certs=true \
-  --server=${KUBE_APISERVER} \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置客户端认证参数
-kubectl config set-credentials ${KUBE_USER} \
-  --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
-  --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
-  --embed-certs=true \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置上下文参数
-kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
-  --cluster=${CLUSTER_NAME} \
-  --user=${KUBE_USER} \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置当前使用的上下文
-kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 查看生成的配置文件
-kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # kube-scheduler
+# CLUSTER_NAME="kubernetes"
+# KUBE_USER="system:kube-scheduler"
+# KUBE_CERT="kube-scheduler"
+# KUBE_CONFIG="scheduler.kubeconfig"
+# # 设置集群参数
+# kubectl config set-cluster ${CLUSTER_NAME} \
+#   --certificate-authority=/etc/kubernetes/pki/ca.crt \
+#   --embed-certs=true \
+#   --server=${KUBE_APISERVER} \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置客户端认证参数
+# kubectl config set-credentials ${KUBE_USER} \
+#   --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
+#   --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
+#   --embed-certs=true \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置上下文参数
+# kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
+#   --cluster=${CLUSTER_NAME} \
+#   --user=${KUBE_USER} \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置当前使用的上下文
+# kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 查看生成的配置文件
+# kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
 
-# admin
-CLUSTER_NAME="kubernetes"
-KUBE_USER="kubernetes-admin"
-KUBE_CERT="admin"
-KUBE_CONFIG="admin.kubeconfig"
-# 设置集群参数
-kubectl config set-cluster ${CLUSTER_NAME} \
-  --certificate-authority=/etc/kubernetes/pki/ca.crt \
-  --embed-certs=true \
-  --server=${KUBE_APISERVER} \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置客户端认证参数
-kubectl config set-credentials ${KUBE_USER} \
-  --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
-  --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
-  --embed-certs=true \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置上下文参数
-kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
-  --cluster=${CLUSTER_NAME} \
-  --user=${KUBE_USER} \
-  --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 设置当前使用的上下文
-kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
-# 查看生成的配置文件
-kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # admin
+# CLUSTER_NAME="kubernetes"
+# KUBE_USER="kubernetes-admin"
+# KUBE_CERT="admin"
+# KUBE_CONFIG="admin.kubeconfig"
+# # 设置集群参数
+# kubectl config set-cluster ${CLUSTER_NAME} \
+#   --certificate-authority=/etc/kubernetes/pki/ca.crt \
+#   --embed-certs=true \
+#   --server=${KUBE_APISERVER} \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置客户端认证参数
+# kubectl config set-credentials ${KUBE_USER} \
+#   --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
+#   --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
+#   --embed-certs=true \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置上下文参数
+# kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
+#   --cluster=${CLUSTER_NAME} \
+#   --user=${KUBE_USER} \
+#   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 设置当前使用的上下文
+# kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+# # 查看生成的配置文件
+# kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
