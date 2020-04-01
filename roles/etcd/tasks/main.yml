@@ -15,13 +15,11 @@
   file: 
     name: '{{ kubernetes.etcd.datadir }}'
     state: directory
-    mode: '0755'
 
 - name: Create certificate directory
   file: 
     name: '{{ ca.etcd.location }}'
     state: directory
-    mode: '0755'
 
 - name: Distribution of certificate
   copy: 
