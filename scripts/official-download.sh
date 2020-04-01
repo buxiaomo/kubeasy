@@ -7,7 +7,7 @@ pushd $(dirname $0)
 mkdir -p binaries
 
 # docker
-DOCKER_VERSION=${DOCKER_VERSION:-"18.06.3"}
+DOCKER_VERSION=${DOCKER_VERSION:-"19.03.8"}
 echo "Prepare docker ${DOCKER_VERSION} release ..."
 mkdir -p binaries/docker/${DOCKER_VERSION}
 grep -q "^${DOCKER_VERSION}\$" binaries/docker/${DOCKER_VERSION}/.docker 2>/dev/null || {
