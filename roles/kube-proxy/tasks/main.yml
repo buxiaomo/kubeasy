@@ -23,7 +23,8 @@
   run_once: true
 
 - name: Register jwt token
-  command: "kubectl -n kube-system get secret {{ SECRET.stdout }} --output=jsonpath='{.data.token}' | base64 -d"
+  shell: |
+    kubectl -n kube-system get secret {{ SECRET.stdout }} --output=jsonpath='{.data.token}' | base64 -d
   register: JWT_TOKEN
   run_once: true
 
