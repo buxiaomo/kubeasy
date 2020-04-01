@@ -16,37 +16,37 @@
     state: directory
     mode: '0755'
 
-- name: Register secret
-  shell: |
-    kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'
-  register: SECRET
-  run_once: true
+# - name: Register secret
+#   shell: |
+#     kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'
+#   register: SECRET
+#   run_once: true
 
-- name: Register jwt token
-  shell: |
-    kubectl -n kube-system get secret {{ SECRET.stdout }} --output=jsonpath='{.data.token}' | base64 -d
-  register: JWT_TOKEN
-  run_once: true
+# - name: Register jwt token
+#   shell: |
+#     kubectl -n kube-system get secret {{ SECRET.stdout }} --output=jsonpath='{.data.token}' | base64 -d
+#   register: JWT_TOKEN
+#   run_once: true
 
-- name: Create kubeconfig
-  shell: |
-    kubectl config set-cluster {{ kubernetes.name }} \
-      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=https://{{ ansible_default_ipv4.address }}:6443 \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+# - name: Create kubeconfig
+#   shell: |
+#     kubectl config set-cluster {{ kubernetes.name }} \
+#       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
+#       --server=https://{{ ansible_default_ipv4.address }}:6443 \
+#       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-context {{ kubernetes.name }} \
-      --cluster={{ kubernetes.name }} \
-      --user={{ kubernetes.name }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+#     kubectl config set-context {{ kubernetes.name }} \
+#       --cluster={{ kubernetes.name }} \
+#       --user={{ kubernetes.name }} \
+#       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-credentials {{ kubernetes.name }} \
-      --token={{ JWT_TOKEN.stdout }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+#     kubectl config set-credentials {{ kubernetes.name }} \
+#       --token={{ JWT_TOKEN.stdout }} \
+#       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config use-context {{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
-  with_items:
-    - { KUBE_CONFIG: 'kube-proxy.kubeconfig'}
+#     kubectl config use-context {{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+#   with_items:
+#     - { KUBE_CONFIG: 'kube-proxy.kubeconfig'}
 
 - name: Install config file
   template: 
