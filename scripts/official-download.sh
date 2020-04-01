@@ -11,11 +11,11 @@ echo ${HTTP_USERNAME}
 echo ${HTTP_PASSWORD}
 
 if [ "${HTTP_USERNAME}" = "" ] || [ ${HTTP_PASSWORD} = "" ];then
-  export Download "curl -f --connect-timeout 20 --retry 5 --location --insecure"
+  Download="curl -f --connect-timeout 20 --retry 5 --location --insecure"
 else
-  export Download "curl -u '${HTTP_USERNAME}:${HTTP_PASSWORD}' -f --connect-timeout 20 --retry 5 --location --insecure"
+  Download="curl -u '${HTTP_USERNAME}:${HTTP_PASSWORD}' -f --connect-timeout 20 --retry 5 --location --insecure"
 fi
-
+echo ${Download}
 # docker
 DOCKER_VERSION=${DOCKER_VERSION:-"19.03.8"}
 echo "Prepare docker ${DOCKER_VERSION} release ..."
