@@ -41,7 +41,7 @@
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=${KUBE_APISERVER} \
+      --server=https://{{ ansible_default_ipv4.address }}:6443 \
       --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
@@ -59,18 +59,24 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
-  # when: "'kube-master' in group_names"
+  when: "'kube-master' in group_names"
 
 - name: Create user kube directory
   file: 
     name: ~/.kube/
     state: directory
     mode: '0755'
-  # when: "'kube-master' in group_names"
+  when: "'kube-master' in group_names"
 
-- name: Create user kube directory
+- name: Create user kube config
   copy: 
     src: /etc/kubernetes/admin.kubeconfig
     dest: ~/.kube/config
     remote_src: yes
-  # when: "'kube-master' in group_names"
+  when: "'kube-master' in group_names"
+
+- name: Create user kube directory
+  copy: 
+    src: /etc/kubernetes/admin.kubeconfig
+    dest: /etc/kubernetes/admin.kubeconfig
+  when: "'kube-minion' in group_names"
