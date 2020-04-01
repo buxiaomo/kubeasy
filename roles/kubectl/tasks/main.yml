@@ -59,18 +59,18 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
-  when: "'kube-master' in group_names"
+  # when: "'kube-master' in group_names"
 
 - name: Create user kube directory
   file: 
     name: ~/.kube/
     state: directory
     mode: '0755'
-  when: "'kube-master' in group_names"
+  # when: "'kube-master' in group_names"
 
 - name: Create user kube directory
   copy: 
     src: /etc/kubernetes/admin.kubeconfig
     dest: ~/.kube/config
     remote_src: yes
-  when: "'kube-master' in group_names"
+  # when: "'kube-master' in group_names"
