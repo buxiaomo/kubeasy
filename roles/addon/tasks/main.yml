@@ -28,6 +28,6 @@
   include_tasks: canal.yml
   when: kubernetes.network == "canal"
 
-# - name: Kubernetes Addon Calico
-#   include_tasks: calico.yml
-#   when: kubernetes.network == "calico"
+- name: Kubernetes Addon Calico
+  include_tasks: calico.yml
+  when: kubernetes.network == "calico"
