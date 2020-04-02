@@ -9,6 +9,9 @@ ETCD_VERSION := "3.4.5"
 CNI_VERSION := "0.8.5"
 DEBUG := true
 
+HTTP_USERNAME := ""
+HTTP_PASSWORD := ""
+
 auto: runtime download sync
 	@make install
 
@@ -29,6 +32,8 @@ download:
 	&& export FLANNEL_VERSION=$(FLANNEL_VERSION) \
 	&& export ETCD_VERSION=$(ETCD_VERSION) \
 	&& export CNI_VERSION=$(CNI_VERSION) \
+	&& export HTTP_USERNAME=$(HTTP_USERNAME) \
+	&& export HTTP_PASSWORD=$(HTTP_PASSWORD) \
 	&& bash scripts/$(DOWNLOAD_WAY)-download.sh
 
 runtime:
