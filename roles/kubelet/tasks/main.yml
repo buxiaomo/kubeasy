@@ -18,6 +18,7 @@
   with_items:
     - /etc/kubernetes/manifests
     - /var/lib/kubelet
+    - /etc/kubernetes/pki
 
 - name: Create log directory
   file: 
