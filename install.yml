@@ -39,7 +39,7 @@
     - kube-apiserver
     - kube-scheduler
     - kube-controller-manager
-    # - kubelet
+    - kubelet
     # - kube-proxy
   tags:
     - kube-master
@@ -56,6 +56,6 @@
 - name: Test step
   hosts: kube-master
   roles:
-    - test
+    - kubelet
   tags:
     - test
