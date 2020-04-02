@@ -17,6 +17,6 @@
       --user={{ item.KUBE_USER }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} 
+     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
-    - { KUBE_USER: 'system:kube-controller-manager', KUBE_CERT: "sa", KUBE_CONFIG: 'controller-manager.kubeconfig' }
+    - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.kubeconfig'}

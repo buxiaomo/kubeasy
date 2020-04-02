@@ -35,10 +35,6 @@
     path: /etc/kubernetes/bootstrap-token.yml
   register: bootstrap_token
 
-- name: debug msg
-  debug: 
-    msg: '{{ bootstrap_token.stat.exists }}'
-
 - name: Register token id
   command: openssl rand -hex 3
   register: TOKEN_ID

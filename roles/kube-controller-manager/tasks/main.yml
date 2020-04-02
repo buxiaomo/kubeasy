@@ -24,8 +24,10 @@
     group: root
   with_items:
     - '{{ca.kubernetes.location }}/ca.crt'
+    - '{{ca.kubernetes.location }}/ca.key'
     - '{{ca.kubernetes.location }}/sa.crt'
     - '{{ca.kubernetes.location }}/sa.key'
+    - '{{ca.kubernetes.location }}/front-proxy-ca.crt'
 
 - name: Create kubeconfig
   shell: |
