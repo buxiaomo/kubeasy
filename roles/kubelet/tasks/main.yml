@@ -50,7 +50,7 @@
   run_once: true
   when: not bootstrap_token.stat.exists
 - name: Register token id
-  command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[*].data.token-id}"
+  command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
   register: TOKEN_ID
   run_once: true
   when: bootstrap_token.stat.exists
@@ -61,7 +61,7 @@
   run_once: true
   when: not bootstrap_token.stat.exists
 - name: Register token secret
-  command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[*].data.token-secret}"
+  command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
   register: TOKEN_SECRET
   run_once: true
   when: bootstrap_token.stat.exists
