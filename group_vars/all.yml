@@ -65,6 +65,7 @@ sysctl:
     net.netfilter.nf_conntrack_tcp_timeout_close_wait: 3600
 
 ca:
+  # Certificate validity
   days: 100000
   kubernetes:
     location: /etc/kubernetes/pki
@@ -72,17 +73,22 @@ ca:
     location: /etc/kubernetes/pki/etcd
 
 kubernetes:
-  # vip: 172.16.13.10/16
-
-  # local、azure
+  # cloud support
   cloud: 
+    # choose: local or azure
+    #   local: local data center (default)
+    #   azure: azure cloud
     type: local
     file: /etc/kubernetes/cloud.conf
+  
+  # virtual IP
+  vip: 172.16.13.10/16
 
-    # cluster name
-  name: 'kubernetes'
   # choose: none flannel calico canal
-
+  #   none: not deployment any network plugin
+  #   flannel: will deployment flannel plugin (default)
+  #   calico: will deployment calico plugin
+  #   canal: will deployment canal plugin
   network: flannel
 
   settings:
@@ -105,6 +111,7 @@ kubernetes:
   # docker parameter configuration
   docker:
     datadir: /var/lib/docker
+    # Convert the json format to yaml
     daemon: 
       exec-opts:
         - "native.cgroupdriver=systemd"
@@ -117,8 +124,6 @@ kubernetes:
       log-opts: 
         max-size: "500m"
         max-file: "2"
-      insecure-registries:
-        - 127.0.0.1
       debug: true
 
   # kubelet parameter configuration
@@ -153,10 +158,6 @@ kubernetes:
     SvcCidr: 10.96.0.0/12
     terminatedPodGcThreshold: 12500
     nodeStatusUpdate: Medium
-    #nodeStatusUpdateFrequency: 10s
-    #nodeMonitorPeriod: 5s     # 如果改它确保它小于下面的值
-    #nodeMonitorGracePeriod: 40s
-    #podEvictionTimeout: 5m
     log:
       logLevel: 2
       logDir: /var/log/kubernetes
@@ -168,3 +169,8 @@ kubernetes:
       logLevel: 2
       logDir: /var/log/kubernetes
       logFile: kube-proxy.log
+
+  addon:
+    location: /etc/kubernetes/addon
+    image: 
+      coredns: coredns/coredns:1.6.7

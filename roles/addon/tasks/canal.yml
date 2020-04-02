@@ -4,21 +4,23 @@
     state: directory
     mode: '0755'
   with_items:
-    - '{{ kubernetes.addon.location }}/coredns'
+    - '{{ kubernetes.addon.location }}/canal'
 
-- name: Deployment coredns --- part.1
+- name: Deployment canal --- part.1
   template: 
     src: '{{ item.src }}'
     dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
   run_once: true
   with_items:
-    - { src: 'coredns/coredns.yaml.j2', dest: 'coredns/coredns.yaml' }
+    - { src: 'canal/rbac.yaml.j2', dest: 'canal/rbac.yaml' }
+    - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
   run_once: true
   when: "'kube-master' in group_names"
 
-- name: Deployment coredns --- part.2
+- name: Deployment canal --- part.2
   command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
   with_items:
-    - coredns/coredns.yaml
+    - canal/rbac.yaml
+    - canal/canal.yaml
   run_once: true
   when: "'kube-master' in group_names"

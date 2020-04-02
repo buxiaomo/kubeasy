@@ -125,7 +125,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
       - name: coredns
-        image: coredns/coredns:1.6.3
+        image: {{ kubernetes.addon.image.coredns | default("coredns/coredns:1.6.7") }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
