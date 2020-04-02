@@ -2,6 +2,10 @@
   template: 
     src: coredns.yml.j2
     dest: /etc/kubernetes/addon/coredns.yml
+  run_once: true
+  when: "'kube-master' in group_names"
 
 - name: Deployment coredns --- part.2
   command: kubectl apply -f /etc/kubernetes/addon/coredns.yml
+  run_once: true
+  when: "'kube-master' in group_names"
