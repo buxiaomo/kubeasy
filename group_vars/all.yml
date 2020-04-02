@@ -178,3 +178,7 @@ kubernetes:
         node: quay.io/calico/node:v3.1.7
         flannel: quay.io/coreos/flannel:v0.9.1
         cni: quay.io/calico/cni:v3.1.7
+      calico: 
+        node: quay.io/calico/node:v3.1.7
+        cni: quay.io/calico/cni:v3.1.7
+        typha: quay.io/calico/typha:v3.1.7
