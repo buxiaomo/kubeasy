@@ -35,27 +35,27 @@
     path: /etc/kubernetes/bootstrap-token.yml
   register: bootstrap_token
 
-# - name: Register token id
-#   command: openssl rand -hex 3
-#   register: TOKEN_ID
-#   run_once: true
-#   when: not bootstrap_token.stat.exists
+- name: Register token id
+  command: openssl rand -hex 3
+  register: TOKEN_ID
+  run_once: true
+  when: not bootstrap_token.stat.exists
 
-# - name: Register token secret
-#   command: openssl rand -hex 8
-#   register: TOKEN_SECRET
-#   run_once: true
-#   when: not bootstrap_token.stat.exists
+- name: Register token secret
+  command: openssl rand -hex 8
+  register: TOKEN_SECRET
+  run_once: true
+  when: not bootstrap_token.stat.exists
 
-# - name: Create bootstrap token --- part.1
-#   template: 
-#     src: bootstrap-token.yml.j2
-#     dest: /etc/kubernetes/bootstrap-token.yml
-#   when: not bootstrap_token.stat.exists
+- name: Create bootstrap token --- part.1
+  template: 
+    src: bootstrap-token.yml.j2
+    dest: /etc/kubernetes/bootstrap-token.yml
+  when: not bootstrap_token.stat.exists
 
-# - name: Create bootstrap token --- part.2
-#   command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
-#   when: not bootstrap_token.stat.exists
+- name: Create bootstrap token --- part.2
+  command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
+  when: not bootstrap_token.stat.exists
 
 
 - name: Check bootstrap kubeconfig
@@ -63,7 +63,7 @@
     path: /etc/kubernetes/bootstrap.kubeconfig
   register: bootstrap_kubeconfig
 
-- name: Create kubeconfig
+- name: Create bootstrap kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
@@ -76,7 +76,7 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --token=${BOOTSTRAP_TOKEN} \
+      --token={{ TOKEN_ID.stdout }}.{{ TOKEN_SECRET.stdout }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
