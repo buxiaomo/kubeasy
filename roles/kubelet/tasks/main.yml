@@ -30,6 +30,15 @@
     src: kubelet-conf.yml.j2
     dest: /etc/kubernetes/kubelet-conf.yml
 
+- name: Distribution of certificate
+  copy: 
+    src: '{{ item }}'
+    dest: '{{ca.kubernetes.location }}'
+    owner: root
+    group: root
+  with_items:
+    - '{{ca.kubernetes.location }}/ca.crt'
+
 - name: Check bootstrap token
   stat: 
     path: /etc/kubernetes/bootstrap-token.yml
@@ -84,7 +93,32 @@
     - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
   when: not bootstrap_kubeconfig.stat.exists
 
+- name: Create auto-approve --- part.1
+  copy: 
+    src: '{{ item }}'
+    dest: '/etc/kubernetes/{{ item }}'
+  run_once: true
+  with_items:
+    - auto-approve-csrs-for-group.yml
+    - auto-approve-renewals-for-nodes.yml
+    - kubeadm-kubelet-bootstrap.yml
+
+- name: Create auto-approve --- part.2
+  command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
+  run_once: true
+  with_items:
+    - auto-approve-csrs-for-group.yml
+    - auto-approve-renewals-for-nodes.yml
+    - kubeadm-kubelet-bootstrap.yml
+
 - name: Install systemd file
   template: 
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
+
+- name: Start the service
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
