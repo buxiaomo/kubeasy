@@ -112,6 +112,7 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
+  when: "'kube-master' in group_names"
 
 - name: Create auto-approve --- part.2
   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
@@ -120,6 +121,7 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
+  when: "'kube-master' in group_names"
 
 - name: Install systemd file
   template: 
@@ -142,3 +144,4 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
+  when: "'kube-master' in group_names"
