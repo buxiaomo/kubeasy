@@ -174,3 +174,7 @@ kubernetes:
     location: /etc/kubernetes/addon
     image: 
       coredns: coredns/coredns:1.6.7
+      canal:
+        node: quay.io/calico/node:v3.1.7
+        flannel: quay.io/coreos/flannel:v0.9.1
+        cni: quay.io/calico/cni:v3.1.7

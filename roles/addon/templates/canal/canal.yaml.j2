@@ -106,7 +106,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: quay.io/calico/node:v3.1.7
+          image: {{ kubernetes.addon.image.canal.node | default("quay.io/calico/node:v3.1.7") }}
           env:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
@@ -174,7 +174,7 @@ spec:
         # This container installs the Calico CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: quay.io/calico/cni:v3.1.7
+          image: {{ kubernetes.addon.image.canal.cni | default("quay.io/calico/cni:v3.1.7") }}
           command: ["/install-cni.sh"]
           env:
             - name: CNI_CONF_NAME
@@ -197,7 +197,7 @@ spec:
         # This container runs flannel using the kube-subnet-mgr backend
         # for allocating subnets.
         - name: kube-flannel
-          image: quay.io/coreos/flannel:v0.9.1
+          image: {{ kubernetes.addon.image.canal.flannel | default("quay.io/coreos/flannel:v0.9.1") }}
           command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr" ]
           securityContext:
             privileged: true
