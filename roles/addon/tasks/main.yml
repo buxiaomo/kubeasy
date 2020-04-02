@@ -7,6 +7,7 @@
     mode: '0755'
   with_items:
     - /etc/kubernetes/addon
+  when: "'kube-master' in group_names"
 
 - name: Update node roles
   shell: |
