@@ -95,7 +95,7 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --token={{ TOKEN_ID.stdout }}.{{ TOKEN_SECRET.stdout }} \
+      --token={{ TOKEN_ID.stdout | b64decode }}.{{ TOKEN_SECRET.stdout | b64decode }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
