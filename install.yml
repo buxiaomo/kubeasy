@@ -40,18 +40,17 @@
     - kube-scheduler
     - kube-controller-manager
     - kubelet
-    # - kube-proxy
+    - kube-proxy
   tags:
     - kube-master
 
-# - name: Deployment kube minion
-#   hosts: kube-minion
-#   roles:
-#     - kubectl
-#     - kubelet
-#     - kube-proxy
-#   tags:
-#     - kube-minion
+- name: Deployment kube minion
+  hosts: kube-minion
+  roles:
+    - kubelet
+    - kube-proxy
+  tags:
+    - kube-minion
 
 - name: Test step
   hosts: kube-master
