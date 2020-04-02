@@ -61,6 +61,8 @@ sysctl:
     vm.swappiness: 0
     vm.overcommit_memory: 1
     vm.panic_on_oom: 0
+    net.netfilter.nf_conntrack_tcp_timeout_established: 86400
+    net.netfilter.nf_conntrack_tcp_timeout_close_wait: 3600
 
 ca:
   days: 100000
@@ -79,6 +81,9 @@ kubernetes:
 
     # cluster name
   name: 'kubernetes'
+  # choose: none flannel calico canal
+
+  network: flannel
 
   settings:
     KubernetesClusterSVCIP: 10.96.0.1
@@ -122,7 +127,7 @@ kubernetes:
       logLevel: 2
       logDir: /var/log/kubernetes
       logFile: kubelet.log
-    pod_infra_container_image: gcr.azk8s.cn/google_containers/pause-amd64:3.1
+    pod_infra_container_image: gcr.io/google_containers/pause-amd64:3.1
     image_pull_progress_deadline: 2m
 
   # kube-apiserver parameter configuration
