@@ -5,12 +5,13 @@
     mode: '0755'
   with_items:
     - '{{ kubernetes.addon.location }}/canal'
+  run_once: true
+  when: "'kube-master' in group_names"
 
 - name: Deployment canal --- part.1
   template: 
     src: '{{ item.src }}'
     dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
-  run_once: true
   with_items:
     - { src: 'canal/rbac.yaml.j2', dest: 'canal/rbac.yaml' }
     - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }

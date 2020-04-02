@@ -5,12 +5,13 @@
     mode: '0755'
   with_items:
     - '{{ kubernetes.addon.location }}/coredns'
+  run_once: true
+  when: "'kube-master' in group_names"
 
 - name: Deployment coredns --- part.1
   template: 
     src: '{{ item.src }}'
     dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
-  run_once: true
   with_items:
     - { src: 'coredns/coredns.yaml.j2', dest: 'coredns/coredns.yaml' }
   run_once: true
