@@ -66,7 +66,6 @@
     name: ~/.kube/
     state: directory
     mode: '0755'
-  when: "'kube-master' in group_names"
 
 - name: Create user kube config
   copy: 
