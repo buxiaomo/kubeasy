@@ -60,7 +60,7 @@ DNS.2 = kubernetes.default
 DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster.local
 DNS.5 = localhost
-IP.1 = 10.96.0.1
+IP.1 = {{ kubernetes.settings.KubernetesClusterSVCIP }}
 IP.2 = 127.0.0.1
 {% if  allnode | length > 0 %}
 {% for host in allnode %}IP.{{ loop.index + 2 }} = {{ host }}

@@ -70,10 +70,23 @@ ca:
     location: /etc/kubernetes/pki/etcd
 
 kubernetes:
-  # cluster name
+  # vip: 172.16.13.10/16
+
+  # local、azure
+  cloud: 
+    type: local
+    file: /etc/kubernetes/cloud.conf
+
+    # cluster name
   name: 'kubernetes'
 
-  # vip: 172.16.13.10/16
+  settings:
+    KubernetesClusterSVCIP: 10.96.0.1
+    ClusterDns: 10.96.0.10
+    PodCIDR: 10.244.0.0/16
+    SvcCIDR: 10.96.0.0/12
+    NodePortRange: 30000-32767
+    ClusterDomain: cluster.local
 
   # etcd parameter configuration
   etcd: 
