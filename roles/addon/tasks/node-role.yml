@@ -1,0 +1,17 @@
+- name: Update node roles for master
+  shell: |
+    {% if nodename is defined %}
+      kubectl label node {{ nodename | lower }} node-role.kubernetes.io/master=""
+    {% else %}
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} node-role.kubernetes.io/master=""
+    {% endif %}
+  when: "'kube-master' in group_names"
+
+- name: Update node roles for minion
+  shell: |
+    {% if nodename is defined %}
+      kubectl label node {{ nodename | lower }} node-role.kubernetes.io/worker=worker
+    {% else %}
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} node-role.kubernetes.io/worker=worker
+    {% endif %}
+  when: "'kube-minion' in group_names"
