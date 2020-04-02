@@ -23,7 +23,6 @@
     mode: '0755'
   with_items:
     - '{{ca.kubernetes.location }}'
-    - '{{ca.kubernetes.location }}/etcd'
 
 - name: Create kube-proxy sa crb --- part.1
   copy: 
@@ -33,6 +32,7 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
+  when: "'kube-master' in group_names"
 
 - name: Create kube-proxy sa crb --- part.2
   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
@@ -40,6 +40,7 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
+  when: "'kube-master' in group_names"
 
 - name: Register secret
   shell: |
@@ -89,3 +90,4 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
+  when: "'kube-master' in group_names"
