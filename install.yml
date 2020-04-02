@@ -47,6 +47,7 @@
 - name: Deployment kube minion
   hosts: kube-minion
   roles:
+    - kubectl
     - kubelet
     - kube-proxy
   tags:
