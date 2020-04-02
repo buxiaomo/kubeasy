@@ -1,7 +1,7 @@
-- name: Update node roles for master
+- name: Update node roles
   shell: |
     {% if nodename is defined %}
-      kubectl label node {{ nodename | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/master=""{% endif %}
+      kubectl label node {{ nodename | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% else %}
-      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/master=""{% endif %}
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% endif %}
