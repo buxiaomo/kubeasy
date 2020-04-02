@@ -77,5 +77,5 @@
 - name: Create user kube directory
   copy: 
     src: /etc/kubernetes/admin.kubeconfig
-    dest: /etc/kubernetes/admin.kubeconfig
+    dest: ~/.kube/config
   when: "'kube-minion' in group_names"
