@@ -1,4 +1,4 @@
 ---
 # tasks file for addon
 - name: Kubernetes node role
-  include_tasks: node-role.yaml
+  include_tasks: node-role.yml
