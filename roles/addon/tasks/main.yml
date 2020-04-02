@@ -17,4 +17,4 @@
     {% endif %}
 
 - name: Kubernetes Addon CoreDNS
-  include_tasks: coredns.yaml
+  include_tasks: coredns.yml
