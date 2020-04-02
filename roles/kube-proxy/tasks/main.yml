@@ -42,13 +42,11 @@
   shell: |
     kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'
   register: SECRET
-  run_once: true
 
 - name: Register jwt token
   shell: |
     kubectl -n kube-system get secret {{ SECRET.stdout }} --output=jsonpath='{.data.token}' | base64 -d
   register: JWT_TOKEN
-  run_once: true
 
 - name: Create kubeconfig
   shell: |
@@ -79,3 +77,12 @@
   template: 
     src: kube-proxy.service.j2
     dest: /etc/systemd/system/kube-proxy.service
+
+- name: Clean kube-proxy ca and crb yml file
+  file:
+    path: '/etc/kubernetes/{{ item }}'
+    state: absent
+  run_once: true
+  with_items:
+    - kube-proxy-crb.yml
+    - kube-proxy-sa.yml
