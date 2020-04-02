@@ -16,11 +16,14 @@
     state: directory
     mode: '0755'
 
-- name: Create log directory
+- name: Create data directory
   file: 
-    name: '{{ kubernetes.proxy.log.logDir }}'
+    name: '{{ item }}'
     state: directory
     mode: '0755'
+  with_items:
+    - '{{ca.kubernetes.location }}'
+    - '{{ca.kubernetes.location }}/etcd'
 
 - name: Create kube-proxy sa crb --- part.1
   copy: 

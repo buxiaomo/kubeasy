@@ -26,6 +26,14 @@
     owner: root
     group: root
 
+- name: Create data directory
+  file: 
+    name: '{{ item }}'
+    state: directory
+    mode: '0755'
+  with_items:
+    - '{{ca.kubernetes.location }}'
+
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
