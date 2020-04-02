@@ -89,7 +89,7 @@ kubernetes:
   #   flannel: will deployment flannel plugin (default)
   #   calico: will deployment calico plugin
   #   canal: will deployment canal plugin
-  network: flannel
+  network: canal
 
   settings:
     KubernetesClusterSVCIP: 10.96.0.1
