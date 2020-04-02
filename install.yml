@@ -58,13 +58,6 @@
 - name: Deployment add-on
   hosts: kubernetes
   roles:
-    - addon
+    - addons
   tags:
-    - addon
-
-- name: Test step
-  hosts: kube-master
-  roles:
-    - kubectl
-  tags:
-    - test
+    - addons
