@@ -1,4 +1,20 @@
 ---
 # tasks file for addon
-- name: Kubernetes node role
-  include_tasks: node-role.yml
+- name: Create data directory
+  file: 
+    name: '{{ item }}'
+    state: directory
+    mode: '0755'
+  with_items:
+    - /etc/kubernetes/addon
+
+- name: Update node roles
+  shell: |
+    {% if nodename is defined %}
+      kubectl label node {{ nodename | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+    {% else %}
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+    {% endif %}
+
+- name: Kubernetes Addon CoreDNS
+  include_tasks: coredns.yaml

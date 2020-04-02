@@ -1,0 +1,7 @@
+- name: Deployment coredns --- part.1
+  template: 
+    src: coredns.yml.j2
+    dest: /etc/kubernetes/addon/coredns.yml
+
+- name: Deployment coredns --- part.2
+  command: kubectl apply -f /etc/kubernetes/addon/coredns.yml
