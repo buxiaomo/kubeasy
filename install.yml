@@ -56,6 +56,6 @@
 - name: Test step
   hosts: kube-master
   roles:
-    - kube-proxy
+    - kubelet
   tags:
     - test
