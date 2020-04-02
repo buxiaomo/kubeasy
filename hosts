@@ -1,7 +1,7 @@
 [kube-master]
-172.16.13.11 hostname=kube-master01
-172.16.13.12 hostname=kube-master02
-172.16.13.13 hostname=kube-master03
+172.16.13.11 hostname=kube-master01 nodename=kube-master01
+172.16.13.12 hostname=kube-master02 nodename=kube-master02
+172.16.13.13 hostname=kube-master03 nodename=kube-master03
 
 [kube-minion]
 172.16.13.14 hostname=kube-minion01

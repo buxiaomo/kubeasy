@@ -52,3 +52,10 @@
 #     - kube-proxy
 #   tags:
 #     - kube-minion
+
+- name: Test step
+  hosts: kube-master
+  roles:
+    - test
+  tags:
+    - kube-master
