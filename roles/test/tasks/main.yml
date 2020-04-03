@@ -2,4 +2,4 @@
 # tasks file for test
 - name: Create kubeconfig
   debug: 
-    msg: '{{ API_SERVER }}'
+    msg: '{{ kubernetes.API_SERVER }}'
