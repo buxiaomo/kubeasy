@@ -54,7 +54,7 @@
   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
   register: TOKEN_ID
   run_once: true
-  when: bootstrap_token.stat.exists or "'kube-minion' in group_names"
+  when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
 
 - name: Register token secret
   command: openssl rand -hex 8
@@ -65,7 +65,7 @@
   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
   register: TOKEN_SECRET
   run_once: true
-  when: bootstrap_token.stat.exists or "'kube-minion' in group_names"
+  when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
 
 - name: Create bootstrap token --- part.1
   template: 

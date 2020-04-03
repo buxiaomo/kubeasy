@@ -73,6 +73,9 @@ ca:
     location: /etc/kubernetes/pki/etcd
 
 kubernetes:
+  # defaullt: kubernetes
+  name: kubernetes
+
   # cloud support
   cloud: 
     # choose: local or azure
