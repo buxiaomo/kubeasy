@@ -1,4 +1,4 @@
-- name: Create data directory
+- name: Create calico data directory
   file: 
     name: '{{ item }}'
     state: directory
