@@ -104,7 +104,9 @@
 
 - name: Create bootstrap token --- part.2
   command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
-  when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+  when: 
+    - not bootstrap_token.stat.exists
+    - "'kube-master' in group_names"
 
 
 - name: Check bootstrap kubeconfig
