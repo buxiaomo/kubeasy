@@ -65,6 +65,6 @@
 - name: Deployment test
   hosts: kubernetes
   roles:
-    - kube-proxy
+    - test
   tags:
     - test
