@@ -2,7 +2,9 @@
 
 ## Cloud Support
 
-* [x] Azure
+* [ ] Azure
+* [ ] Aws
+* [ ] GCP
 
 ## OS Support
 
@@ -40,6 +42,13 @@ make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 E
 ```
 
 <!-- 
+
+NS
+env=
+name=
+project=
+
+
 ansible-playbook -i hosts install.yml -t kube-master --start-at-task "Install some applications"
 
 ansible-playbook -i hosts install.yml --list-tags
