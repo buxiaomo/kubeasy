@@ -31,3 +31,6 @@
 - name: Kubernetes Addon Calico
   include_tasks: calico.yml
   when: kubernetes.network == "calico"
+
+- name: Kubernetes Done
+  include_tasks: done.yml
