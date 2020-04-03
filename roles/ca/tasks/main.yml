@@ -33,7 +33,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force
+  when: kubernetes_ca_check.rc != 0 or force == "true"
 
 - name: Check etcd ca certificate expired(30 days)
   shell: |
@@ -49,7 +49,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or force
+  when: etcd_ca_check.rc != 0 or force == "true"
 
 
 - name: Check front-proxy ca certificate expired(30 days)
@@ -66,7 +66,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: front_proxy_ca_check.rc != 0 or force
+  when: front_proxy_ca_check.rc != 0 or force == "true"
 
 
 - name: Create apiserver etcd client
@@ -77,7 +77,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or force
+  when: etcd_ca_check.rc != 0 or force == "true"
 
 
 - name: Create kube etcd
@@ -88,7 +88,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or force
+  when: etcd_ca_check.rc != 0 or force == "true"
 
 
 - name: kube-etcd-peer
@@ -99,7 +99,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or force
+  when: etcd_ca_check.rc != 0 or force == "true"
 
 
 - name: kube-etcd-healthcheck-client
@@ -110,7 +110,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or force
+  when: etcd_ca_check.rc != 0 or force == "true"
 
 
 - name: kube-apiserver
@@ -121,7 +121,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force
+  when: kubernetes_ca_check.rc != 0 or force == "true"
 
 
 - name: apiserver-kubelet-client
@@ -132,7 +132,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force
+  when: kubernetes_ca_check.rc != 0 or force == "true"
 
 
 - name: front-proxy-client
@@ -143,7 +143,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: front_proxy_ca_check.rc != 0 or force
+  when: front_proxy_ca_check.rc != 0 or force == "true"
 
 
 - name: kube-scheduler
@@ -154,7 +154,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force
+  when: kubernetes_ca_check.rc != 0 or force == "true"
 
 - name: sa.pub sa.key
   shell: |
@@ -166,7 +166,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force
+  when: kubernetes_ca_check.rc != 0 or force == "true"
 
 - name: admin
   shell: |
@@ -176,4 +176,4 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force
+  when: kubernetes_ca_check.rc != 0 or force == "true"
