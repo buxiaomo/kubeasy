@@ -24,6 +24,7 @@
     [ -f /etc/kubernetes/pki/ca.crt ] && 
     openssl x509 -in /etc/kubernetes/pki/ca.crt -noout -text -checkend 2592000
   register: kubernetes_ca_check
+  ignore_errors: True
 
 - name: Create kubernetes ca
   shell: |
