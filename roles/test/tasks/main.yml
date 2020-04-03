@@ -1,5 +1,14 @@
 ---
 # tasks file for test
+- name: Clean old tls file --- part.1
+  find:
+    paths: '{{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}'
+    patterns: 
+      - "kubelet*"
+    use_regex: yes
+    recurse: yes
+  register: kubelet_files
+
 - name: Create kubeconfig
   debug: 
-    msg: '{{ kubernetes.API_SERVER }}'
+    msg: '{{ kubelet_files }}'
