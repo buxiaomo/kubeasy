@@ -69,21 +69,21 @@
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
   when: inventory_hostname in groups['kube-master']
 
-- name: Create user kube directory
-  file: 
-    name: ~/.kube/
-    state: directory
-    mode: '0755'
+# - name: Create user kube directory
+#   file: 
+#     name: ~/.kube/
+#     state: directory
+#     mode: '0755'
 
-- name: Create user kube config
-  copy: 
-    src: /etc/kubernetes/admin.kubeconfig
-    dest: ~/.kube/config
-    remote_src: yes
-  when: inventory_hostname in groups['kube-master']
+# - name: Create user kube config
+#   copy: 
+#     src: /etc/kubernetes/admin.kubeconfig
+#     dest: ~/.kube/config
+#     remote_src: yes
+#   when: inventory_hostname in groups['kube-master']
 
-- name: Create user kube directory
-  copy: 
-    src: /etc/kubernetes/admin.kubeconfig
-    dest: ~/.kube/config
-  when: inventory_hostname in groups['kube-minion']
+# - name: Create user kube directory
+#   copy: 
+#     src: /etc/kubernetes/admin.kubeconfig
+#     dest: ~/.kube/config
+#   when: inventory_hostname in groups['kube-minion']
