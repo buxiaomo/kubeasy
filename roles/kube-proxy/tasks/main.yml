@@ -82,6 +82,13 @@
     src: kube-proxy.service.j2
     dest: /etc/systemd/system/kube-proxy.service
 
+- name: Start the service
+  systemd:
+    name: kube-proxy
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
 - name: Clean kube-proxy ca and crb yml file
   file:
     path: '/etc/kubernetes/{{ item }}'
