@@ -50,6 +50,9 @@
   register: TOKEN_ID
   run_once: true
   when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+- name: debug TOKEN_ID
+  debug: 
+    msg: '{{ TOKEN_ID }}'
 - name: Register token id
   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
   register: TOKEN_ID
@@ -64,6 +67,9 @@
   register: TOKEN_SECRET
   run_once: true
   when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+- name: debug TOKEN_ID
+  debug: 
+    msg: '{{ TOKEN_ID }}'
 - name: Register token secret
   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
   register: TOKEN_SECRET
