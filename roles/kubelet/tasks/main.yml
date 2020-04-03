@@ -50,17 +50,17 @@
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
     {% else %}
-      {% if "'kube-master' in group_names" %}
-      openssl rand -hex 8
+      {% if 'kube-master' in group_names %}
+      openssl rand -hex 3
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
       {% endif %}
     {% endif %}
   register: TOKEN_ID
   run_once: true
-# - name: debug msg TOKEN_ID
-#   debug:
-#     msg: '{{ TOKEN_ID }}'
+- name: debug msg TOKEN_ID
+  debug:
+    msg: '{{ TOKEN_ID }}'
 # - name: Register token id
 #   command: openssl rand -hex 3
 #   register: TOKEN_ID
