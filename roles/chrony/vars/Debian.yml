@@ -1,6 +1,6 @@
 chrony:
   config: /etc/chrony/chrony.conf
-  svc_name: chronyd
+  svc_name: chrony
   pkg_name: chrony
   optional: 
     keyfile: /etc/chrony/chrony.keys
