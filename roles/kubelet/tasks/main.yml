@@ -166,7 +166,7 @@
 
 - name: Clean old tls file
   file: 
-    src: /etc/kubernetes/pki/kubelet*
+    path: /etc/kubernetes/pki/kubelet*
     state: absent
 
 - name: Start the service
