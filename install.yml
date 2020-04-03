@@ -35,8 +35,8 @@
 - name: Deployment kube master
   hosts: kube-master
   roles:
-    # - haproxy
-    # - keepalived
+    - haproxy
+    - keepalived
     - kubectl
     - kube-apiserver
     - kube-scheduler
@@ -65,7 +65,6 @@
 - name: Deployment add-on
   hosts: kube-master
   roles:
-    - test
     - haproxy
     - keepalived
   tags:
