@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 DOWNLOAD_WAY := "official"
 
-KUBE_VERSION := "1.14.1"
+KUBE_VERSION := "1.14.4"
 DOCKER_VERSION := "19.03.8"
 FLANNEL_VERSION := "0.12.0"
 ETCD_VERSION := "3.4.5"
