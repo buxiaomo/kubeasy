@@ -38,11 +38,11 @@
     - haproxy
     - keepalived
     - kubectl
-    - kube-apiserver
-    - kube-scheduler
-    - kube-controller-manager
-    - kubelet
-    - kube-proxy
+    # - kube-apiserver
+    # - kube-scheduler
+    # - kube-controller-manager
+    # - kubelet
+    # - kube-proxy
   tags:
     - kube-master
 
