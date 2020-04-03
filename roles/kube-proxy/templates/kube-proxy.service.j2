@@ -8,7 +8,7 @@ ExecStart=/usr/local/bin/kube-proxy \
   --hostname-override={{ hostvars[inventory_hostname].hostname }} \
   --config=/etc/kubernetes/kube-proxy.conf \
 {% if kubernetes.proxy.log is defined %}
-  --logtostderr=false \
+  --logtostderr=true \
   --log-dir={{ kubernetes.proxy.log.logDir }} \
   --log-file={{ kubernetes.proxy.log.logDir }}/{{ kubernetes.proxy.log.logFile }} \
 {% endif %}

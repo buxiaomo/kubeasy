@@ -9,7 +9,7 @@ ExecStart=/usr/local/bin/kube-scheduler \
   --kubeconfig=/etc/kubernetes/scheduler.kubeconfig \
   --bind-address={{ kubernetes.scheduler.bind | default('0.0.0.0') }} \
 {% if kubernetes.scheduler.log is defined %}
-  --logtostderr=false \
+  --logtostderr=true \
   --log-dir={{ kubernetes.scheduler.log.logDir }} \
   --log-file={{ kubernetes.scheduler.log.logDir }}/{{ kubernetes.scheduler.log.logFile }} \
 {% endif %}

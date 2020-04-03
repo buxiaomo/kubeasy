@@ -21,7 +21,7 @@ ExecStart=/usr/local/bin/kubelet \
   --register-node=true \
 {% if kubernetes.kubelet.log is defined %}
   --alsologtostderr=true \
-  --logtostderr=false \
+  --logtostderr=true \
   --log-dir={{ kubernetes.kubelet.log.logDir }} \
   --log-file={{ kubernetes.kubelet.log.logDir }}/{{ kubernetes.kubelet.log.logFile }} \
 {% endif %}

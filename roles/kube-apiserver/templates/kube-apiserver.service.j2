@@ -51,7 +51,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --proxy-client-cert-file={{ ca.kubernetes.location }}/front-proxy-client.crt \
   --proxy-client-key-file={{ ca.kubernetes.location }}/front-proxy-client.key \
 {% if kubernetes.apiserver.log is defined %}
-  --logtostderr=false \
+  --logtostderr=true \
   --log-dir={{ kubernetes.apiserver.log.logDir }} \
   --log-file={{ kubernetes.apiserver.log.logDir }}/{{ kubernetes.apiserver.log.logFile }} \
 {% endif %}
