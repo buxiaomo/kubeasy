@@ -47,10 +47,14 @@
 
 - name: Register token id
   shell: |
-    {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
-      openssl rand -hex 3
-    {% else %}
+    {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
+    {% else %}
+      {% if "'kube-master' in group_names" %}
+      openssl rand -hex 8
+      {% else %}
+      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
+      {% endif %}
     {% endif %}
   register: TOKEN_ID
   run_once: true
@@ -73,10 +77,14 @@
 
 - name: Register token secret
   shell: |
-    {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
-      openssl rand -hex 8
-    {% else %}
+    {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
+    {% else %}
+      {% if "'kube-master' in group_names" %}
+      openssl rand -hex 8
+      {% else %}
+      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
+      {% endif %}
     {% endif %}
   register: TOKEN_SECRET
   run_once: true
@@ -93,7 +101,7 @@
 #   register: TOKEN_SECRET
 #   run_once: true
 #   when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
- 
+
 - name: Create bootstrap token --- part.1
   template: 
     src: bootstrap-token.yml.j2
