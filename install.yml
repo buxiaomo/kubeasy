@@ -66,6 +66,6 @@
   hosts: kube-master
   roles:
     - haproxy
-    # - keepalived
+    - keepalived
   tags:
     - test
