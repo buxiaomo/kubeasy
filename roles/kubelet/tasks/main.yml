@@ -46,39 +46,47 @@
   register: bootstrap_token
 
 - name: Register token id
-  command: openssl rand -hex 3
+  shell: |
+    {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
+      openssl rand -hex 3
+    {% else %}
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+    {% endif %}
   register: TOKEN_ID
   run_once: true
-  when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
-- name: debug TOKEN_ID
-  debug: 
-    msg: '{{ TOKEN_ID }}'
-- name: Register token id
-  command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
+# - name: Register token id
+#   command: openssl rand -hex 3
+#   register: TOKEN_ID
+#   run_once: true
+#   when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+# - name: Register token id
+#   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
+#   register: TOKEN_ID
+#   run_once: true
+#   when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
+# - name: debug TOKEN_ID
+#   debug: 
+#     msg: '{{ TOKEN_ID }}'
+
+- name: Register token secret
+  shell: |
+    {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
+      openssl rand -hex 3
+    {% else %}
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+    {% endif %}
   register: TOKEN_ID
   run_once: true
-  when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
-- name: debug TOKEN_ID
-  debug: 
-    msg: '{{ TOKEN_ID }}'
-
-- name: Register token secret
-  command: openssl rand -hex 8
-  register: TOKEN_SECRET
-  run_once: true
-  when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
-- name: debug TOKEN_ID
-  debug: 
-    msg: '{{ TOKEN_ID }}'
-- name: Register token secret
-  command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
-  register: TOKEN_SECRET
-  run_once: true
-  when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
-- name: debug TOKEN_SECRET
-  debug: 
-    msg: '{{ TOKEN_SECRET }}'
-
+# - name: Register token secret
+#   command: openssl rand -hex 8
+#   register: TOKEN_SECRET
+#   run_once: true
+#   when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+# - name: Register token secret
+#   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
+#   register: TOKEN_SECRET
+#   run_once: true
+#   when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
  
 - name: Create bootstrap token --- part.1
   template: 
