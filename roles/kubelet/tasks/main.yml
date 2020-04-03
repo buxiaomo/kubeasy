@@ -110,6 +110,13 @@
     path: /etc/kubernetes/bootstrap.kubeconfig
   register: bootstrap_kubeconfig
 
+- name: debug msg TOKEN_SECRET
+  debug:
+    msg: '{{ TOKEN_SECRET }}'
+- name: debug msg TOKEN_ID
+  debug:
+    msg: '{{ TOKEN_ID }}'
+
 - name: Create bootstrap kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
