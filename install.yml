@@ -65,6 +65,7 @@
 - name: Deployment add-on
   hosts: kube-master
   roles:
+    - test
     - haproxy
     - keepalived
   tags:
