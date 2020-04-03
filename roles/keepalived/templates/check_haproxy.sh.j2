@@ -1,5 +1,5 @@
 #!/bin/bash
-VIRTUAL_IP={{ VIP }}
+VIRTUAL_IP={{ kubernetes.ha.vip }}
 
 errorExit() {
     echo "*** $*" 1>&2
