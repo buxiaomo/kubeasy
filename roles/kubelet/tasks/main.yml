@@ -55,6 +55,9 @@
   register: TOKEN_ID
   run_once: true
   when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
+- name: debug TOKEN_ID
+  debug: 
+    msg: '{{ TOKEN_ID }}'
 
 - name: Register token secret
   command: openssl rand -hex 8
@@ -66,7 +69,11 @@
   register: TOKEN_SECRET
   run_once: true
   when: bootstrap_token.stat.exists and "'kube-minion' in group_names"
+- name: debug TOKEN_SECRET
+  debug: 
+    msg: '{{ TOKEN_SECRET }}'
 
+ 
 - name: Create bootstrap token --- part.1
   template: 
     src: bootstrap-token.yml.j2
