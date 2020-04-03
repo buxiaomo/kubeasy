@@ -161,9 +161,6 @@
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
 
-- name: Clean old tls file
-  shell: 'rm -rf /kubelet*'
-
 - name: Clean old tls file --- part.1
   find:
     paths: '{{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}'
@@ -171,13 +168,13 @@
       - "kubelet*"
     use_regex: yes
     recurse: yes
-  register: found_files
+  register: kubelet_files
 
-- name: Clean old tls file --- part.1
+- name: Clean old tls file --- part.2
   file:
     path: '{{ item.path }}'
     state: absent
-  with_items: '{{ found_files.files }}'
+  with_items: '{{ kubelet_files.files }}'
 
 - name: Start the service
   systemd:
