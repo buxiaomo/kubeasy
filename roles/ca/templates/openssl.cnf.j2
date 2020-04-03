@@ -20,6 +20,10 @@
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- endif %}
+
+{%- if  kubernetes.ha.vip is defined %}
+{{ allnode.append(kubernetes.ha.vip) }}
+{%- endif %}
 [ req ]
 default_bits = 2048
 default_md = sha256
