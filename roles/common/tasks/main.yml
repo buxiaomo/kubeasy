@@ -11,6 +11,25 @@
     state: present
   with_items:
     - python-apt
+    - conntrack
+    - libseccomp
+    - net-tools
+    - crontabs
+    - sysstat
+    - unzip
+    - bind-utils
+    - tcpdump
+    - telnet
+    - lsof
+    - nload
+    - strace
+    - iftop
+    - htop
+    - wget
+    - psmisc
+    - ipset
+    - socat
+    - bash-completion
 
 - name: Set the Hostname
   hostname: 
