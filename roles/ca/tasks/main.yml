@@ -38,8 +38,9 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
-
+  when: 
+    - not kubernetes_ca_check.skipped
+    - kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
 - name: Register etcd ca file
   stat: 
