@@ -51,7 +51,7 @@ sync:
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-scheduler ./roles/kube-scheduler/files/kube-scheduler --delete
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-proxy ./roles/kube-proxy/files/kube-proxy --delete
 	@rsync -a ./scripts/binaries/cni-plugins/$(CNI_VERSION)/* ./roles/cni-plugins/files/ --delete
-	@echo "Playbook is ready. Enjoy!"
+	@echo -e "\033[32mPlaybook is ready. Enjoy!\033[0m"
 
 # check:
 # 	@ansible -i hosts all -m ping

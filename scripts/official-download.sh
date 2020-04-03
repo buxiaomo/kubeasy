@@ -29,16 +29,16 @@ grep -q "^${DOCKER_VERSION}\$" binaries/docker/${DOCKER_VERSION}/.docker 2>/dev/
   echo ${DOCKER_VERSION} > binaries/docker/${DOCKER_VERSION}/.docker
 }
 
-# # flannel
-# FLANNEL_VERSION=${FLANNEL_VERSION:-"0.12.0"}
-# printb "Prepare flannel ${FLANNEL_VERSION} release ..."
-# mkdir -p binaries/flannel/${FLANNEL_VERSION}
-# grep -q "^${FLANNEL_VERSION}\$" binaries/flannel/${FLANNEL_VERSION}/.flannel 2>/dev/null || {
-#   curl -f --connect-timeout 20 --retry 5 --location --insecure https://github.com/coreos/flannel/releases/download/v${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -o binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
-#   tar -zxf binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -C binaries/flannel/${FLANNEL_VERSION}/ flanneld mk-docker-opts.sh
-#   rm -rf binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
-#   echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
-# }
+# flannel
+FLANNEL_VERSION=${FLANNEL_VERSION:-"0.12.0"}
+printb "Prepare flannel ${FLANNEL_VERSION} release ..."
+mkdir -p binaries/flannel/${FLANNEL_VERSION}
+grep -q "^${FLANNEL_VERSION}\$" binaries/flannel/${FLANNEL_VERSION}/.flannel 2>/dev/null || {
+  curl -f --connect-timeout 20 --retry 5 --location --insecure https://github.com/coreos/flannel/releases/download/v${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -o binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
+  tar -zxf binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -C binaries/flannel/${FLANNEL_VERSION}/ flanneld mk-docker-opts.sh
+  rm -rf binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
+  echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
+}
 
 # ectd
 ETCD_VERSION=${ETCD_VERSION:-"3.4.5"}
@@ -65,12 +65,12 @@ grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/
   echo ${KUBE_VERSION} > binaries/kubernetes/${KUBE_VERSION}/.kubernetes
 }
 
-# CNI_VERSION=${CNI_VERSION:-"0.8.5"}
-# printb "Prepare cni-plugins ${CNI_VERSION} release ..."
-# mkdir -p binaries/cni-plugins/${CNI_VERSION}
-# grep -q "^${CNI_VERSION}\$" binaries/cni-plugins/${CNI_VERSION}/.cni 2>/dev/null || {
-#   curl -f --connect-timeout 20 --retry 5 --location --insecure "https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
-#   tar -zxf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz --strip-components 1 -C binaries/cni-plugins/${CNI_VERSION}/
-#   rm -rf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
-#   echo ${CNI_VERSION} > binaries/cni-plugins/${CNI_VERSION}/.cni
-# }
+CNI_VERSION=${CNI_VERSION:-"0.8.5"}
+printb "Prepare cni-plugins ${CNI_VERSION} release ..."
+mkdir -p binaries/cni-plugins/${CNI_VERSION}
+grep -q "^${CNI_VERSION}\$" binaries/cni-plugins/${CNI_VERSION}/.cni 2>/dev/null || {
+  curl -f --connect-timeout 20 --retry 5 --location --insecure "https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+  tar -zxf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz --strip-components 1 -C binaries/cni-plugins/${CNI_VERSION}/
+  rm -rf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+  echo ${CNI_VERSION} > binaries/cni-plugins/${CNI_VERSION}/.cni
+}
