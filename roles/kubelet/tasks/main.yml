@@ -50,7 +50,7 @@
     {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
       openssl rand -hex 3
     {% else %}
-      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
+      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
     {% endif %}
   register: TOKEN_ID
   run_once: true
@@ -76,7 +76,7 @@
     {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
       openssl rand -hex 8
     {% else %}
-      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
+      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
     {% endif %}
   register: TOKEN_SECRET
   run_once: true
@@ -126,19 +126,21 @@
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}/ca.crt \
       --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
-      --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-context kubelet-bootstrap@{{ kubernetes.name | default("kubernetes") }} \
+    kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} \
       --cluster={{ kubernetes.name | default("kubernetes") }} \
-      --user=kubelet-bootstrap \
-      --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
+      --user={{ item.KUBE_USER }} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-credentials kubelet-bootstrap \
-      --token={{ TOKEN_ID.stdout | b64decode }}.{{ TOKEN_SECRET.stdout | b64decode }} \
-      --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
+    kubectl config set-credentials {{ item.KUBE_USER }} \
+      --token={{ TOKEN_ID.stdout }}.{{ TOKEN_SECRET.stdout }} \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config use-context kubelet-bootstrap@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
-
+    kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+  with_items:
+    - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
+  
 - name: Create auto-approve --- part.1
   copy: 
     src: '{{ item }}'
