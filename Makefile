@@ -19,7 +19,6 @@ auto: runtime download sync
 	@make install
 
 install:
-	@echo $@
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
 	@ansible-playbook -i hosts install.yml -e force=$(force)
 
