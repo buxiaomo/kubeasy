@@ -80,7 +80,7 @@
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
     {% else %}
-      {% if "'kube-master' in group_names" %}
+      {% if 'kube-master' in group_names %}
       openssl rand -hex 8
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
@@ -106,15 +106,11 @@
   template: 
     src: bootstrap-token.yml.j2
     dest: /etc/kubernetes/bootstrap-token.yml
-  when: 
-    - not bootstrap_token.stat.exists
-    - "'kube-master' in group_names"
+  when: not bootstrap_token.stat.exists and 'kube-master' in group_names
 
 - name: Create bootstrap token --- part.2
   command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
-  when: 
-    - not bootstrap_token.stat.exists
-    - "'kube-master' in group_names"
+  when: not bootstrap_token.stat.exists and 'kube-master' in group_names
 
 - name: Create bootstrap kubeconfig
   shell: |
