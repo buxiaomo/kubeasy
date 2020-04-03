@@ -46,7 +46,7 @@
     enabled: yes
     daemon_reload: yes
 
-- name: Wait for Etcd
+- name: Wait for etcd
   wait_for:
     port: 2379
     delay: 15

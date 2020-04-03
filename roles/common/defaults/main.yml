@@ -33,9 +33,11 @@ sysctl:
     net.bridge.bridge-nf-call-arptables: 1
     net.netfilter.nf_conntrack_max: 2310720
     fs.inotify.max_user_watches: 89100
-    fs.may_detach_mounts: 1
+    # fs.may_detach_mounts: 1
     fs.file-max: 52706963
     fs.nr_open: 52706963
     vm.swappiness: 0
     vm.overcommit_memory: 1
     vm.panic_on_oom: 0
+    net.netfilter.nf_conntrack_tcp_timeout_established: 86400
+    net.netfilter.nf_conntrack_tcp_timeout_close_wait: 3600
