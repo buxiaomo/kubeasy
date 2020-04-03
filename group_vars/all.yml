@@ -84,6 +84,7 @@ kubernetes:
     # virtual IP
     vip: 172.16.13.10
     mask: 16
+    interface: ens160
 
   # API_SERVER: "https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %}"
 
