@@ -16,6 +16,7 @@ auto: runtime download sync
 	@make install
 
 install:
+	@[ -f group_vars/all.yml ] || cp group_vars/all.yml group_vars/template.yml
 	@ansible-playbook -i hosts install.yml
 
 uninstall:
