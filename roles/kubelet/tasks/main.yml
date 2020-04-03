@@ -164,6 +164,11 @@
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
 
+- name: Clean old tls file
+  file: 
+    src: /etc/kubernetes/pki/kubelet*
+    state: absent
+
 - name: Start the service
   systemd:
     name: kubelet
