@@ -50,7 +50,7 @@
     {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
       openssl rand -hex 3
     {% else %}
-      kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
+      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
     {% endif %}
   register: TOKEN_ID
   run_once: true
@@ -76,7 +76,7 @@
     {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
       openssl rand -hex 8
     {% else %}
-      kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
+      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
     {% endif %}
   register: TOKEN_SECRET
   run_once: true
@@ -138,7 +138,6 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
-  when: not bootstrap_kubeconfig.stat.exists
 
 - name: Create auto-approve --- part.1
   copy: 

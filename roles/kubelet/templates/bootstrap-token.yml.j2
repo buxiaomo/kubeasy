@@ -5,7 +5,7 @@ metadata:
   name: bootstrap-token-{{ TOKEN_ID.stdout }}
   namespace: kube-system
   labels:
-    bootstrap: token
+    ansible: "true"
 data:
   description: Y2x1c3RlciBib290c3RyYXAgdG9rZW4=
   token-id: {{ TOKEN_ID.stdout | b64encode }}
