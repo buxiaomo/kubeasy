@@ -33,7 +33,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or force == "true"
+  when: kubernetes_ca_check.rc != 0 or force | default(false)
 
 - name: Check etcd ca certificate expired(30 days)
   shell: |
