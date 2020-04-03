@@ -54,21 +54,21 @@
 
 - name: Create kubeconfig
   shell: |
-    kubectl config set-cluster {{ kubernetes.name }} \
+    kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-context {{ kubernetes.name }} \
-      --cluster={{ kubernetes.name }} \
-      --user={{ kubernetes.name }} \
+    kubectl config set-context {{ kubernetes.name | default("kubernetes") }} \
+      --cluster={{ kubernetes.name | default("kubernetes") }} \
+      --user={{ kubernetes.name | default("kubernetes") }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-credentials {{ kubernetes.name }} \
+    kubectl config set-credentials {{ kubernetes.name | default("kubernetes") }} \
       --token={{ JWT_TOKEN.stdout }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config use-context {{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+    kubectl config use-context {{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_CONFIG: 'kube-proxy.kubeconfig'}
 

@@ -37,7 +37,7 @@
 
 - name: Create kubeconfig
   shell: |
-    kubectl config set-cluster {{ kubernetes.name }} \
+    kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
@@ -47,12 +47,12 @@
       --client-key={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.key \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-     kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name }} \
-      --cluster={{ kubernetes.name }} \
+     kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} \
+      --cluster={{ kubernetes.name | default("kubernetes") }} \
       --user={{ item.KUBE_USER }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.kubeconfig'}
 
