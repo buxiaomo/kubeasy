@@ -28,7 +28,7 @@
   roles:
     - docker
     - ipvs
-    - cni-plugins
+    # - cni-plugins
   tags:
     - kubernetes-init
 
@@ -61,3 +61,11 @@
     - addons
   tags:
     - addons
+
+- name: Deployment add-on
+  hosts: kube-master
+  roles:
+    - haproxy
+    # - keepalived
+  tags:
+    - test
