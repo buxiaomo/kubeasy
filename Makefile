@@ -1,5 +1,7 @@
 SHELL := /bin/bash
 
+DEBUG := false
+
 DOWNLOAD_WAY := "official"
 
 KUBE_VERSION := "1.14.4"
@@ -7,7 +9,6 @@ DOCKER_VERSION := "19.03.8"
 FLANNEL_VERSION := "0.12.0"
 ETCD_VERSION := "3.4.5"
 CNI_VERSION := "0.8.5"
-DEBUG := true
 
 HTTP_USERNAME := ""
 HTTP_PASSWORD := ""

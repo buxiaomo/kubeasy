@@ -62,10 +62,9 @@
   tags:
     - addons
 
-# - name: Deployment test
-#   hosts: kube-master
-#   roles:
-#     - haproxy
-#     - keepalived
-#   tags:
-#     - test
+- name: Deployment test
+  hosts: kubernetes
+  roles:
+    - kube-proxy
+  tags:
+    - test

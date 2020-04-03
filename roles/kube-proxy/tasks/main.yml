@@ -42,14 +42,10 @@
     - kube-proxy-sa.yml
   when: "'kube-master' in group_names"
 
-- name: Register secret
-  shell: |
-    kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}'
-  register: SECRET
-
 - name: Register jwt token
   shell: |
-    kubectl -n kube-system get secret {{ SECRET.stdout }} --output=jsonpath='{.data.token}' | base64 -d
+    secret=$(kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}')
+    kubectl -n kube-system get secret/${secret} --output=jsonpath='{.data.token}'
   register: JWT_TOKEN
 
 - name: Create kubeconfig
@@ -65,7 +61,7 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ kubernetes.name | default("kubernetes") }} \
-      --token={{ JWT_TOKEN.stdout }} \
+      --token={{ JWT_TOKEN.stdout | b64encode }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config use-context {{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}

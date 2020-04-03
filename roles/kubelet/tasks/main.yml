@@ -165,9 +165,7 @@
     dest: /etc/systemd/system/kubelet.service
 
 - name: Clean old tls file
-  file: 
-    path: /etc/kubernetes/pki/kubelet*
-    state: absent
+  shell: 'rm -rf {{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}/kubelet*'
 
 - name: Start the service
   systemd:
