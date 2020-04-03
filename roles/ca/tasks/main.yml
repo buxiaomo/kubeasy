@@ -23,9 +23,12 @@
   stat: 
     path: /etc/kubernetes/pki/ca.crt
   register: kubernetes_ca_file
+
 - name: Check kubernetes ca certificate expired(30 days)
   command: openssl x509 -in /etc/kubernetes/pki/ca.crt -noout -text -checkend 2592000
   register: kubernetes_ca_check
+  when: kubernetes_ca_file.stat.exists
+
 - name: Create kubernetes ca
   shell: |
     openssl genrsa -out ca.key 2048 && \
@@ -35,13 +38,17 @@
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
+
 - name: Register etcd ca file
   stat: 
     path: /etc/kubernetes/pki/ca.crt
   register: etcd_ca_file
+
 - name: Check etcd ca certificate expired(30 days)
   command: openssl x509 -in /etc/kubernetes/pki/etcd/ca.crt -noout -text -checkend 2592000
   register: etcd_ca_check
+  when: etcd_ca_file.stat.exists
+
 - name: Create etcd ca
   shell: |
     openssl genrsa -out {{ ca.etcd.location }}/ca.key 2048 && \
@@ -51,13 +58,17 @@
     executable: /bin/bash
   when: etcd_ca_check.rc != 0 or not etcd_ca_file.stat.exists or force
 
+
 - name: Register front-proxy ca file
   stat: 
     path: /etc/kubernetes/pki/ca.crt
   register: front_proxy_ca_file
+
 - name: Check front-proxy ca certificate expired(30 days)
   command: openssl x509 -in /etc/kubernetes/pki/front-proxy-ca.crt -noout -text -checkend 2592000
   register: front_proxy_ca_check
+  when: front_proxy_ca_file.stat.exists
+
 - name: Create front-proxy-ca
   shell: |
     openssl genrsa -out front-proxy-ca.key 2048 && \
