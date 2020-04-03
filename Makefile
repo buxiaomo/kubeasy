@@ -16,7 +16,7 @@ auto: runtime download sync
 	@make install
 
 install:
-	@[ -f group_vars/all.yml ] || cp group_vars/all.yml group_vars/template.yml
+	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
 	@ansible-playbook -i hosts install.yml
 
 uninstall:
@@ -52,7 +52,7 @@ sync:
 	@rsync -a ./scripts/binaries/cni-plugins/$(CNI_VERSION)/* ./roles/cni-plugins/files/ --delete
 	@echo "Playbook is ready. Enjoy!"
 
-check:
-	@ansible -i hosts all -m ping
-	# @ansible-playbook -i hosts --check install.yml
-	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null
+# check:
+# 	@ansible -i hosts all -m ping
+# 	# @ansible-playbook -i hosts --check install.yml
+# 	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null
