@@ -50,7 +50,7 @@
     {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
       openssl rand -hex 3
     {% else %}
-      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+      kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
     {% endif %}
   register: TOKEN_ID
   run_once: true
@@ -73,7 +73,7 @@
     {% if not bootstrap_token.stat.exists and "'kube-master' in group_names" %}
       openssl rand -hex 3
     {% else %}
-      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if 'kube-master' in group_names %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+      kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
     {% endif %}
   register: TOKEN_ID
   run_once: true
