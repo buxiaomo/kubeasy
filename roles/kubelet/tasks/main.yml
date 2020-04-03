@@ -75,7 +75,7 @@
     {% else %}
       kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
     {% endif %}
-  register: TOKEN_ID
+  register: TOKEN_SECRET
   run_once: true
 # - name: Register token secret
 #   command: openssl rand -hex 8
