@@ -40,9 +40,9 @@
     - kubectl
     - kube-apiserver
     - kube-scheduler
-    # - kube-controller-manager
-    # - kubelet
-    # - kube-proxy
+    - kube-controller-manager
+    - kubelet
+    - kube-proxy
   tags:
     - kube-master
 
