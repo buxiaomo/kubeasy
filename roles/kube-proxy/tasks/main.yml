@@ -56,7 +56,7 @@
   shell: |
     kubectl config set-cluster {{ kubernetes.name }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=https://{{ ansible_default_ipv4.address }}:6443 \
+      --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-context {{ kubernetes.name }} \
