@@ -2,7 +2,6 @@
   file:
     path: '{{ item }}'
     state: absent
-  run_once: true
   with_items:
     - ~/.kube
   when: "'kube-minion' in group_names"
