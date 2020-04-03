@@ -27,7 +27,7 @@ upgrade:
 	@ansible-playbook upgrade.yml
 
 download:
-	@echo 'Download the binaries package to ./scripts/binaries directory...'
+	@echo -e "\033[32mDownload the binaries package to ./scripts/binaries directory...\033[0m"
 	@export DEBUG=$(DEBUG) \
 	&& export KUBE_VERSION=$(KUBE_VERSION) \
 	&& export DOCKER_VERSION=$(DOCKER_VERSION) \

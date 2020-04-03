@@ -7,7 +7,7 @@ function printb(){
   echo -e "\033[32m$1\033[0m"
 }
 
-pushd $(dirname $0)
+# pushd $(dirname $0)
 
 mkdir -p binaries
 
