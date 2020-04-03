@@ -28,7 +28,9 @@
   command: openssl x509 -in /etc/kubernetes/pki/ca.crt -noout -text -checkend 2592000
   register: kubernetes_ca_check
   when: kubernetes_ca_file.stat.exists
-
+- name: debug msg
+  debug: 
+    msg: '{{ kubernetes_ca_check }}'
 - name: Create kubernetes ca
   shell: |
     openssl genrsa -out ca.key 2048 && \
