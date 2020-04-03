@@ -25,6 +25,15 @@
     - '{{ca.kubernetes.location }}'
     - '{{ca.kubernetes.location }}/etcd'
 
+- name: Distribution of etcd certificate
+  copy: 
+    src: '{{ item }}'
+    dest: '{{ca.kubernetes.location }}/etcd'
+    owner: root
+    group: root
+  with_items:
+    - '{{ca.kubernetes.location }}/etcd/ca.crt'
+
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
@@ -33,7 +42,6 @@
     group: root
   with_items:
     - '{{ca.kubernetes.location }}/ca.crt'
-    - '{{ca.kubernetes.location }}/etcd/ca.crt'
     - '{{ca.kubernetes.location }}/apiserver-etcd-client.crt'
     - '{{ca.kubernetes.location }}/apiserver-etcd-client.key'
     - '{{ca.kubernetes.location }}/apiserver-kubelet-client.crt'
