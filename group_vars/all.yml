@@ -23,7 +23,7 @@ kubernetes:
     file: /etc/kubernetes/cloud.conf
   ha:
     # virtual IP
-    vip: 172.16.13.10
+    vip: 172.16.15.10
     mask: 16
     interface: ens160
 
