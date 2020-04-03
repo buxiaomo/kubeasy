@@ -126,20 +126,18 @@
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}/ca.crt \
       --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+      --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
 
-    kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} \
+    kubectl config set-context kubelet-bootstrap@{{ kubernetes.name | default("kubernetes") }} \
       --cluster={{ kubernetes.name | default("kubernetes") }} \
-      --user={{ item.KUBE_USER }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+      --user=kubelet-bootstrap \
+      --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
 
-    kubectl config set-credentials {{ item.KUBE_USER }} \
+    kubectl config set-credentials kubelet-bootstrap \
       --token={{ TOKEN_ID.stdout | b64decode }}.{{ TOKEN_SECRET.stdout | b64decode }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+      --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
 
-    kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
-  with_items:
-    - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
+    kubectl config use-context kubelet-bootstrap@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/bootstrap.kubeconfig
 
 - name: Create auto-approve --- part.1
   copy: 
