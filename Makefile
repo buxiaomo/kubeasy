@@ -13,12 +13,15 @@ CNI_VERSION := "0.8.5"
 HTTP_USERNAME := ""
 HTTP_PASSWORD := ""
 
+force := false
+
 auto: runtime download sync
 	@make install
 
 install:
+	@echo $@
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
-	@ansible-playbook -i hosts install.yml
+	@ansible-playbook -i hosts install.yml -e force=$(force)
 
 uninstall:
 	@ansible-playbook uninstall.yml
