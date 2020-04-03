@@ -25,7 +25,7 @@ vrrp_instance haproxy-vip {
     }
 
     virtual_ipaddress {
-        {{ kubernetes.vip }}/16
+        {{ kubernetes.ha.vip }}/{{ kubernetes.ha.mask }}
     }
 
     track_script {

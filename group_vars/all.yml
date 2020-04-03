@@ -80,12 +80,12 @@ kubernetes:
     #   azure: azure cloud
     type: local
     file: /etc/kubernetes/cloud.conf
-  
-  # virtual IP
-  vip: 172.16.13.10
-  mask: 16
+  ha:
+    # virtual IP
+    vip: 172.16.13.10
+    mask: 16
 
-  API_SERVER: https://{% if groups['kube-master'] | length !=1 %}{{ VIP }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %}
+  API_SERVER: https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %}
 
   # choose: none flannel calico canal
   #   none: not deployment any network plugin
