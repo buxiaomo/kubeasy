@@ -47,7 +47,7 @@
 
 - name: Create kubeconfig
   shell: |
-    kubectl config set-cluster {{ kubernetes.name }} \
+    kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
       --embed-certs=true \
