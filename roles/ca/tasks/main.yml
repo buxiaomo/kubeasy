@@ -19,6 +19,10 @@
     src: openssl.cnf.j2
     dest: '{{ ca.kubernetes.location }}/openssl.cnf'
 
+- name: Register kubernetes ca file
+  stat: 
+    path: /etc/kubernetes/pki/ca.crt
+  register: kubernetes_ca_file
 - name: Check kubernetes ca certificate expired(30 days)
   command: openssl x509 -in /etc/kubernetes/pki/ca.crt -noout -text -checkend 2592000
   register: kubernetes_ca_check
@@ -29,8 +33,12 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0
+  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
+- name: Register etcd ca file
+  stat: 
+    path: /etc/kubernetes/pki/ca.crt
+  register: etcd_ca_file
 - name: Check etcd ca certificate expired(30 days)
   command: openssl x509 -in /etc/kubernetes/pki/etcd/ca.crt -noout -text -checkend 2592000
   register: etcd_ca_check
@@ -41,10 +49,13 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0
+  when: etcd_ca_check.rc != 0 or not etcd_ca_file.stat.exists or force
 
-
-- name: Check etcd ca certificate expired(30 days)
+- name: Register front-proxy ca file
+  stat: 
+    path: /etc/kubernetes/pki/ca.crt
+  register: front_proxy_ca_file
+- name: Check front-proxy ca certificate expired(30 days)
   command: openssl x509 -in /etc/kubernetes/pki/front-proxy-ca.crt -noout -text -checkend 2592000
   register: front_proxy_ca_check
 - name: Create front-proxy-ca
@@ -54,7 +65,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: front_proxy_ca_check.rc != 0
+  when: front_proxy_ca_check.rc != 0 or not front_proxy_ca_file.stat.exists or force
 
 
 - name: Create apiserver etcd client
@@ -65,7 +76,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0
+  when: etcd_ca_check.rc != 0 or not etcd_ca_file.stat.exists or force
 
 
 - name: Create kube etcd
@@ -76,7 +87,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0
+  when: etcd_ca_check.rc != 0 or not etcd_ca_file.stat.exists or force
 
 
 - name: kube-etcd-peer
@@ -87,7 +98,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0
+  when: etcd_ca_check.rc != 0 or not etcd_ca_file.stat.exists or force
 
 
 - name: kube-etcd-healthcheck-client
@@ -98,7 +109,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0
+  when: etcd_ca_check.rc != 0 or not etcd_ca_file.stat.exists or force
 
 
 - name: kube-apiserver
@@ -109,7 +120,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0
+  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
 
 - name: apiserver-kubelet-client
@@ -120,7 +131,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0
+  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
 
 - name: front-proxy-client
@@ -131,7 +142,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: front_proxy_ca_check.rc != 0
+  when: front_proxy_ca_check.rc != 0 or not front_proxy_ca_file.stat.exists or force
 
 
 - name: kube-scheduler
@@ -142,7 +153,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0
+  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
 - name: sa.pub sa.key
   shell: |
@@ -154,7 +165,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0
+  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
 
 - name: admin
   shell: |
@@ -164,4 +175,4 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0
+  when: kubernetes_ca_check.rc != 0 or not kubernetes_ca_file.stat.exists or force
