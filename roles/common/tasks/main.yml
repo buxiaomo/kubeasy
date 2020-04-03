@@ -12,7 +12,6 @@
   with_items:
     - python-apt
     - conntrack
-    - libseccomp
     - net-tools
     - sysstat
     - unzip
