@@ -10,7 +10,6 @@
     name: '{{ item }}'
     state: present
   with_items:
-    - python-apt
     - conntrack
     - net-tools
     - sysstat
@@ -18,10 +17,7 @@
     - tcpdump
     - telnet
     - lsof
-    - nload
     - strace
-    - iftop
-    - htop
     - wget
     - psmisc
     - ipset
