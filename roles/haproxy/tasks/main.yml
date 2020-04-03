@@ -21,4 +21,4 @@
         name: haproxy
         enabled: yes
         state: restarted
-  when: "'{{ kubernetes.cloud.type }}' == 'local'"
+  when: kubernetes.cloud.type == "local"
