@@ -1,10 +1,10 @@
 [kube-master]
-172.16.15.11 hostname=kube-master01 nodename=kube-ansble-master-01
-172.16.15.12 hostname=kube-master02 nodename=kube-ansble-master-02
-172.16.15.13 hostname=kube-master03 nodename=kube-ansble-master-03
+172.16.15.11 hostname=kube-ansble-master-01 nodename=master01
+172.16.15.12 hostname=kube-ansble-master-02 nodename=master02
+172.16.15.13 hostname=kube-ansble-master-03 nodename=master03
 
 [kube-minion]
-172.16.15.14 hostname=kube-minion01 nodename=kube-ansble-minion--01
+172.16.15.14 hostname=kube-ansble-minion-01 nodename=worker01
 
 [kubernetes:children]
 kube-master
