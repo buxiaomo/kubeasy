@@ -62,9 +62,9 @@
   tags:
     - addons
 
-- name: Deployment test
-  hosts: kubernetes
-  roles:
-    - test
-  tags:
-    - test
+# - name: Deployment test
+#   hosts: kubernetes
+#   roles:
+#     - test
+#   tags:
+#     - test
