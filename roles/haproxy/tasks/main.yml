@@ -13,8 +13,7 @@
         src: '{{ item.src }}'
         dest: '{{ item.dest }}'
       with_items:
-        - { src: 'keepalived.conf.j2', dest: '/etc/keepalived/keepalived.conf'}
-        - { src: 'check_haproxy.sh.j2', dest: '/etc/keepalived/check_haproxy.sh'}
+        - { src: 'haproxy.cfg.j2', dest: '/etc/haproxy/haproxy.cfg'}
 
     - name: Start the service
       systemd:
