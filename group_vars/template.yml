@@ -55,7 +55,7 @@ sysctl:
     net.bridge.bridge-nf-call-arptables: 1
     net.netfilter.nf_conntrack_max: 2310720
     fs.inotify.max_user_watches: 89100
-    # fs.may_detach_mounts: 1
+    fs.may_detach_mounts: 1
     fs.file-max: 52706963
     fs.nr_open: 52706963
     vm.swappiness: 0
@@ -80,6 +80,7 @@ kubernetes:
     #   azure: azure cloud
     type: local
     file: /etc/kubernetes/cloud.conf
+
   ha:
     # virtual IP
     vip: 172.16.13.10
