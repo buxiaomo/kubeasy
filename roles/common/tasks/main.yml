@@ -1,10 +1,6 @@
 ---
 # tasks file for common
 - name: Set OS dependent variables
-  debug: 
-    msg: groups['kube-master']
-
-- name: Set OS dependent variables
   include_vars: '{{ item }}'
   with_first_found:
    - '{{ ansible_os_family }}.yml'
