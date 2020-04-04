@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Secret
 type: bootstrap.kubernetes.io/token
 metadata:
-  name: bootstrap-token-{{ TOKEN_ID.stdout }}
+  name: bootstrap-token-{{ TOKEN_ID.stdout | b64decode }}
   namespace: kube-system
   labels:
     ansible: "true"
