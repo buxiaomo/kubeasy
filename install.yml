@@ -17,7 +17,7 @@
     - ca
 
 - name: Deployment etcd cluster
-  hosts: "{% if groups['kube-etcd'] is not defined %}kube-master{% else %}kube-etcd{% endif %}"
+  hosts: "{% if groups['etcd'] is not defined %}master{% else %}kube-etcd{% endif %}"
   roles:
     - etcd
   tags:
@@ -44,7 +44,7 @@
     - kubelet
     - kube-proxy
   tags:
-    - kube-master
+    - master
 
 - name: Deployment kube minion
   hosts: minion
