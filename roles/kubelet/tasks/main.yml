@@ -124,7 +124,7 @@
   with_items:
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
+    - create-csrs-for-bootstrapping.yml
   when: inventory_hostname in groups['master']
 
 - name: Create auto-approve --- part.2
@@ -133,7 +133,7 @@
   with_items:
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
+    - create-csrs-for-bootstrapping.yml
   when: inventory_hostname in groups['master']
 
 - name: Install systemd file
@@ -178,7 +178,7 @@
 - name: Waiting node on-line
   shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
   register: waiting_for_node
-  until: waiting_for_node.rc == 0
+  until: waiting_for_node.rc == 0 and waiting_for_node.stdout.find("NotReady") != -1
   retries: 15
   delay: 5
   changed_when: false
@@ -191,5 +191,5 @@
   with_items:
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
-    - kubeadm-kubelet-bootstrap.yml
+    - create-csrs-for-bootstrapping.yml
   when: inventory_hostname in groups['master']
