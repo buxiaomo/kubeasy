@@ -172,11 +172,10 @@
 - name: Waiting node on-line
   shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
   register: waiting_for_node
-  until: waiting_for_cluster.rc == 0
+  until: waiting_for_node.rc == 0
   retries: 10
   delay: 5
   changed_when: false
-  ignore_errors: true
 
 - name: Clean auto-approve yml file
   file:
