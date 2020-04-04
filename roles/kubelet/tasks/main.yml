@@ -9,6 +9,7 @@
     group: root
   with_items:
     - kubelet
+  register: bin_file
 
 - name: Create data directory
   file: 
@@ -30,6 +31,7 @@
   template: 
     src: kubelet-conf.yml.j2
     dest: /etc/kubernetes/kubelet-conf.yml
+  register: config_file
 
 - name: Distribution of certificate
   copy: 
@@ -39,6 +41,7 @@
     group: root
   with_items:
     - '{{ca.kubernetes.location }}/ca.crt'
+  register: ca_file
 
 - name: Check bootstrap token
   stat: 
@@ -104,6 +107,7 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
+  when: ca_file.changed or bin_file.changed
   
 - name: Create auto-approve --- part.1
   copy: 
@@ -129,6 +133,7 @@
   template: 
     src: kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
+  when: ca_file.changed or bin_file.changed
 
 - name: Clean old tls file --- part.1
   find:
@@ -138,12 +143,14 @@
     use_regex: yes
     recurse: yes
   register: kubelet_files
+  when: ca_file.changed or bin_file.changed
 
 - name: Clean old tls file --- part.2
   file:
     path: '{{ item.path }}'
     state: absent
   with_items: '{{ kubelet_files.files }}'
+  when: ca_file.changed or bin_file.changed
 
 - name: Start the service
   systemd:
@@ -151,6 +158,8 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
+  when: ca_file.changed or bin_file.changed
+  register: systemd_file
 
 - name: Health check
   uri: 
@@ -163,6 +172,7 @@
   delay: 4
   connection: local
   ignore_errors: True
+  when: system_file.changed
 
 - name: Waiting node on-line
   shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
@@ -171,6 +181,7 @@
   retries: 10
   delay: 5
   changed_when: false
+  when: systemd_file.changed
 
 - name: Clean auto-approve yml file
   file:

@@ -9,6 +9,7 @@
     group: root
   with_items:
     - kube-scheduler
+  register: bin_file
 
 - name: Create log directory
   file: 
@@ -23,6 +24,7 @@
     mode: '0755'
   with_items:
     - '{{ca.kubernetes.location }}'
+  register: ca_file
 
 - name: Distribution of certificate
   copy: 
@@ -55,11 +57,13 @@
      kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.kubeconfig'}
+  when: ca_file.changed
 
 - name: Install systemd file
   template: 
     src: kube-scheduler.service.j2
     dest: /etc/systemd/system/kube-scheduler.service
+  register: systemd_file
 
 - name: Start the service
   systemd:
@@ -67,6 +71,7 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
+  when: ca_file.changed or bin_file.changed or systemd_file.changed
 
 - name: Health check
   uri: 
@@ -79,3 +84,4 @@
   delay: 4
   connection: local
   ignore_errors: True
+  when: systemd_file.changed

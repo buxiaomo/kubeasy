@@ -24,6 +24,15 @@
   with_items:
     - '{{ca.kubernetes.location }}'
 
+- name: Distribution of certificate
+  copy: 
+    src: '{{ item }}'
+    dest: '{{ca.kubernetes.location }}'
+    owner: root
+    group: root
+  with_items:
+    - '{{ca.kubernetes.location }}/ca.crt'
+
 - name: Create kube-proxy sa crb --- part.1
   copy: 
     src: '{{ item }}'

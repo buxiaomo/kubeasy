@@ -9,6 +9,7 @@
     group: root
   with_items:
     - kubectl
+  register: bin_file
 
 - name: Create data directory
   file: 
@@ -44,6 +45,7 @@
     - '{{ca.kubernetes.location }}/ca.crt'
     - '{{ca.kubernetes.location }}/admin.crt'
     - '{{ca.kubernetes.location }}/admin.key'
+  register: ca_file
 
 - name: Create kubeconfig
   shell: |
@@ -67,7 +69,7 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
-  # when: inventory_hostname in groups['master']
+  when: ca_file.changed or bin_file.changed
 
 - name: Create user kube directory
   file: 
