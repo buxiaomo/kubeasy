@@ -6,7 +6,7 @@
   with_items:
     - '{{ kubernetes.addon.location }}/flannel'
   run_once: true
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
 
 - name: Deployment flannel --- part.1
   template: 
@@ -15,11 +15,11 @@
   with_items:
     - { src: 'flannel/flannel.yaml.j2', dest: 'flannel/flannel.yaml' }
   run_once: true
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
 
 - name: Deployment flannel --- part.2
   command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
   with_items:
     - flannel/flannel.yaml
   run_once: true
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']

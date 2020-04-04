@@ -32,7 +32,7 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
 
 - name: Create kube-proxy sa crb --- part.2
   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
@@ -40,7 +40,7 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
 
 - name: Register jwt token
   shell: |
@@ -93,4 +93,4 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']

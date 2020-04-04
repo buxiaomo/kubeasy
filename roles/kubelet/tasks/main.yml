@@ -50,7 +50,7 @@
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
     {% else %}
-      {% if 'kube-master' in group_names %}
+      {% if inventory_hostname in groups['kube-master'] %}
       openssl rand -hex 3
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
@@ -65,7 +65,7 @@
 #   command: openssl rand -hex 3
 #   register: TOKEN_ID
 #   run_once: true
-#   when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+#   when: not bootstrap_token.stat.exists and inventory_hostname in groups['kube-master']
 # - name: Register token id
 #   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-id}"
 #   register: TOKEN_ID
@@ -80,7 +80,7 @@
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
     {% else %}
-      {% if 'kube-master' in group_names %}
+      {% if inventory_hostname in groups['kube-master'] %}
       openssl rand -hex 8
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
@@ -95,7 +95,7 @@
 #   command: openssl rand -hex 8
 #   register: TOKEN_SECRET
 #   run_once: true
-#   when: not bootstrap_token.stat.exists and "'kube-master' in group_names"
+#   when: not bootstrap_token.stat.exists and inventory_hostname in groups['kube-master']
 # - name: Register token secret
 #   command: kubectl get secret -n kube-system -l bootstrap=token --output="jsonpath={.items[0].data.token-secret}"
 #   register: TOKEN_SECRET
@@ -106,11 +106,13 @@
   template: 
     src: bootstrap-token.yml.j2
     dest: /etc/kubernetes/bootstrap-token.yml
-  when: not bootstrap_token.stat.exists and 'kube-master' in group_names
+  run_once: true    
+  when: not bootstrap_token.stat.exists and inventory_hostname in groups['kube-master']
 
 - name: Create bootstrap token --- part.2
   command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
-  when: not bootstrap_token.stat.exists and 'kube-master' in group_names
+  run_once: true
+  when: not bootstrap_token.stat.exists and inventory_hostname in groups['kube-master']
 
 - name: Create bootstrap kubeconfig
   shell: |
@@ -141,7 +143,7 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
 
 - name: Create auto-approve --- part.2
   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
@@ -150,7 +152,7 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
 
 - name: Install systemd file
   template: 
@@ -188,4 +190,4 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
-  when: "'kube-master' in group_names"
+  when: inventory_hostname in groups['kube-master']
