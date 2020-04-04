@@ -95,6 +95,7 @@
 - name: Create bootstrap kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
+      --embed-certs=true \
       --certificate-authority={{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}/ca.crt \
       --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
