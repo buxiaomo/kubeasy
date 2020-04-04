@@ -41,17 +41,16 @@
     - '{{ca.kubernetes.location }}/ca.crt'
 
 - name: Check bootstrap token
-  stat: 
-    path: /etc/kubernetes/bootstrap-token.yml
+  command: kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].metadata.name}"
   register: bootstrap_token
 
 - name: Register token id
   shell: |
-    {% if bootstrap_token.stat.exists %}
+    {% if bootstrap_token.rc == 0 %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
-      openssl rand -hex 3 | base64
+      openssl rand -hex 3
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
       {% endif %}
@@ -61,11 +60,11 @@
 
 - name: Register token secret
   shell: |
-    {% if bootstrap_token.stat.exists %}
+    {% if bootstrap_token.rc == 0 %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
-      openssl rand -hex 8 | openssl enc -d -base64
+      openssl rand -hex 8
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
       {% endif %}
@@ -73,17 +72,19 @@
   register: TOKEN_SECRET
   run_once: true
 
-- name: Create bootstrap token --- part.1
-  template: 
-    src: bootstrap-token.yml.j2
-    dest: /etc/kubernetes/bootstrap-token.yml
-  run_once: true    
-  when: not bootstrap_token.stat.exists and inventory_hostname in groups['master']
+- name: Create bootstrap token
+  shell: |
+    kubectl -n kube-system create secret generic bootstrap-token-{{ TOKEN_ID }} \
+    --type 'bootstrap.kubernetes.io/token' \
+    --from-literal description="cluster bootstrap token" \
+    --from-literal token-id={{ TOKEN_ID }} \
+    --from-literal token-secret={{ TOKEN_SECRET }} \
+    --from-literal usage-bootstrap-authentication=true \
+    --from-literal usage-bootstrap-signing=true
 
-- name: Create bootstrap token --- part.2
-  command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
+    kubectl label secrets -n kube-system bootstrap-token-{{ TOKEN_ID }} ansible=true
   run_once: true
-  when: not bootstrap_token.stat.exists and inventory_hostname in groups['master']
+  when: bootstrap_token.rc != 0 and inventory_hostname in groups['master']
 
 - name: debug TOKEN_ID
   debug: 
