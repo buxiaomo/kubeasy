@@ -1,8 +1,3 @@
-# [etcd]
-# 172.16.16.8 hostname=kube-ansble-c-etcd01
-# 172.16.16.9 hostname=kube-ansble-c-etcd02
-# 172.16.16.10 hostname=kube-ansble-c-etcd03
-
 [master]
 172.16.16.11 hostname=kube-ansble-c-m01 nodename=master01
 172.16.16.12 hostname=kube-ansble-c-m02 nodename=master02

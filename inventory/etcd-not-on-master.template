@@ -1,0 +1,16 @@
+[etcd]
+172.16.16.11 hostname=kube-ansble-c-etcd01
+172.16.16.12 hostname=kube-ansble-c-etcd02
+172.16.16.13 hostname=kube-ansble-c-etcd03
+
+[master]
+172.16.16.14 hostname=kube-ansble-c-m01 nodename=master01
+172.16.16.15 hostname=kube-ansble-c-m02 nodename=master02
+172.16.16.16 hostname=kube-ansble-c-m03 nodename=master03
+
+[worker]
+172.16.16.17 hostname=kube-ansble-c-n01 nodename=worker01
+
+[kubernetes:children]
+master
+worker
