@@ -111,6 +111,10 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
+  register: bootstrap
+- name: Create bootstrap kubeconfig  debug
+  debug: 
+    msg: '{{bootstrap}}'
 
 - name: Create auto-approve --- part.1
   copy: 
