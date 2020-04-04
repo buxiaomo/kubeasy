@@ -9,7 +9,6 @@
     group: root
   with_items:
     - kube-apiserver
-  register: bin_file
 
 - name: Create log directory
   file: 
@@ -34,7 +33,6 @@
     group: root
   with_items:
     - '{{ca.kubernetes.location }}/etcd/ca.crt'
-  register: etcd_ca_file
 
 - name: Distribution of certificate
   copy: 
@@ -57,13 +55,11 @@
     - '{{ca.kubernetes.location }}/front-proxy-client.key'
     - '{{ca.kubernetes.location }}/admin.crt'
     - '{{ca.kubernetes.location }}/admin.key'
-  register: ca_file
 
 - name: Install systemd file
   template: 
     src: kube-apiserver.service.j2
     dest: /etc/systemd/system/kube-apiserver.service
-  register: systemd_file
 
 - name: Start the service
   systemd:
@@ -71,7 +67,6 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-  when: etcd_ca_file.changed or ca_file.changed or bin_file.changed or systemd_file.changed
 
 - name: Wait ApiServer
   wait_for:
@@ -79,7 +74,6 @@
     delay: 30
     state: started
     host: '{{ ansible_ssh_host }}'
-  when: systemd_file.changed
 
 - name: Health check
   uri: 
@@ -92,4 +86,3 @@
   delay: 4
   connection: local
   ignore_errors: True
-  when: systemd_file.changed

@@ -9,7 +9,6 @@
     group: root
   with_items:
     - kube-controller-manager
-  register: bin_file
 
 - name: Create log directory
   file: 
@@ -37,7 +36,6 @@
     - '{{ca.kubernetes.location }}/sa.crt'
     - '{{ca.kubernetes.location }}/sa.key'
     - '{{ca.kubernetes.location }}/front-proxy-ca.crt'
-  register: ca_file
 
 - name: Create kubeconfig
   shell: |
@@ -58,13 +56,11 @@
      kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} 
   with_items:
     - { KUBE_USER: 'system:kube-controller-manager', KUBE_CERT: "sa", KUBE_CONFIG: 'controller-manager.kubeconfig' }
-  when: ca_file.changed or bin_file.changed
 
 - name: Install systemd file
   template: 
     src: kube-controller-manager.service.j2
     dest: /etc/systemd/system/kube-controller-manager.service
-  register: systemd_file
 
 - name: Start the service
   systemd:
@@ -72,7 +68,6 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-  when: ca_file.changed or bin_file.changed or systemd_file.changed
 
 - name: Health check
   uri: 
@@ -85,4 +80,3 @@
   delay: 4
   connection: local
   ignore_errors: True
-  when: ca_file.changed or bin_file.changed
