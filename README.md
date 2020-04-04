@@ -17,7 +17,10 @@
 ### clone code
 
 ```
-apt install make -y
+# ubuntu
+apt install git make -y
+# centos
+yum install git make -y
 git clone https://github.com/buxiaomo/kube-ansible.git /usr/local/src/kube-ansible
 cd /usr/local/src/kube-ansible
 ```
@@ -41,6 +44,25 @@ make download KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 
 make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
+### deploy
+
+```
+# default version
+make install
+
+# custom version
+make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+```
+
+### auto deploy
+```
+# default version
+make
+
+# custom version
+make KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+```
+
 <!-- 
 
 NS
@@ -59,6 +81,8 @@ ansible-playbook -i hosts install.yml -t ca
 ansible-playbook -i hosts install.yml -t etcd
 ansible-playbook -i hosts install.yml -t kube-master
 ansible-playbook -i hosts install.yml -t kube-minion
+
+ansible-playbook -i hosts install.yml -t test
 
 
 Master: 
