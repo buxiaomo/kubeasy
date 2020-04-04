@@ -85,6 +85,13 @@
   run_once: true
   when: not bootstrap_token.stat.exists and inventory_hostname in groups['master']
 
+- name: debug TOKEN_ID
+  debug: 
+    msg: '{{TOKEN_ID}}'
+- name: debug TOKEN_SECRET
+  debug: 
+    msg: '{{TOKEN_SECRET}}'
+
 - name: Create bootstrap kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
@@ -168,7 +175,7 @@
   shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
   register: waiting_for_node
   until: waiting_for_node.rc == 0
-  retries: 10
+  retries: 15
   delay: 5
   changed_when: false
 
