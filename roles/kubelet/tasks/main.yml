@@ -172,7 +172,7 @@
   delay: 4
   connection: local
   ignore_errors: True
-  when: system_file.changed
+  when: ca_file.changed or bin_file.changed
 
 - name: Waiting node on-line
   shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
@@ -181,7 +181,7 @@
   retries: 10
   delay: 5
   changed_when: false
-  when: systemd_file.changed
+  when: ca_file.changed or bin_file.changed
 
 - name: Clean auto-approve yml file
   file:
