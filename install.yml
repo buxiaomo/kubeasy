@@ -44,16 +44,16 @@
     - kubelet
     - kube-proxy
   tags:
-    - master
+    - kube-master
 
-- name: Deployment kube minion
-  hosts: minion
+- name: Deployment kube worker
+  hosts: worker
   roles:
     - kubectl
     - kubelet
     - kube-proxy
   tags:
-    - kube-minion
+    - kube-worker
 
 - name: Deployment add-on
   hosts: kubernetes
