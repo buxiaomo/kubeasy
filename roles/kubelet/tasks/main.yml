@@ -65,7 +65,7 @@
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
-      openssl rand -hex 8 | base64
+      openssl rand -hex 8 | openssl enc -d -base64
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
       {% endif %}
@@ -106,7 +106,7 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --token={{ TOKEN_ID.stdout | b64decode | trim }}.{{ TOKEN_SECRET.stdout | b64decode | trim }} \
+      --token={{ TOKEN_ID.stdout | trim | b64decode | trim }}.{{ TOKEN_SECRET.stdout | b64decode | trim }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
