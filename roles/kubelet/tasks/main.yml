@@ -61,7 +61,6 @@
 
 - name: Register token secret
   shell: |
-    set -e
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
     {% else %}
