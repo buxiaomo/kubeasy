@@ -32,7 +32,7 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Create kube-proxy sa crb --- part.2
   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
@@ -40,7 +40,7 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Register jwt token
   shell: |
@@ -52,7 +52,7 @@
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
+      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-context {{ kubernetes.name | default("kubernetes") }} \
@@ -93,4 +93,4 @@
   with_items:
     - kube-proxy-crb.yml
     - kube-proxy-sa.yml
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']

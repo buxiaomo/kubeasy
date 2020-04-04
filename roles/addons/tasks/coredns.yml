@@ -6,7 +6,7 @@
   with_items:
     - '{{ kubernetes.addon.location }}/coredns'
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Deployment coredns --- part.1
   template: 
@@ -15,11 +15,11 @@
   with_items:
     - { src: 'coredns/coredns.yaml.j2', dest: 'coredns/coredns.yaml' }
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Deployment coredns --- part.2
   command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
   with_items:
     - coredns/coredns.yaml
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']

@@ -6,7 +6,7 @@
   with_items:
     - '{{ kubernetes.addon.location }}/canal'
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Deployment canal --- part.1
   template: 
@@ -16,7 +16,7 @@
     - { src: 'canal/rbac.yaml.j2', dest: 'canal/rbac.yaml' }
     - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Deployment canal --- part.2
   command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
@@ -24,4 +24,4 @@
     - canal/rbac.yaml
     - canal/canal.yaml
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']

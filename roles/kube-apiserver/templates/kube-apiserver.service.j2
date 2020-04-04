@@ -1,10 +1,10 @@
 {%- set etcdnode=[] -%}
-{%- if groups['kube-etcd'] is not defined %}
-    {%- for host in groups['kube-master'] -%}
+{%- if groups['etcd'] is not defined %}
+    {%- for host in groups['master'] -%}
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- else%}
-    {%- for host in groups['kube-etcd'] -%}
+    {%- for host in groups['etcd'] -%}
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- endif %}

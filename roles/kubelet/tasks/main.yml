@@ -50,7 +50,7 @@
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
     {% else %}
-      {% if inventory_hostname in groups['kube-master'] %}
+      {% if inventory_hostname in groups['master'] %}
       openssl rand -hex 3
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}" | base64 -d
@@ -64,7 +64,7 @@
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
     {% else %}
-      {% if inventory_hostname in groups['kube-master'] %}
+      {% if inventory_hostname in groups['master'] %}
       openssl rand -hex 8
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}" | base64 -d
@@ -78,18 +78,18 @@
     src: bootstrap-token.yml.j2
     dest: /etc/kubernetes/bootstrap-token.yml
   run_once: true    
-  when: not bootstrap_token.stat.exists and inventory_hostname in groups['kube-master']
+  when: not bootstrap_token.stat.exists and inventory_hostname in groups['master']
 
 - name: Create bootstrap token --- part.2
   command: kubectl apply -f /etc/kubernetes/bootstrap-token.yml
   run_once: true
-  when: not bootstrap_token.stat.exists and inventory_hostname in groups['kube-master']
+  when: not bootstrap_token.stat.exists and inventory_hostname in groups['master']
 
 - name: Create bootstrap kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}/ca.crt \
-      --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
+      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} \
@@ -114,7 +114,7 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Create auto-approve --- part.2
   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
@@ -123,7 +123,7 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Install systemd file
   template: 
@@ -161,4 +161,4 @@
     - auto-approve-csrs-for-group.yml
     - auto-approve-renewals-for-nodes.yml
     - kubeadm-kubelet-bootstrap.yml
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']

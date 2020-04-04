@@ -4,4 +4,4 @@
     state: absent
   with_items:
     - ~/.kube
-  when: "'kube-minion' in group_names"
+  when: inventory_hostname in groups['worker']

@@ -49,7 +49,7 @@
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=https://{% if groups['kube-master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['kube-master'][0]].inventory_hostname }}:6443{% endif %} \
+      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %} \
       --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
@@ -67,7 +67,7 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
-  # when: inventory_hostname in groups['kube-master']
+  # when: inventory_hostname in groups['master']
 
 # - name: Create user kube directory
 #   file: 
@@ -80,10 +80,10 @@
 #     src: /etc/kubernetes/admin.kubeconfig
 #     dest: ~/.kube/config
 #     remote_src: yes
-#   when: inventory_hostname in groups['kube-master']
+#   when: inventory_hostname in groups['master']
 
 # - name: Create user kube directory
 #   copy: 
 #     src: /etc/kubernetes/admin.kubeconfig
 #     dest: ~/.kube/config
-#   when: inventory_hostname in groups['kube-minion']
+#   when: inventory_hostname in groups['worker']

@@ -7,14 +7,14 @@
     mode: '0755'
   with_items:
     - '{{ kubernetes.addon.location }}'
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Update node roles
   shell: |
     {% if nodename is defined %}
-      kubectl label node {{ nodename | lower }} {% if inventory_hostname in groups['kube-master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+      kubectl label node {{ nodename | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% else %}
-      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if inventory_hostname in groups['kube-master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+      kubectl label node {{ hostvars[inventory_hostname].hostname  | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% endif %}
 
 - name: Kubernetes Addon CoreDNS

@@ -6,7 +6,7 @@
   with_items:
     - '{{ kubernetes.addon.location }}/calico'
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Deployment calico --- part.1
   template: 
@@ -16,7 +16,7 @@
     - { src: 'calico/rbac-kdd.yaml.j2', dest: 'calico/rbac-kdd.yaml' }
     - { src: 'calico/calico.yaml.j2', dest: 'calico/calico.yaml' }
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
 
 - name: Deployment calico --- part.2
   command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
@@ -24,4 +24,4 @@
     - calico/rbac-kdd.yaml
     - calico/calico.yaml
   run_once: true
-  when: inventory_hostname in groups['kube-master']
+  when: inventory_hostname in groups['master']
