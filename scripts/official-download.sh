@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 if ${DEBUG};then
   set -ex
 fi
