@@ -72,12 +72,7 @@
     {% endif %}
   register: TOKEN_SECRET
   run_once: true
-- name: debug TOKEN_ID
-  debug: 
-    msg: '{{ TOKEN_ID }}'
-- name: debug TOKEN_SECRET
-  debug: 
-    msg: '{{ TOKEN_SECRET }}'
+
 - name: Create bootstrap token --- part.1
   template: 
     src: bootstrap-token.yml.j2

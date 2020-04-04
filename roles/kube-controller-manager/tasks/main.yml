@@ -9,7 +9,7 @@
     group: root
   with_items:
     - kube-controller-manager
-  when: bin_file
+  register: bin_file
 
 - name: Create log directory
   file: 
