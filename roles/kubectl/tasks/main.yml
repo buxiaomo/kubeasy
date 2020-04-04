@@ -67,7 +67,7 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
-  when: inventory_hostname in groups['kube-master']
+  # when: inventory_hostname in groups['kube-master']
 
 # - name: Create user kube directory
 #   file: 
