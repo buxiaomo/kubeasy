@@ -33,7 +33,7 @@
     - kubernetes-init
 
 - name: Deployment kube master
-  hosts: kube-master
+  hosts: master
   roles:
     - haproxy
     - keepalived
@@ -47,7 +47,7 @@
     - kube-master
 
 - name: Deployment kube minion
-  hosts: kube-minion
+  hosts: minion
   roles:
     - kubectl
     - kubelet
