@@ -51,7 +51,7 @@
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
-      openssl rand -hex 3
+      openssl rand -hex 3 | base64
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
       {% endif %}
@@ -61,11 +61,12 @@
 
 - name: Register token secret
   shell: |
+    set -e
     {% if bootstrap_token.stat.exists %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
-      openssl rand -hex 8
+      openssl rand -hex 8 | base64
       {% else %}
       kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
       {% endif %}
@@ -103,7 +104,7 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --token={{ TOKEN_ID.stdout }}.{{ TOKEN_SECRET.stdout }} \
+      --token={{ TOKEN_ID.stdout | b64decode }}.{{ TOKEN_SECRET.stdout | b64decode }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}

@@ -75,16 +75,8 @@
     state: directory
     mode: '0755'
 
-# - name: Create user kube config
-#   copy: 
-#     src: /etc/kubernetes/admin.kubeconfig
-#     dest: ~/.kube/config
-#     remote_src: yes
-#   when: inventory_hostname in groups['master']
-
-- name: Create user kube directory
+- name: Create kubeconfig
   copy: 
     src: /etc/kubernetes/admin.kubeconfig
     dest: ~/.kube/config
     remote_src: yes
-  when: inventory_hostname in groups['worker']
