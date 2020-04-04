@@ -83,7 +83,7 @@
 
 - name: Health check
   uri: 
-    url: https://{{ ansible_default_ipv4.address }}:6443/healthz
+    url: https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %}/healthz
     validate_certs: no
     return_content: yes
   register: this
