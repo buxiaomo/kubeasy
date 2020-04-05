@@ -9,10 +9,10 @@
   - '{{ ca.kubernetes.location }}'
   - '{{ ca.etcd.location }}'
 
-# - name: Create certificate directory
-#   file: 
-#     name: ~/.rnd
-#     state: touch
+- name: Create certificate directory
+  file: 
+    name: ~/.rnd
+    state: touch
 
 - name: Create openssl template
   template: 
