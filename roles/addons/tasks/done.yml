@@ -4,4 +4,5 @@
     state: absent
   with_items:
     - ~/.kube
+    - /etc/kubernetes/admin.kubeconfig
   when: inventory_hostname in groups['worker']

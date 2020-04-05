@@ -38,11 +38,13 @@
 - name: Create kubeconfig
   shell: |
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
+      --embed-certs=true \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
       --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
      kubectl config set-credentials {{ item.KUBE_USER }} \
+      --embed-certs=true \
       --client-certificate={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.crt \
       --client-key={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.key \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
