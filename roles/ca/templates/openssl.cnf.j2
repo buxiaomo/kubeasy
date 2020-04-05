@@ -1,5 +1,4 @@
 {%- set allnode,etcdnode=[],[] -%}
-
 {%- if kubernetes.vip is defined %}
 {{ allnode.append(kubernetes.vip) }}
 {%- endif %}
