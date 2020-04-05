@@ -33,4 +33,4 @@
   when: kubernetes.network == "calico"
 
 - name: Kubernetes Done
-  include_tasks: done.yml
+  include_tasks: clean.yml
