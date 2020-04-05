@@ -75,15 +75,15 @@
 
 - name: Create bootstrap token
   shell: |
-    kubectl -n kube-system create secret generic bootstrap-token-{{ TOKEN_ID.stdout | b64decode  }} \
+    kubectl -n kube-system create secret generic bootstrap-token-{{ TOKEN_ID.stdout | b64decode | trim  }} \
     --type 'bootstrap.kubernetes.io/token' \
     --from-literal description="cluster bootstrap token" \
-    --from-literal token-id={{ TOKEN_ID.stdout | b64decode  }} \
-    --from-literal token-secret={{ TOKEN_SECRET.stdout | b64decode  }} \
+    --from-literal token-id={{ TOKEN_ID.stdout | b64decode | trim }} \
+    --from-literal token-secret={{ TOKEN_SECRET.stdout | b64decode | trim }} \
     --from-literal usage-bootstrap-authentication=true \
     --from-literal usage-bootstrap-signing=true
 
-    kubectl label secrets -n kube-system bootstrap-token-{{ TOKEN_ID.stdout | b64decode  }} ansible=true
+    kubectl label secrets -n kube-system bootstrap-token-{{ TOKEN_ID.stdout | b64decode | trim }} ansible=true
   run_once: true
   when: bootstrap_token.rc != 0 and inventory_hostname in groups['master']
 
@@ -108,7 +108,7 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --token={{ TOKEN_ID.stdout | b64decode  }}.{{ TOKEN_SECRET.stdout | b64decode  }} \
+      --token={{ TOKEN_ID.stdout | b64decode | trim }}.{{ TOKEN_SECRET.stdout | b64decode | trim }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
