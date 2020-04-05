@@ -10,7 +10,6 @@
   with_items:
     - etcd
     - etcdctl
-  register: bin_file
 
 - name: Create data directory
   file: 
@@ -34,13 +33,11 @@
     - server.key
     - peer.crt
     - peer.key
-  register: ca_file
 
 - name: Install systemd file
   template: 
     src: etcd.service.j2
     dest: /etc/systemd/system/etcd.service
-  register: systemd_file
 
 - name: Start the service
   systemd:
@@ -48,7 +45,6 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-  when: ca_file.changed or bin_file.changed or systemd_file.changed
 
 - name: Wait for etcd
   wait_for:
@@ -57,7 +53,6 @@
     state: started
     host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
   connection: local
-  when: ca_file.changed or bin_file.changed or systemd_file.changed
 
 - name: Install health check command
   template: 
@@ -69,4 +64,3 @@
   shell: |
     ETCDCTL_API=3
     /usr/local/bin/etcdctl --endpoints {{ ansible_default_ipv4.address }}:2379 --cacert {{ ca.etcd.location }}/ca.crt --cert {{ ca.etcd.location }}/server.crt --key {{ ca.etcd.location }}/server.key endpoint health
-  when: ca_file.changed or bin_file.changed or systemd_file.changed
