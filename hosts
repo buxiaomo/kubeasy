@@ -4,14 +4,14 @@
 # 172.16.16.10 hostname=kube-ansble-c-etcd03
 
 [master]
-172.16.15.11 hostname=kube-ansble-c-m01 nodename=master01
-172.16.15.12 hostname=kube-ansble-c-m02 nodename=worker01
-172.16.15.13 hostname=kube-ansble-c-m03 nodename=worker02
+172.16.16.11 hostname=kube-ansble-c-m01 nodename=master01
+172.16.16.12 hostname=kube-ansble-c-m02 nodename=worker01
+172.16.16.13 hostname=kube-ansble-c-m03 nodename=worker02
 
 [worker]
-172.16.15.14 hostname=kube-ansble-c-n01 nodename=worker03
-# 172.16.16.15 hostname=kube-ansble-c-n02 nodename=worker04
-# 172.16.16.16 hostname=kube-ansble-c-n02 nodename=worker05
+172.16.16.14 hostname=kube-ansble-c-n01 nodename=worker03
+172.16.16.15 hostname=kube-ansble-c-n02 nodename=worker04
+172.16.16.16 hostname=kube-ansble-c-n02 nodename=worker05
 
 [kubernetes:children]
 master
