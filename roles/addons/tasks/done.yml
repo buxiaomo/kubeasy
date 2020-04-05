@@ -5,4 +5,6 @@
   with_items:
     - ~/.kube
     - /etc/kubernetes/admin.kubeconfig
+    - '{{ca.kubernetes.location }}/admin.crt'
+    - '{{ca.kubernetes.location }}/admin.key'
   when: inventory_hostname in groups['worker']
