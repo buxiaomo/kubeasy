@@ -10,6 +10,7 @@
 
 [worker]
 172.16.16.14 hostname=kube-ansble-c-n01 nodename=worker01
+172.16.16.15 hostname=kube-ansble-c-n02 nodename=worker02
 
 [kubernetes:children]
 master
