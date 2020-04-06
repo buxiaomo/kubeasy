@@ -34,7 +34,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 - name: Check etcd ca certificate expired(30 days)
   shell: |
@@ -50,7 +50,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: Check front-proxy ca certificate expired(30 days)
@@ -67,7 +67,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: front_proxy_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: front_proxy_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: Create apiserver etcd client
@@ -78,7 +78,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: Create kube etcd
@@ -89,7 +89,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: kube-etcd-peer
@@ -100,7 +100,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: kube-etcd-healthcheck-client
@@ -111,7 +111,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: etcd_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: kube-apiserver
@@ -122,7 +122,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: apiserver-kubelet-client
@@ -133,7 +133,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: front-proxy-client
@@ -144,7 +144,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: front_proxy_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: front_proxy_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: kube-scheduler
@@ -155,7 +155,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 - name: sa.pub sa.key
   shell: |
@@ -167,7 +167,7 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 - name: admin
   shell: |
@@ -177,4 +177,4 @@
   args:
     chdir: '{{ ca.kubernetes.location }}'
     executable: /bin/bash
-  when: kubernetes_ca_check.rc != 0 or ( force | bool | default(false) ) or openssl_file.changed
+  when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
