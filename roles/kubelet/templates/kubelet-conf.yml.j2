@@ -17,7 +17,7 @@ cgroupDriver: systemd
 cgroupsPerQOS: true
 clusterDNS:
 - {{ kubernetes.settings.DNSIP }}
-clusterDomain: {{ kubernetes.settings.clusterDomain }}
+clusterDomain: {{ kubernetes.settings.ClusterDomain }}
 configMapAndSecretChangeDetectionStrategy: Watch
 containerLogMaxFiles: 5
 containerLogMaxSize: 10Mi
