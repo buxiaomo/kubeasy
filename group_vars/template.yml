@@ -88,7 +88,7 @@ kubernetes:
     # virtual IP
     vip: 172.16.16.10
     mask: 16
-    interface: ens160
+    # interface: ens160
 
   # choose: none flannel calico canal
   #   none: not deployment any network plugin
