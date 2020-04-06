@@ -98,10 +98,10 @@ kubernetes:
   network: canal
 
   settings:
-    KubernetesClusterSVCIP: 10.96.0.1
-    ClusterDns: 10.96.0.10
     PodCIDR: 10.244.0.0/16
     SvcCIDR: 10.96.0.0/12
+    SvcIP: 10.96.0.1
+    DNSIP: 10.96.0.10
     NodePortRange: 30000-32767
     ClusterDomain: cluster.local
 
@@ -160,8 +160,6 @@ kubernetes:
   # kube-controller-manager parameter configuration
   controllerManager:
     bind: 0.0.0.0
-    PodCidr: 10.244.0.0/16
-    SvcCidr: 10.96.0.0/12
     terminatedPodGcThreshold: 12500
     nodeStatusUpdate: Medium
     log:

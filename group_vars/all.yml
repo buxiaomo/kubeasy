@@ -24,6 +24,7 @@ kubernetes:
     #   azure: azure cloud
     type: local
     file: /etc/kubernetes/cloud.conf
+
   ha:
     # virtual IP
     vip: 172.16.16.10

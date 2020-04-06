@@ -38,8 +38,8 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --kubelet-client-key={{ ca.kubernetes.location }}/apiserver-kubelet-client.key \
   --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname \
   --runtime-config=api/all,settings.k8s.io/v1alpha1=true \
-  --service-cluster-ip-range=10.96.0.0/12 \
-  --service-node-port-range=30000-32767 \
+  --service-cluster-ip-range={{ kubernetes.settings.SvcCIDR }} \
+  --service-node-port-range={{ kubernetes.settings.NodePortRange }} \
   --service-account-key-file={{ ca.kubernetes.location }}/sa.pub \
   --tls-cert-file={{ ca.kubernetes.location }}/apiserver.crt \
   --tls-private-key-file={{ ca.kubernetes.location }}/apiserver.key \
