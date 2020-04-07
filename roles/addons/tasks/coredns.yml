@@ -18,7 +18,9 @@
   when: inventory_hostname in groups['master']
 
 - name: Deployment coredns --- part.2
-  command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
+  shell: |
+    kubectl delete -f {{ kubernetes.addon.location }}/{{ item }} 
+    kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
   with_items:
     - coredns/coredns.yaml
   run_once: true

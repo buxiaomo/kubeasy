@@ -19,7 +19,9 @@
   when: inventory_hostname in groups['master']
 
 - name: Deployment calico --- part.2
-  command: 'kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}'
+  shell: |
+    kubectl delete -f {{ kubernetes.addon.location }}/{{ item }} 
+    kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
   with_items:
     - calico/rbac-kdd.yaml
     - calico/calico.yaml
