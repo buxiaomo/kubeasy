@@ -41,9 +41,9 @@
     owner: root
     group: root
   with_items:
-    - '{{ca.kubernetes.location }}/ca.crt'
-    - '{{ca.kubernetes.location }}/admin.crt'
-    - '{{ca.kubernetes.location }}/admin.key'
+    - '{{ ca.kubernetes.location }}/ca.crt'
+    - '{{ ca.kubernetes.location }}/admin.crt'
+    - '{{ ca.kubernetes.location }}/admin.key'
 
 - name: Create kubeconfig
   shell: |
@@ -66,7 +66,7 @@
 
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
-    - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: "admin", KUBE_CONFIG: 'admin.kubeconfig'}
+    - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: 'admin', KUBE_CONFIG: 'admin.kubeconfig'}
 
 - name: Create user kube directory
   file: 
