@@ -86,7 +86,7 @@ kubernetes:
 
   ha:
     # virtual IP
-    vip: 172.16.16.10
+    vip: 172.16.15.10
     mask: 16
     # interface: ens160
 
@@ -175,6 +175,12 @@ kubernetes:
       logFile: kube-proxy.log
 
   addon:
+    dashboard_enabled: true
+    helm_enabled: false
+    registry_enabled: false
+    metrics_server_enabled: false
+    ingress_nginx_enabled: false
+
     location: /etc/kubernetes/addon
     image: 
       coredns: coredns/coredns:1.6.7
