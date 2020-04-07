@@ -1,14 +1,25 @@
 ---
 # tasks file for test
-- name: Clean old tls file --- part.1
-  find:
-    paths: '{{ ca.kubernetes.location | default("/etc/kubernetes/pki") }}'
-    patterns: 
-      - "kubelet*"
-    use_regex: yes
-    recurse: yes
-  register: kubelet_files
-
-- name: Create kubeconfig
-  debug: 
-    msg: '{{ kubelet_files }}'
+- name: Create a Service object from an inline definition
+  k8s:
+    state: present
+    force: yes
+    kubeconfig: /etc/kubernetes/admin.kubeconfig
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: web
+        namespace: testing
+        labels:
+          app: galaxy
+          service: web
+      spec:
+        selector:
+          app: galaxy
+          service: web
+        ports:
+        - protocol: TCP
+          targetPort: 8000
+          name: port-8000-tcp
+          port: 8000
