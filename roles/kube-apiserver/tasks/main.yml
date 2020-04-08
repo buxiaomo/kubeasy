@@ -77,7 +77,7 @@
 
 - name: Health check
   uri: 
-    url: https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %}/healthz
+    url: https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% endif %}/healthz
     validate_certs: no
     return_content: yes
   register: this

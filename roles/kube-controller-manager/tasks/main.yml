@@ -42,7 +42,7 @@
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --embed-certs=true \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:8443{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:6443{% endif %} \
+      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% endif %} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
      kubectl config set-credentials {{ item.KUBE_USER }} \
       --embed-certs=true \
