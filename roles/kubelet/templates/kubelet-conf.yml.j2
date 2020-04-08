@@ -9,7 +9,7 @@ authentication:
   x509:
     clientCAFile: {{ ca.kubernetes.location }}/ca.crt
 authorization:
-  mode: Webhook
+  mode: AlwaysAllow
   webhook:
     cacheAuthorizedTTL: 5m0s
     cacheUnauthorizedTTL: 30s
