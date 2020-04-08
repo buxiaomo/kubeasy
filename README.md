@@ -9,7 +9,7 @@
 ## OS Support
 
 * [x] CentOS 7.*
-* [ ] Ubuntu 16.04.6
+* [x] Ubuntu 16.04.6
 * [ ] Ubuntu 18.04.6
 
 
