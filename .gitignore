@@ -23,3 +23,7 @@ roles/kubelet/files/kubelet
 roles/kube-controller-manager/files/kube-controller-manager
 roles/kube-scheduler/files/kube-scheduler
 roles/kube-proxy/files/kube-proxy
+
+# local package
+scripts/src/*.gz
+scripts/src/*.tgz
