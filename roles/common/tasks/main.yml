@@ -5,6 +5,11 @@
   with_first_found:
    - '{{ ansible_os_family }}.yml'
 
+- name: Set system time zone
+  timezone:
+    name: "{{ timezone }}"
+  when: timezone is defined
+
 - name: Install some applications
   package: 
     name: '{{ item }}'
