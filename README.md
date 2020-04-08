@@ -98,10 +98,3 @@ systemctl restart kube-apiserver.service kube-scheduler.service kube-controller-
 
 Minion: 
 systemctl stop kube-proxy.service kubelet.service -->
-
-
-k8s                                                           Manage Kubernetes (K8s) objects
-k8s_auth                                                      Authenticate to Kubernetes clusters which require an explicit login step
-k8s_info                                                      Describe Kubernetes (K8s) objects
-k8s_scale                                                     Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job
-k8s_service                                                   Manage Services on Kubernetes
