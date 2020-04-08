@@ -37,7 +37,7 @@ kubernetes:
   #   flannel: will deployment flannel plugin (default)
   #   calico: will deployment calico plugin
   #   canal: will deployment canal plugin
-  network: flannel
+  network: canal
   settings:
     PodCIDR: 10.244.0.0/16
     SvcCIDR: 10.96.0.0/12
