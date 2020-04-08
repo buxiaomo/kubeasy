@@ -175,7 +175,7 @@
   ignore_errors: True
 
 - name: Waiting node on-line
-  shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
+  shell: kubectl get node {% if nodename is defined %}{{ nodename }}{% else %}{{ hostvars[inventory_hostname].hostname }}{% endif %}
   register: waiting_for_node
   until: waiting_for_node.rc == 0 and (waiting_for_node.stdout.find("NotReady") != -1 or waiting_for_node.stdout.find("Ready") != -1)
   retries: 15

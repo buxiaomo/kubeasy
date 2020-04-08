@@ -105,6 +105,7 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 
 * Support ca update
 * Support version update
+* Standardize log
 
 <!-- 
 

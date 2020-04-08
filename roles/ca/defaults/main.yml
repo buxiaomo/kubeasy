@@ -1,2 +1,10 @@
 ---
 # defaults file for ca
+ca:
+  # Certificate validity
+  # default: 10 years
+  days: 3652
+  kubernetes:
+    location: /etc/kubernetes/pki
+  etcd:
+    location: /etc/kubernetes/pki/etcd
