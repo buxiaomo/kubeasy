@@ -22,13 +22,14 @@ kubernetes:
     # choose: local or azure
     #   local: local data center (default)
     #   azure: azure cloud
-    type: local
+    #   gcp: Google Compute Engine
+    type: gcp
     file: /etc/kubernetes/cloud.conf
 
   ha:
     # virtual IP
-    vip: 172.16.15.10
-    mask: 16
+    vip: 10.140.0.11
+    mask: 20
     # interface: ens192
 
   # choose: none flannel calico canal
