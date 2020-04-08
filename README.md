@@ -34,6 +34,8 @@ make runtime
 
 ### download binaries
 
+if you want to use local package files, Reference here.
+
 ```
 # default version
 make download
@@ -62,6 +64,34 @@ make
 
 # custom version
 make KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+```
+
+## use local package
+
+download package save to `scripts/src` directory.
+
+package name format:
+
+* docker-${DOCKER_VERSION}.tgz
+* flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
+* etcd-v${ETCD_VERSION}-linux-amd64.tar.gz
+* kubernetes-client-linux-amd64.v${KUBE_VERSION}.tar.gz
+* kubernetes-server-linux-amd64.v${KUBE_VERSION}.tar.gz
+* cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+
+all version please consistent with the makefile or make command
+
+example: 
+
+```
+cd scripts/src
+KUBE_VERSION=1.14.4
+wget https://download.docker.com/linux/static/stable/x86_64/docker-19.03.8.tgz
+wget https://github.com/coreos/flannel/releases/download/v0.12.0/flannel-v0.12.0-linux-amd64.tar.gz
+wget https://dl.k8s.io/v${KUBE_VERSION}/kubernetes-client-linux-amd64.tar.gz -O kubernetes-client-linux-amd64.v${KUBE_VERSION}.tar.gz
+wget https://dl.k8s.io/v${KUBE_VERSION}/kubernetes-server-linux-amd64.tar.gz -O kubernetes-server-linux-amd64.v${KUBE_VERSION}.tar.gz
+wget https://github.com/coreos/etcd/releases/download/v3.4.5/etcd-v3.4.5-linux-amd64.tar.gz
+wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni-plugins-linux-amd64-v0.8.5.tgz
 ```
 
 # issue
