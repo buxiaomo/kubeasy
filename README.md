@@ -4,7 +4,7 @@
 
 * [ ] Azure
 * [ ] Aws
-* [ ] GCP
+* [x] GCP(Apiserver HA use the TCP Load balancing)
 
 ## OS Support
 
@@ -97,7 +97,9 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 # issue
 
 * New node kube-proxy not ready
-
+* K8S custom setting CIDR
+* Add check svc、pod ip is on host cird
+* Deploy flannel failure
 
 <!-- 
 
@@ -115,8 +117,10 @@ ansible-playbook -i hosts install.yml --list-tasks
 ansible-playbook -i hosts install.yml -t common
 ansible-playbook -i hosts install.yml -t ca
 ansible-playbook -i hosts install.yml -t etcd
+ansible-playbook -i hosts install.yml -t kubernetes-init
 ansible-playbook -i hosts install.yml -t kube-master
-ansible-playbook -i hosts install.yml -t kube-minion
+ansible-playbook -i hosts install.yml -t kube-worker
+ansible-playbook -i hosts install.yml -t addons
 
 ansible-playbook -i hosts install.yml -t test
 
