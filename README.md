@@ -101,6 +101,11 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 * Add check svc、pod ip is on host cird
 * Deploy flannel failure
 
+# future
+
+* Support ca update
+* Support version update
+
 <!-- 
 
 NS
