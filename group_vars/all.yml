@@ -94,8 +94,8 @@ kubernetes:
     master_run_pod: false
     PodCIDR: 10.200.0.0/16
     SvcCIDR: 10.24.0.0/16
-    SvcIP: 10.96.0.1
-    DNSIP: 10.96.0.2
+    SvcIP: 10.24.0.1
+    DNSIP: 10.24.0.2
     NodePortRange: 30000-32767
     ClusterDomain: cluster.local
 
