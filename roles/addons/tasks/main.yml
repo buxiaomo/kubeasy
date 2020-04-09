@@ -12,7 +12,7 @@
 - name: Master not scheduling
   shell: |
     {% if nodename is defined %}
-      kubectl taint node {{ nodename }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master="":NoSchedule --overwrite
+      kubectl taint node {{ nodename }} node-role.kubernetes.io/master="":NoSchedule --overwrite
     {% else %}
       kubectl taint node {{ hostvars[inventory_hostname].hostname }} node-role.kubernetes.io/master="":NoSchedule --overwrite
     {% endif %}
