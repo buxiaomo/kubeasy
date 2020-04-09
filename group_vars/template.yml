@@ -55,14 +55,14 @@ ansible_ssh_pass: 'root'
 #     net.netfilter.nf_conntrack_tcp_timeout_established: 86400
 #     net.netfilter.nf_conntrack_tcp_timeout_close_wait: 3600
 
-# ca:
-#   # Certificate validity
-#   # default: 10 years
-#   days: 3652
-#   kubernetes:
-#     location: /etc/kubernetes/pki
-#   etcd:
-#     location: /etc/kubernetes/pki/etcd
+ca:
+  # Certificate validity
+  # default: 10 years
+  days: 3652
+  kubernetes:
+    location: /etc/kubernetes/pki
+  etcd:
+    location: /etc/kubernetes/pki/etcd
 
 kubernetes:
   # defaullt: kubernetes
