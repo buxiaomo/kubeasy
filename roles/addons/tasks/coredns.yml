@@ -9,7 +9,7 @@
   when: inventory_hostname in groups['master']
 
 - name: Clean old deployment
-  shell: kubectl delete -f coredns/coredns.yaml
+  shell: kubectl delete -f {{ kubernetes.addon.location }}/coredns/coredns.yaml
 
 - name: Waiting deployment delete
   shell: kubectl get svc -n kube-system
