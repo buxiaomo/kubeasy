@@ -10,6 +10,7 @@
 
 - name: Clean old deployment
   shell: kubectl delete -f {{ kubernetes.addon.location }}/coredns/coredns.yaml
+  run_once: true
 
 - name: Waiting deployment delete
   shell: kubectl get svc -n kube-system
