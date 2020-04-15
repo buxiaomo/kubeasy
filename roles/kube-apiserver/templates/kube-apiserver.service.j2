@@ -21,6 +21,8 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --bind-address={{ kubernetes.apiserver.bind | default('0.0.0.0') }}  \
   --secure-port=6443 \
   --allow-privileged=true \
+  --audit-policy-file=/etc/kubernetes/pki/audit-policy-minimal.yaml \
+  --audit-log-format=json \
   --audit-log-maxage=30 \
   --audit-log-maxbackup=3 \
   --audit-log-maxsize=100 \
@@ -31,6 +33,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --etcd-keyfile={{ ca.kubernetes.location }}/apiserver-etcd-client.key \
   --etcd-servers={% for host in etcdnode %}https://{{ host }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
   --event-ttl=1h \
+  --experimental-encryption-provider-config=/etc/kubernetes/pki/encryption-config.yaml \
   --enable-bootstrap-token-auth \
   --client-ca-file={{ ca.kubernetes.location }}/ca.crt \
   --kubelet-https \

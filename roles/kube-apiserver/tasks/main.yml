@@ -56,6 +56,28 @@
     - '{{ ca.kubernetes.location }}/admin.crt'
     - '{{ ca.kubernetes.location }}/admin.key'
 
+- name: Stat encryption config file
+  stat: 
+    path: /etc/kubernetes/pki/encryption-config.yaml
+  register: encryption_config_file
+
+- name: Register encryption config
+  shell: head -c 32 /dev/urandom | base64
+  register: encryption_config
+  run_once: true
+  when: not encryption_config_file.stat.exists
+
+- name: Install audit policy
+  template: 
+    src: encryption-config.yaml.j2
+    dest: /etc/kubernetes/pki/encryption-config.yaml
+  when: not encryption_config_file.stat.exists
+
+- name: Install audit policy
+  template: 
+    src: audit-policy-minimal.yaml.j2
+    dest: /etc/kubernetes/pki/audit-policy-minimal.yaml
+
 - name: Install systemd file
   template: 
     src: kube-apiserver.service.j2
