@@ -132,7 +132,7 @@ kubernetes:
       logLevel: 2
       logDir: /var/log/kubernetes
       logFile: kubelet.log
-    pod_infra_container_image: gcr.io/google_containers/pause-amd64:3.1
+    pod_infra_container_image: registry.aliyuncs.com/google_containers/pause:3.2
     image_pull_progress_deadline: 2m
 
   # kube-apiserver parameter configuration
