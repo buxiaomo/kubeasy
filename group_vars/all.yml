@@ -71,7 +71,7 @@ kubernetes:
   # cloud support
   cloud: 
     # choose: local or azure
-    #   local: local data center (default)
+    #   local: local data center (default, use haproxy and keepalived keep HA)
     #   azure: azure cloud
     #   gcp: Google Compute Engine
     type: local
