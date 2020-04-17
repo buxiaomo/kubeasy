@@ -34,7 +34,7 @@ make runtime
 
 ### download binaries
 
-if you want to use local package files, Reference here.
+if you want to use local package files, Reference [here](#local).
 
 ```
 # default version
@@ -66,7 +66,7 @@ make
 make KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
-## use local package
+## <span id = "local">use local package</span>
 
 download package save to `scripts/src` directory.
 
