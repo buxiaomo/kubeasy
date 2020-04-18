@@ -9,9 +9,7 @@
 
 - name: Init all kubernetes node
   hosts: kubernetes
-  serial: 1
   roles:
-    - docker
     - ipvs
     # - cni-plugins
   tags:
@@ -21,6 +19,7 @@
   hosts: master
   serial: 1
   roles:
+    - docker
     - kubectl
     - kube-apiserver
     - kube-scheduler
@@ -34,6 +33,7 @@
   hosts: worker
   serial: 1
   roles:
+    - docker
     - kubectl
     - kubelet
     - kube-proxy
