@@ -22,7 +22,7 @@ install:
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
 	@ansible-playbook -i hosts install.yml -e force=$(force)
 
-scale:
+scale: download sync
 	@ansible-playbook -i hosts scale.yml
 
 uninstall:

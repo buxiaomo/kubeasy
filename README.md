@@ -22,6 +22,7 @@
 
 ## How to use
 
+
 ### clone code
 
 ```
@@ -71,6 +72,14 @@ make
 
 # custom version
 make KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+```
+
+### scale node
+
+add node to `hosts` file.
+
+```
+make scale KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
 ## <span id = "local">use local package</span>

@@ -24,10 +24,3 @@
     - kube-proxy
   tags:
     - kube-worker
-
-- name: Deployment add-on
-  hosts: kubernetes
-  roles:
-    - addons
-  tags:
-    - addons
