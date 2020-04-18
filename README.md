@@ -136,13 +136,14 @@ ansible-playbook -i hosts install.yml -t kube-master --start-at-task "Install so
 ansible-playbook -i hosts install.yml --list-tags
 ansible-playbook -i hosts install.yml --list-tasks
 
+ansible-playbook -i hosts install.yml -e force=$(force)
 ansible-playbook -i hosts install.yml -t common
 ansible-playbook -i hosts install.yml -t ca
 ansible-playbook -i hosts install.yml -t etcd
 ansible-playbook -i hosts install.yml -t kubernetes-init
 ansible-playbook -i hosts install.yml -t kube-master
 ansible-playbook -i hosts install.yml -t kube-worker
-ansible-playbook -i hosts install.yml -t addons -e force=false -e KUBE_VERSION=1.16.9
+ansible-playbook -i hosts install.yml -t addons
 
 ansible-playbook -i hosts install.yml -t test
 

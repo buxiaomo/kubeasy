@@ -1,8 +1,6 @@
 ---
 - name: Base environment configuration
   hosts: all
-  vars:
-    kernel_upgrade: True
   roles:
     - common
     - chrony

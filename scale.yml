@@ -1,0 +1,33 @@
+---
+- name: Base environment configuration
+  hosts: all
+  roles:
+    - common
+    - chrony
+  tags:
+    - common
+
+- name: Init all kubernetes node
+  hosts: kubernetes
+  roles:
+    - docker
+    - ipvs
+    # - cni-plugins
+  tags:
+    - kubernetes-init
+
+- name: Deployment kube worker
+  hosts: worker
+  roles:
+    - kubectl
+    - kubelet
+    - kube-proxy
+  tags:
+    - kube-worker
+
+- name: Deployment add-on
+  hosts: kubernetes
+  roles:
+    - addons
+  tags:
+    - addons
