@@ -1,6 +1,6 @@
 ---
 - name: Base environment configuration
-  hosts: all
+  hosts: worker
   roles:
     - common
     - chrony
@@ -8,7 +8,7 @@
     - common
 
 - name: Init all kubernetes node
-  hosts: kubernetes
+  hosts: worker
   roles:
     - docker
     - ipvs
