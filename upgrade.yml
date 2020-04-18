@@ -19,8 +19,6 @@
 - name: Deployment kube master
   hosts: master
   roles:
-    - haproxy
-    - keepalived
     - kubectl
     - kube-apiserver
     - kube-scheduler
