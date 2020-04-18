@@ -8,6 +8,25 @@
   run_once: true
   when: inventory_hostname in groups['master']
 
+- name: Stat canal yaml file
+  stat: 
+    path: {{ kubernetes.addon.location }}/canal/canal.yaml
+  register: canal_yaml_file
+
+- name: Clean old deployment
+  shell: kubectl delete -f {{ kubernetes.addon.location }}/canal/canal.yaml
+  run_once: true
+  when: canal_yaml_file.stat.exists
+
+- name: Waiting deployment delete
+  shell: kubectl get po -n kube-system
+  register: waiting_for_delete_deployment_done
+  until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("canal") == -1
+  retries: 15
+  delay: 5
+  changed_when: false
+  when: canal_yaml_file.stat.exists
+
 - name: Deployment canal --- part.1
   template: 
     src: '{{ item.src }}'
@@ -20,7 +39,6 @@
 
 - name: Deployment canal --- part.2
   shell: |
-    kubectl delete -f {{ kubernetes.addon.location }}/{{ item }} 
     kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
   with_items:
     - canal/rbac.yaml

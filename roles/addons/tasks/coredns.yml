@@ -8,10 +8,15 @@
   run_once: true
   when: inventory_hostname in groups['master']
 
+- name: Stat coredns yaml file
+  stat: 
+    path: {{ kubernetes.addon.location }}/coredns/coredns.yaml
+  register: coredns_yaml_file
+
 - name: Clean old deployment
   shell: kubectl delete -f {{ kubernetes.addon.location }}/coredns/coredns.yaml
   run_once: true
-  ignore_errors: True
+  when: coredns_yaml_file.stat.exists
 
 - name: Waiting deployment delete
   shell: kubectl get svc -n kube-system
@@ -20,6 +25,7 @@
   retries: 15
   delay: 5
   changed_when: false
+  when: coredns_yaml_file.stat.exists
 
 - name: Deployment coredns --- part.1
   template: 
