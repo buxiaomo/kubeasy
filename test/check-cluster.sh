@@ -18,4 +18,10 @@ kubectl exec -it -n test ${POD01} -- wget http://${SVC02} -O /dev/null
 kubectl exec -it -n test ${POD02} -- wget http://${SVC01} -O /dev/null
 kubectl exec -it -n test ${POD02} -- wget http://${SVC02} -O /dev/null
 
+nodePort=$(kubectl get svc --selector=app=nginx01 -n test -o jsonpath='{.items[0].spec.ports[].nodePort}')
+for node in $(kubectl get node -o jsonpath='{.items[*].status.addresses[0].address}');
+do
+  curl http://${node}:${nodePort} -o /tmp/index.html
+done
+
 kubectl delete -f test.yaml
