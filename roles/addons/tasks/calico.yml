@@ -10,11 +10,11 @@
 
 - name: Stat calico yaml file
   stat: 
-    path: {{ kubernetes.addon.location }}/calico/calico.yaml
+    path: '{{ kubernetes.addon.location }}/calico/calico.yaml'
   register: calico_yaml_file
 
 - name: Clean old deployment
-  shell: kubectl delete -f {{ kubernetes.addon.location }}/calico/calico.yaml
+  shell: 'kubectl delete -f {{ kubernetes.addon.location }}/calico/calico.yaml'
   run_once: true
   when: calico_yaml_file.stat.exists
 

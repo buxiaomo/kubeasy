@@ -10,11 +10,11 @@
 
 - name: Stat flannel yaml file
   stat: 
-    path: {{ kubernetes.addon.location }}/flannel/flannel.yaml
+    path: '{{ kubernetes.addon.location }}/flannel/flannel.yaml'
   register: flannel_yaml_file
 
 - name: Clean old deployment
-  shell: kubectl delete -f {{ kubernetes.addon.location }}/flannel/flannel.yaml
+  shell: 'kubectl delete -f {{ kubernetes.addon.location }}/flannel/flannel.yaml'
   run_once: true
   when: flannel_yaml_file.stat.exists
 

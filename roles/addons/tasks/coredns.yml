@@ -10,11 +10,11 @@
 
 - name: Stat coredns yaml file
   stat: 
-    path: {{ kubernetes.addon.location }}/coredns/coredns.yaml
+    path: '{{ kubernetes.addon.location }}/coredns/coredns.yaml'
   register: coredns_yaml_file
 
 - name: Clean old deployment
-  shell: kubectl delete -f {{ kubernetes.addon.location }}/coredns/coredns.yaml
+  shell: 'kubectl delete -f {{ kubernetes.addon.location }}/coredns/coredns.yaml'
   run_once: true
   when: coredns_yaml_file.stat.exists
 
