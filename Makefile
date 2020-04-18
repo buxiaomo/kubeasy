@@ -25,11 +25,11 @@ install:
 scale: download sync
 	@ansible-playbook -i hosts scale.yml
 
-uninstall:
-	@ansible-playbook uninstall.yml
+upgrade: download sync
+	@ansible-playbook -i hosts upgrade.yml
 
-upgrade:
-	@ansible-playbook upgrade.yml
+uninstall:
+	@ansible-playbook -i hosts uninstall.yml
 
 download:
 	@echo -e "\033[32mDownload the binaries package to ./scripts/binaries directory...\033[0m"
