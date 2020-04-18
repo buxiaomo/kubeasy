@@ -67,7 +67,7 @@
   run_once: true
   when: not encryption_config_file.stat.exists
 
-- name: Install audit policy
+- name: Install encryption config
   template: 
     src: encryption-config.yaml.j2
     dest: /etc/kubernetes/pki/encryption-config.yaml
