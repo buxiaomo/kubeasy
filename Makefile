@@ -20,7 +20,7 @@ auto: runtime download sync
 
 install:
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
-	@ansible-playbook -i hosts install.yml -e force=$(force)
+	@ansible-playbook -i hosts install.yml -e force=$(force) -e KUBE_VERSION=$(KUBE_VERSION)
 
 uninstall:
 	@ansible-playbook uninstall.yml
