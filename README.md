@@ -48,12 +48,9 @@ if you want to use local package files, Reference [here](#local).
 ```
 # default version
 make download
-make sync
-make install
 
 # custom version
 make download KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
-make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
 ### Kubernetes management
@@ -62,9 +59,11 @@ make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 E
 
 ```
 # default version
+make sync
 make install
 
 # custom version
+make sync
 make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
@@ -85,7 +84,7 @@ make scale KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETC
 Download new kubernetes binaries, Reference [here](#download).
 
 ```
-make upgrade KUBE_VERSION=1.15.11 DOCKER_VERSION=19.03.8 ETCD_VERSION=3.4.5
+make upgrade KUBE_VERSION=1.16.9 DOCKER_VERSION=19.03.8
 ```
 
 ## <span id = "local">use local package</span>
