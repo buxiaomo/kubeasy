@@ -27,6 +27,7 @@
   changed_when: false
   when: coredns_yaml_file.stat.exists
   run_once: true
+  ignore_errors: True
 
 - name: Deployment coredns --- part.1
   template: 
