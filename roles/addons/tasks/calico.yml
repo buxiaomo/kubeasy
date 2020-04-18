@@ -36,7 +36,6 @@
   with_items:
     - { src: 'calico/rbac-kdd.yaml.j2', dest: 'calico/rbac-kdd.yaml' }
     - { src: 'calico/calico.yaml.j2', dest: 'calico/calico.yaml' }
-  run_once: true
   when: inventory_hostname in groups['master']
 
 - name: Deployment calico --- part.2

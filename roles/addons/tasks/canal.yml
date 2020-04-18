@@ -36,7 +36,6 @@
   with_items:
     - { src: 'canal/rbac.yaml.j2', dest: 'canal/rbac.yaml' }
     - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
-  run_once: true
   when: inventory_hostname in groups['master']
 
 - name: Deployment canal --- part.2

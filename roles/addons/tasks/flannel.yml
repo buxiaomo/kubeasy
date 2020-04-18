@@ -35,7 +35,6 @@
     dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
   with_items:
     - { src: 'flannel/flannel.yaml.j2', dest: 'flannel/flannel.yaml' }
-  run_once: true
   when: inventory_hostname in groups['master']
 
 - name: Deployment flannel --- part.2

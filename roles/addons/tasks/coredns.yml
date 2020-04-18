@@ -35,7 +35,6 @@
     dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
   with_items:
     - { src: 'coredns/coredns.yaml.j2', dest: 'coredns/coredns.yaml' }
-  run_once: true
   when: inventory_hostname in groups['master']
 
 - name: Deployment coredns --- part.2
