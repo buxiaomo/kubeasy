@@ -12,6 +12,7 @@
   stat: 
     path: '{{ kubernetes.addon.location }}/coredns/coredns.yaml'
   register: coredns_yaml_file
+  run_once: true
 
 - name: Clean old deployment
   shell: 'kubectl delete -f {{ kubernetes.addon.location }}/coredns/coredns.yaml'
@@ -26,6 +27,7 @@
   delay: 5
   changed_when: false
   when: coredns_yaml_file.stat.exists
+  run_once: true
 
 - name: Deployment coredns --- part.1
   template: 

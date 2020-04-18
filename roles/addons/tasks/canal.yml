@@ -12,6 +12,7 @@
   stat: 
     path: '{{ kubernetes.addon.location }}/canal/canal.yaml'
   register: canal_yaml_file
+  run_once: true
 
 - name: Clean old deployment
   shell: 'kubectl delete -f {{ kubernetes.addon.location }}/canal/canal.yaml'
@@ -26,6 +27,7 @@
   delay: 5
   changed_when: false
   when: canal_yaml_file.stat.exists
+  run_once: true
 
 - name: Deployment canal --- part.1
   template: 

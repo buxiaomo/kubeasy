@@ -12,6 +12,7 @@
   stat: 
     path: '{{ kubernetes.addon.location }}/flannel/flannel.yaml'
   register: flannel_yaml_file
+  run_once: true
 
 - name: Clean old deployment
   shell: 'kubectl delete -f {{ kubernetes.addon.location }}/flannel/flannel.yaml'
@@ -26,6 +27,7 @@
   delay: 5
   changed_when: false
   when: flannel_yaml_file.stat.exists
+  run_once: true
 
 - name: Deployment flannel --- part.1
   template: 

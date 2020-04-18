@@ -12,6 +12,7 @@
   stat: 
     path: '{{ kubernetes.addon.location }}/calico/calico.yaml'
   register: calico_yaml_file
+  run_once: true
 
 - name: Clean old deployment
   shell: 'kubectl delete -f {{ kubernetes.addon.location }}/calico/calico.yaml'
@@ -26,6 +27,7 @@
   delay: 5
   changed_when: false
   when: calico_yaml_file.stat.exists
+  run_once: true
 
 - name: Deployment calico --- part.1
   template: 
