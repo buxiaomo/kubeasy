@@ -180,10 +180,13 @@ kubernetes:
       coredns: coredns/coredns:1.6.7
       flannel: quay.io/coreos/flannel:v0.12.0
       canal:
-        node: quay.io/calico/node:v3.1.7
-        flannel: quay.io/coreos/flannel:v0.9.1
-        cni: quay.io/calico/cni:v3.1.7
+        node: calico/node:v3.13.2
+        flannel: quay.io/coreos/flannel:v0.11.0
+        cni: calico/cni:v3.13.2
+        flexvol: calico/pod2daemon-flexvol:v3.13.2
       calico: 
-        node: quay.io/calico/node:v3.1.7
-        cni: quay.io/calico/cni:v3.1.7
+        node: calico/node:v3.13.2
+        cni: calico/cni:v3.13.2
         typha: quay.io/calico/typha:v3.1.7
+        flexvol: calico/pod2daemon-flexvol:v3.13.2
+        controllers: calico/kube-controllers:v3.13.2

@@ -33,7 +33,6 @@
     src: '{{ item.src }}'
     dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
   with_items:
-    - { src: 'canal/rbac.yaml.j2', dest: 'canal/rbac.yaml' }
     - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
   when: inventory_hostname in groups['master']
 
@@ -41,7 +40,6 @@
   shell: |
     kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
   with_items:
-    - canal/rbac.yaml
     - canal/canal.yaml
   run_once: true
   when: inventory_hostname in groups['master']
