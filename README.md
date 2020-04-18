@@ -12,6 +12,13 @@
 * [x] Ubuntu 16.04.6
 * [ ] Ubuntu 18.04.6
 
+## Kubernetes Support
+
+* [x] 1.14.x
+* [x] 1.15.x
+* [x] 1.16.x
+* [x] 1.17.x
+* [ ] 1.18.x
 
 ## How to use
 
@@ -94,12 +101,21 @@ wget https://github.com/coreos/etcd/releases/download/v3.4.5/etcd-v3.4.5-linux-a
 wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni-plugins-linux-amd64-v0.8.5.tgz
 ```
 
+# knowledge
+
+* [kubernetes](https://github.com/kubernetes/kubernetes) 
+* [kubernetes command line tools reference](https://kubernetes.io/zh/docs/reference/command-line-tools-reference/feature-gates/)
+* [calico](https://docs.projectcalico.org/getting-started/kubernetes/quickstart)
+* [canal](https://docs.projectcalico.org/getting-started/kubernetes/flannel/flannel) 
+* [flannel](https://github.com/coreos/flannel#flannel)
+
 # issue
 
 * New node kube-proxy not ready
 * K8S custom setting CIDR
 * Add check svc、pod ip is on host cird
 * Deploy flannel failure
+* Flag --experimental-encryption-provider-config has been deprecated, use --encryption-provider-config
 
 # future
 
@@ -126,7 +142,7 @@ ansible-playbook -i hosts install.yml -t etcd
 ansible-playbook -i hosts install.yml -t kubernetes-init
 ansible-playbook -i hosts install.yml -t kube-master
 ansible-playbook -i hosts install.yml -t kube-worker
-ansible-playbook -i hosts install.yml -t addons
+ansible-playbook -i hosts install.yml -t addons -e force=false -e KUBE_VERSION=1.16.9
 
 ansible-playbook -i hosts install.yml -t test
 
