@@ -23,7 +23,7 @@
   register: waiting_for_delete_deployment_done
   until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("kube-dns") == -1
   retries: 15
-  delay: 5
+  delay: 10
   changed_when: false
   when: coredns_yaml_file.stat.exists
   run_once: true
