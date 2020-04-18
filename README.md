@@ -22,8 +22,9 @@
 
 ## How to use
 
+### Preparation work
 
-### clone code
+#### Clone code
 
 ```
 # ubuntu
@@ -34,13 +35,13 @@ git clone https://github.com/buxiaomo/kube-ansible.git /usr/local/src/kube-ansib
 cd /usr/local/src/kube-ansible
 ```
 
-### install ansible
+#### Install ansible
 
 ```
 make runtime
 ```
 
-### download binaries
+#### <span id = "download">Download binaries</span>
 
 if you want to use local package files, Reference [here](#local).
 
@@ -55,7 +56,9 @@ make download KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 
 make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
-### deploy
+### Kubernetes management
+
+#### Deploy
 
 ```
 # default version
@@ -65,21 +68,24 @@ make install
 make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
-### auto deploy
-```
-# default version
-make
-
-# custom version
-make KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
-```
-
-### scale node
+#### Scale
 
 add node to `hosts` file.
 
 ```
+# default version
+make scale
+
+# custom version
 make scale KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+```
+
+#### Upgrade
+
+Download new kubernetes binaries, Reference [here](#download).
+
+```
+make upgrade KUBE_VERSION=1.15.11 DOCKER_VERSION=19.03.8 ETCD_VERSION=3.4.5
 ```
 
 ## <span id = "local">use local package</span>
