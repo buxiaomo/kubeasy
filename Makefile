@@ -4,7 +4,7 @@ DEBUG := false
 
 DOWNLOAD_WAY := "official"
 
-KUBE_VERSION := "1.15.11"
+KUBE_VERSION := "1.16.9"
 DOCKER_VERSION := "19.03.8"
 FLANNEL_VERSION := "0.12.0"
 ETCD_VERSION := "3.4.5"
@@ -20,7 +20,7 @@ auto: runtime download sync
 
 install:
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
-	@ansible-playbook -i hosts install.yml -e force=$(force) -e KUBE_VERSION=$(KUBE_VERSION)
+	@ansible-playbook -i hosts install.yml -e force=$(force)
 
 uninstall:
 	@ansible-playbook uninstall.yml
