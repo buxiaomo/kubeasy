@@ -16,6 +16,7 @@
 
 - name: Deployment kube master
   hosts: master
+  serial: 1
   roles:
     - cni-plugins
     - docker
@@ -30,6 +31,7 @@
 
 - name: Deployment kube worker
   hosts: worker
+  serial: 1
   roles:
     - cni-plugins
     - docker
