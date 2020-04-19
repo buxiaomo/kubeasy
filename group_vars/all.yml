@@ -88,7 +88,7 @@ kubernetes:
   #   flannel: will deployment flannel plugin (default)
   #   calico: will deployment calico plugin
   #   canal: will deployment canal plugin
-  network: canal
+  network: flannel
 
   settings:
     master_run_pod: false
