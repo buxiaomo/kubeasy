@@ -28,6 +28,7 @@
     - ipset
     - socat
     - bash-completion
+    - nfs-utils
 
 - name: Set the Hostname
   hostname: 
