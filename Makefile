@@ -19,16 +19,20 @@ auto: runtime download sync
 	@make install
 
 install:
+	@echo -e "\033[32mDeploy kubernetes...\033[0m"
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
 	@ansible-playbook -i hosts install.yml -e force=$(force)
 
 scale: download sync
+	@echo -e "\033[32mScale kubernetes...\033[0m"
 	@ansible-playbook -i hosts scale.yml
 
 upgrade: download sync
+	@echo -e "\033[32mUpgrade kubernetes...\033[0m"
 	@ansible-playbook -i hosts upgrade.yml
 
 uninstall:
+	@echo -e "\033[32mUninstall kubernetes...\033[0m"
 	@ansible-playbook -i hosts uninstall.yml
 
 download:
@@ -44,9 +48,11 @@ download:
 	&& bash scripts/$(DOWNLOAD_WAY)-download.sh
 
 runtime:
+	@echo -e "\033[32mDeploy ansible...\033[0m"
 	@scripts/runtime.sh
 
 sync:
+	@echo -e "\033[32mSync binary...\033[0m"
 	@rsync -a ./scripts/binaries/docker/$(DOCKER_VERSION)/* ./roles/docker/files/ --delete
 	@rsync -a ./scripts/binaries/etcd/$(ETCD_VERSION)/* ./roles/etcd/files/ --delete
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-apiserver ./roles/kube-apiserver/files/kube-apiserver --delete	
