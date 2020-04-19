@@ -23,7 +23,7 @@
   shell: kubectl get po -n kube-system
   register: waiting_for_delete_deployment_done
   until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("coredns") == -1
-  retries: 15
+  retries: 30
   delay: 5
   changed_when: false
   when: coredns_yaml_file.stat.exists
