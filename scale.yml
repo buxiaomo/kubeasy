@@ -11,7 +11,6 @@
   hosts: worker
   roles:
     - ipvs
-    # - cni-plugins
   tags:
     - kubernetes-init
 
