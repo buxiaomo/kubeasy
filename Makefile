@@ -24,7 +24,7 @@ install:
 	@ansible-playbook -i hosts install.yml -e force=$(force)
 
 scale: download sync
-	@echo -e "\033[32mScale kubernetes...\033[0m"
+	@echo -e "\033[32mScale kubernetes node...\033[0m"
 	@ansible-playbook -i hosts scale.yml
 
 upgrade: download sync

@@ -86,7 +86,7 @@ make scale KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETC
 Download new kubernetes binaries, Reference [here](#download).
 
 ```
-make upgrade KUBE_VERSION=1.16.9 DOCKER_VERSION=19.03.8
+make upgrade KUBE_VERSION=1.18.2 DOCKER_VERSION=19.03.8
 ```
 
 ## <span id = "local">use local package</span>
