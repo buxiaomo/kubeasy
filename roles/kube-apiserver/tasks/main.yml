@@ -95,7 +95,6 @@
     port: 6443
     delay: 30
     state: started
-    host: '{{ ansible_ssh_host }}'
 
 - name: Health check
   uri: 
