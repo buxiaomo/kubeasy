@@ -125,10 +125,10 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 
 # issue
 
-* New node kube-proxy not ready
+* ~~New node kube-proxy not ready~~
 * K8S custom setting CIDR
 * Add check svc、pod ip is on host cird
-* Deploy flannel failure
+* ~~Deploy flannel failure~~
 * Flag --experimental-encryption-provider-config has been deprecated, use --encryption-provider-config
 
 # future
@@ -148,6 +148,7 @@ project=
 ansible-playbook -i hosts install.yml -t kube-master --start-at-task "Install some applications"
 
 ansible-playbook -i hosts install.yml --list-tags
+
 ansible-playbook -i hosts install.yml --list-tasks
 
 ansible-playbook -i hosts install.yml -e force=$(force)
@@ -157,10 +158,9 @@ ansible-playbook -i hosts install.yml -t etcd
 ansible-playbook -i hosts install.yml -t kubernetes-init
 ansible-playbook -i hosts install.yml -t kube-master
 ansible-playbook -i hosts install.yml -t kube-worker
+ansible-playbook -i hosts install.yml -t cleanup
 ansible-playbook -i hosts install.yml -t addons
-
 ansible-playbook -i hosts install.yml -t test
-
 
 Master: 
 systemctl stop kube-apiserver.service kube-scheduler.service kube-controller-manager.service kube-proxy.service kubelet.service etcd.service
