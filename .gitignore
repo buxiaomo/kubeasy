@@ -1,20 +1,17 @@
 # OSX files
 **/.DS_Store
+!.gitignore
+
 scripts/binaries
 
+# cni-plugins
+roles/cni-plugins/files/*
+
 # docker
-roles/docker/files/containerd
-roles/docker/files/containerd-shim
-roles/docker/files/ctr
-roles/docker/files/docker
-roles/docker/files/dockerd
-roles/docker/files/docker-init
-roles/docker/files/docker-proxy
-roles/docker/files/runc
+roles/docker/files/*
 
 # etcd
-roles/etcd/files/etcd
-roles/etcd/files/etcdctl
+roles/etcd/files/*
 
 # kubernetes
 roles/kube-apiserver/files/kube-apiserver
@@ -27,3 +24,5 @@ roles/kube-proxy/files/kube-proxy
 # local package
 scripts/src/*.gz
 scripts/src/*.tgz
+
+inventory/terraform
