@@ -5,9 +5,9 @@
 
 [worker]
 172.16.16.14 hostname=k8s-worker-01 nodename=worker01
-172.16.16.15 hostname=k8s-worker-02 nodename=worker02
-172.16.16.16 hostname=k8s-worker-03 nodename=worker03
-172.16.16.17 hostname=k8s-worker-04 nodename=worker04
+# 172.16.16.15 hostname=k8s-worker-02 nodename=worker02
+# 172.16.16.16 hostname=k8s-worker-03 nodename=worker03
+# 172.16.16.17 hostname=k8s-worker-04 nodename=worker04
 
 [kubernetes:children]
 master
