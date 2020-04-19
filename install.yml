@@ -54,9 +54,12 @@
     - kube-worker
 
 - name: Deployment add-on
-  hosts: kubernetes
+  hosts: master
   roles:
-    - addons
+    - coredns
+    - calico
+    - canal
+    - flannel
   tags:
     - addons
 

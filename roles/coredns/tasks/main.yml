@@ -1,3 +1,5 @@
+---
+# tasks file for coredns
 - name: Create coredns data directory
   file: 
     name: '{{ item }}'
