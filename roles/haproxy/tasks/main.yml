@@ -28,4 +28,4 @@
         state: started
         host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
       connection: local
-  when: kubernetes.cloud.type == "local"
+  when: kubernetes.cloud.type == "local" and kubernetes.ha.vip is defined

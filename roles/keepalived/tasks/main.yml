@@ -21,4 +21,4 @@
         name: keepalived
         enabled: yes
         state: restarted
-  when: kubernetes.cloud.type == "local"
+  when: kubernetes.cloud.type == "local" and kubernetes.ha.vip is defined

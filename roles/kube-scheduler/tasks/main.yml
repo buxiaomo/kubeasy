@@ -37,10 +37,24 @@
 
 - name: Create kubeconfig
   shell: |
+    {% if kubernetes.ha is defined %}
+      {% if kubernetes.cloud.type == "local" %}
+        {% if groups['master'] | length >= 3 %}
+          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = {{ kubernetes.ha.vip }}, 8443 %}
+        {% else %}
+          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = {{ ansible_default_ipv4.address }}, 6443 %}
+        {% endif %}
+      {% else %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = {{ kubernetes.ha.vip }}, 6443 %}
+      {% endif %}
+    {% else %}
+      {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = {{ ansible_default_ipv4.address }}, 6443 %}
+    {% endif %}
+
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --embed-certs=true \
       --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
-      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% else %}{{ hostvars[groups['master'][0]].inventory_hostname }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% endif %} \
+      --server=https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
      kubectl config set-credentials {{ item.KUBE_USER }} \

@@ -1,7 +1,7 @@
 ---
 ansible_ssh_port: 22
 ansible_ssh_user: 'root'
-ansible_ssh_pass: 'root'
+# ansible_ssh_pass: 'root'
 
 # timezone: 'Asia/Shanghai'
 
@@ -77,10 +77,12 @@ kubernetes:
     type: local
     # file: /etc/kubernetes/cloud.conf
 
-  ha:
-    # virtual IP
-    vip: 172.16.16.10
-    mask: 16
+  # kube-apiserver HA configuration
+  # cloud.type is local, will deployment haproxy and keepalived on master
+  # if cloud.type isn't local, will use cloud slb
+  # ha:
+  #   vip: 172.16.16.10
+  #   mask: 16
 
   # choose: none flannel calico canal
   #   none: not deployment any network plugin
