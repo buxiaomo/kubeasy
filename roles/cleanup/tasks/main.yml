@@ -1,14 +1,5 @@
 ---
-# tasks file for addon
-- name: Create data directory
-  file: 
-    name: '{{ item }}'
-    state: directory
-    mode: '0755'
-  with_items:
-    - '{{ kubernetes.addon.location }}'
-  when: inventory_hostname in groups['master']
-
+# tasks file for done
 - name: Master not scheduling
   shell: |
     {% if nodename is defined %}
@@ -28,20 +19,13 @@
       kubectl label node {{ hostvars[inventory_hostname].hostname }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% endif %}
 
-# - name: Kubernetes Addon CoreDNS
-#   include_tasks: coredns.yml
-
-# - name: Kubernetes Addon Flannel
-#   include_tasks: flannel.yml
-#   when: kubernetes.network == "flannel"
-
-# - name: Kubernetes Addon Canal
-#   include_tasks: canal.yml
-#   when: kubernetes.network == "canal"
-
-# - name: Kubernetes Addon Calico
-#   include_tasks: calico.yml
-#   when: kubernetes.network == "calico"
-
-# - name: Kubernetes Done
-#   include_tasks: clean.yml
+- name: Clean kubeconfig for kube-minion nodes
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - ~/.kube
+    - /etc/kubernetes/admin.kubeconfig
+    - '{{ca.kubernetes.location }}/admin.crt'
+    - '{{ca.kubernetes.location }}/admin.key'
+  when: inventory_hostname in groups['worker']

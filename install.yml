@@ -54,6 +54,13 @@
   tags:
     - kube-worker
 
+- name: Clean up the data
+  hosts: all
+  roles:
+    - cleanup
+  tags:
+    - cleanup
+
 - name: Deployment add-on
   hosts: master
   roles:
