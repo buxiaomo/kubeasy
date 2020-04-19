@@ -1,47 +1,49 @@
 ---
 # tasks file for canal
-- name: Create canal data directory
-  file: 
-    name: '{{ item }}'
-    state: directory
-    mode: '0755'
-  with_items:
-    - '{{ kubernetes.addon.location }}/canal'
-  when: inventory_hostname in groups['master']
+- block:
+  - name: Create canal data directory
+    file: 
+      name: '{{ item }}'
+      state: directory
+      mode: '0755'
+    with_items:
+      - '{{ kubernetes.addon.location }}/canal'
+    when: inventory_hostname in groups['master']
 
-- name: Stat canal yaml file
-  stat: 
-    path: '{{ kubernetes.addon.location }}/canal/canal.yaml'
-  register: canal_yaml_file
-  run_once: true
+  - name: Stat canal yaml file
+    stat: 
+      path: '{{ kubernetes.addon.location }}/canal/canal.yaml'
+    register: canal_yaml_file
+    run_once: true
 
-- name: Clean old deployment
-  shell: 'kubectl delete -f {{ kubernetes.addon.location }}/canal/canal.yaml'
-  run_once: true
-  when: canal_yaml_file.stat.exists
+  - name: Clean old deployment
+    shell: 'kubectl delete -f {{ kubernetes.addon.location }}/canal/canal.yaml'
+    run_once: true
+    when: canal_yaml_file.stat.exists
 
-- name: Waiting deployment delete
-  shell: kubectl get po -n kube-system
-  register: waiting_for_delete_deployment_done
-  until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("canal") == -1
-  retries: 15
-  delay: 5
-  changed_when: false
-  when: canal_yaml_file.stat.exists
-  run_once: true
+  - name: Waiting deployment delete
+    shell: kubectl get po -n kube-system
+    register: waiting_for_delete_deployment_done
+    until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("canal") == -1
+    retries: 15
+    delay: 5
+    changed_when: false
+    when: canal_yaml_file.stat.exists
+    run_once: true
 
-- name: Deployment canal --- part.1
-  template: 
-    src: '{{ item.src }}'
-    dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
-  with_items:
-    - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
-  when: inventory_hostname in groups['master']
+  - name: Deployment canal --- part.1
+    template: 
+      src: '{{ item.src }}'
+      dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
+    with_items:
+      - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
+    when: inventory_hostname in groups['master']
 
-- name: Deployment canal --- part.2
-  shell: |
-    kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
-  with_items:
-    - canal/canal.yaml
-  run_once: true
-  when: inventory_hostname in groups['master']
+  - name: Deployment canal --- part.2
+    shell: |
+      kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
+    with_items:
+      - canal/canal.yaml
+    run_once: true
+    when: inventory_hostname in groups['master']
+  when: kubernetes.network == "canal"
