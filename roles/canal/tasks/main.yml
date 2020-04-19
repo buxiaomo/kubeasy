@@ -1,39 +1,39 @@
 ---
 # tasks file for canal
 - block:
-  - name: Create canal data directory
-    file: 
-      name: '{{ kubernetes.addon.location }}/canal'
-      state: directory
-      mode: '0755'
+    - name: Create canal data directory
+      file: 
+        name: '{{ kubernetes.addon.location }}/canal'
+        state: directory
+        mode: '0755'
 
-  - name: Stat canal yaml file
-    stat: 
-      path: '{{ kubernetes.addon.location }}/canal/canal.yaml'
-    register: canal_yaml_file
-    run_once: true
+    - name: Stat canal yaml file
+      stat: 
+        path: '{{ kubernetes.addon.location }}/canal/canal.yaml'
+      register: canal_yaml_file
+      run_once: true
 
-  - name: Clean old deployment
-    shell: 'kubectl delete -f {{ kubernetes.addon.location }}/canal/canal.yaml'
-    run_once: true
-    when: canal_yaml_file.stat.exists
+    - name: Clean old deployment
+      shell: 'kubectl delete -f {{ kubernetes.addon.location }}/canal/canal.yaml'
+      run_once: true
+      when: canal_yaml_file.stat.exists
 
-  - name: Waiting deployment delete
-    shell: kubectl get po -n kube-system
-    register: waiting_for_delete_deployment_done
-    until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("canal") == -1
-    retries: 15
-    delay: 5
-    changed_when: false
-    when: canal_yaml_file.stat.exists
-    run_once: true
+    - name: Waiting deployment delete
+      shell: kubectl get po -n kube-system
+      register: waiting_for_delete_deployment_done
+      until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("canal") == -1
+      retries: 15
+      delay: 5
+      changed_when: false
+      when: canal_yaml_file.stat.exists
+      run_once: true
 
-  - name: Deployment canal --- part.1
-    template: 
-      src: canal.yaml.j2
-      dest: '{{ kubernetes.addon.location }}/canal/canal.yaml'
+    - name: Deployment canal --- part.1
+      template: 
+        src: canal.yaml.j2
+        dest: '{{ kubernetes.addon.location }}/canal/canal.yaml'
 
-  - name: Deployment canal --- part.2
-    shell: 'kubectl apply -f {{ kubernetes.addon.location }}/canal/canal.yaml'
-    run_once: true
+    - name: Deployment canal --- part.2
+      shell: 'kubectl apply -f {{ kubernetes.addon.location }}/canal/canal.yaml'
+      run_once: true
   when: kubernetes.network == "canal"
