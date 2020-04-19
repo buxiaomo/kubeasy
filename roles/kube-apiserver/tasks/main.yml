@@ -104,10 +104,9 @@
     return_content: yes
   register: this
   until: "'ok' in this.content"
-  retries: 10
-  delay: 4
+  retries: 30
+  delay: 5
   connection: local
-  ignore_errors: True
 
 - name: Health check for VIP
   uri: 
@@ -116,8 +115,7 @@
     return_content: yes
   register: this
   until: "'ok' in this.content"
-  retries: 10
-  delay: 4
+  retries: 30
+  delay: 5
   connection: local
-  ignore_errors: True
   when: kubernetes.ha.vip is defined
