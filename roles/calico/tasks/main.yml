@@ -37,4 +37,4 @@
     shell: 'kubectl apply -f {{ kubernetes.addon.location }}/calico/calico.yaml'
     run_once: true
 
-when: kubernetes.network == "calico"
+  when: kubernetes.network == "calico"
