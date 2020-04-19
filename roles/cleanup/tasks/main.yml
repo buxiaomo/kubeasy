@@ -8,7 +8,7 @@
       kubectl taint node {{ hostvars[inventory_hostname].hostname }} node-role.kubernetes.io/master="":NoSchedule --overwrite
     {% endif %}
   when: 
-    - kubernetes.settings.master_run_pod | default(false) | bool and inventory_hostname in groups['master']
+    - not kubernetes.settings.master_run_pod | default(false) | bool and inventory_hostname in groups['master']
 
 - name: Update node roles
   shell: |
