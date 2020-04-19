@@ -18,6 +18,7 @@
 - name: Deployment kube worker
   hosts: worker
   roles:
+    - cni-plugins
     - docker
     - kubectl
     - kubelet

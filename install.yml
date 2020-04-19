@@ -25,7 +25,6 @@
   hosts: kubernetes
   roles:
     - ipvs
-    - cni-plugins
   tags:
     - kubernetes-init
 
@@ -34,6 +33,7 @@
   roles:
     - haproxy
     - keepalived
+    - cni-plugins
     - docker
     - kubectl
     - kube-apiserver
@@ -47,6 +47,7 @@
 - name: Deployment kube worker
   hosts: worker
   roles:
+    - cni-plugins
     - docker
     - kubectl
     - kubelet

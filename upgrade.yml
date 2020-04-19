@@ -11,14 +11,14 @@
   hosts: kubernetes
   roles:
     - ipvs
-    # - cni-plugins
   tags:
     - kubernetes-init
 
 - name: Deployment kube master
   hosts: master
-  serial: 1
   roles:
+    - cni-plugins
+    - docker
     - kubectl
     - kube-apiserver
     - kube-scheduler
@@ -30,8 +30,8 @@
 
 - name: Deployment kube worker
   hosts: worker
-  serial: 1
   roles:
+    - cni-plugins
     - docker
     - kubectl
     - kubelet
