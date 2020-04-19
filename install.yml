@@ -65,9 +65,10 @@
   hosts: master
   roles:
     - coredns
-    - calico
-    - canal
-    - flannel
+    - "{{ kubernetes.network | default(flannel) }}"
+    # - calico
+    # - canal
+    # - flannel
   tags:
     - addons
 
