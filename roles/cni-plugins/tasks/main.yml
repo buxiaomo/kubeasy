@@ -5,6 +5,7 @@
     name: /opt/cni/bin
     state: directory
     mode: '0755'
+  when: (not master_run_pod | default(false) | bool and inventory_hostname in groups['master']) or (inventory_hostname in groups['worker'])
 
 - name: Install the binary
   copy: 
@@ -28,3 +29,4 @@
     - static
     - tuning
     - vlan
+  when: (not master_run_pod | default(false) | bool and inventory_hostname in groups['master']) or (inventory_hostname in groups['worker'])
