@@ -99,7 +99,7 @@
     {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
     {% if kubernetes.ha is defined %}
       {% if kubernetes.cloud.type == "local" %}
-        {% if groups['master'] | length >= 3 %}
+        {% if groups['master'] | length > 1 %}
           {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 8443 %}
         {% else %}
           {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}

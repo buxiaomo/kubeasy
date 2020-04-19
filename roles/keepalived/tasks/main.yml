@@ -21,4 +21,4 @@
         name: keepalived
         enabled: yes
         state: restarted
-  when: kubernetes.cloud.type == "local" and kubernetes.ha.vip is defined
+  when: kubernetes.cloud.type == "local" and kubernetes.ha.vip is defined and groups['master'] | length > 1

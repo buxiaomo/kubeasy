@@ -13,7 +13,7 @@ check_pod_ready() {
 echo -e "\033[32mDeploy test service...\033[0m"
 kubectl apply -f test.yaml
 
-echo -e "\033[32mWait Pod ready...\033[0m"
+echo -e "\033[32mWait resources ready...\033[0m"
 CHECK_POD_LIST="app=nginx01 app=nginx02"
 for pod in ${CHECK_POD_LIST};do
   retry_times=0
