@@ -46,4 +46,4 @@
       - calico/calico.yaml
     run_once: true
     when: inventory_hostname in groups['master']
-  when: kubernetes.cloud.type == "local"
+  when: kubernetes.network == "calico"
