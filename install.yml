@@ -25,6 +25,7 @@
   hosts: kubernetes
   roles:
     - ipvs
+    - cni-plugins
   tags:
     - kubernetes-init
 
@@ -33,6 +34,7 @@
   roles:
     - haproxy
     - keepalived
+    - docker
     - kubectl
     - kube-apiserver
     - kube-scheduler
@@ -46,7 +48,6 @@
   hosts: worker
   roles:
     - docker
-    - cni-plugins
     - kubectl
     - kubelet
     - kube-proxy
