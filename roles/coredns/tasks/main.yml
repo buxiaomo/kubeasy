@@ -7,7 +7,6 @@
     mode: '0755'
   with_items:
     - '{{ kubernetes.addon.location }}/coredns'
-  when: inventory_hostname in groups['master']
 
 - name: Stat coredns yaml file
   stat: 
@@ -33,16 +32,9 @@
 
 - name: Deployment coredns --- part.1
   template: 
-    src: '{{ item.src }}'
-    dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
-  with_items:
-    - { src: 'coredns/coredns.yaml.j2', dest: 'coredns/coredns.yaml' }
-  when: inventory_hostname in groups['master']
+    src: coredns.yaml.j2
+    dest: '{{ kubernetes.addon.location }}/coredns/coredns.yaml'
 
 - name: Deployment coredns --- part.2
-  shell: |
-    kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
-  with_items:
-    - coredns/coredns.yaml
+  shell: 'kubectl apply -f {{ kubernetes.addon.location }}/coredns/coredns.yaml'
   run_once: true
-  when: inventory_hostname in groups['master']

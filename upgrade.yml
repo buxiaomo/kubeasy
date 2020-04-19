@@ -19,7 +19,6 @@
   hosts: master
   serial: 1
   roles:
-    - docker
     - kubectl
     - kube-apiserver
     - kube-scheduler

@@ -3,12 +3,9 @@
 - block:
   - name: Create calico data directory
     file: 
-      name: '{{ item }}'
+      name: '{{ kubernetes.addon.location }}/calico'
       state: directory
       mode: '0755'
-    with_items:
-      - '{{ kubernetes.addon.location }}/calico'
-    when: inventory_hostname in groups['master']
 
   - name: Stat calico yaml file
     stat: 
@@ -33,17 +30,11 @@
 
   - name: Deployment calico --- part.1
     template: 
-      src: '{{ item.src }}'
-      dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
-    with_items:
-      - { src: 'calico/calico.yaml.j2', dest: 'calico/calico.yaml' }
-    when: inventory_hostname in groups['master']
+      src: calico.yaml.j2
+      dest: '{{ kubernetes.addon.location }}/calico/calico.yaml'
 
   - name: Deployment calico --- part.2
-    shell: |
-      kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
-    with_items:
-      - calico/calico.yaml
+    shell: 'kubectl apply -f {{ kubernetes.addon.location }}/calico/calico.yaml'
     run_once: true
-    when: inventory_hostname in groups['master']
-  when: kubernetes.network == "calico"
+
+when: kubernetes.network == "calico"

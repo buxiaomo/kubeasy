@@ -3,12 +3,9 @@
 - block:
   - name: Create canal data directory
     file: 
-      name: '{{ item }}'
+      name: '{{ kubernetes.addon.location }}/canal'
       state: directory
       mode: '0755'
-    with_items:
-      - '{{ kubernetes.addon.location }}/canal'
-    when: inventory_hostname in groups['master']
 
   - name: Stat canal yaml file
     stat: 
@@ -33,17 +30,10 @@
 
   - name: Deployment canal --- part.1
     template: 
-      src: '{{ item.src }}'
-      dest: '{{ kubernetes.addon.location }}/{{ item.dest }}'
-    with_items:
-      - { src: 'canal/canal.yaml.j2', dest: 'canal/canal.yaml' }
-    when: inventory_hostname in groups['master']
+      src: canal.yaml.j2
+      dest: '{{ kubernetes.addon.location }}/canal/canal.yaml'
 
   - name: Deployment canal --- part.2
-    shell: |
-      kubectl apply -f {{ kubernetes.addon.location }}/{{ item }}
-    with_items:
-      - canal/canal.yaml
+    shell: 'kubectl apply -f {{ kubernetes.addon.location }}/canal/canal.yaml'
     run_once: true
-    when: inventory_hostname in groups['master']
   when: kubernetes.network == "canal"

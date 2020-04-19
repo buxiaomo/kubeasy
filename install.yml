@@ -24,7 +24,6 @@
 - name: Init all kubernetes node
   hosts: kubernetes
   roles:
-    - docker
     - ipvs
     # - cni-plugins
   tags:
@@ -47,6 +46,7 @@
 - name: Deployment kube worker
   hosts: worker
   roles:
+    - docker
     - kubectl
     - kubelet
     - kube-proxy
