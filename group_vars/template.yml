@@ -70,19 +70,22 @@ kubernetes:
 
   # cloud support
   cloud: 
-    # choose: local or azure
-    #   local: local data center (default, use haproxy and keepalived keep HA)
+    # choose: local aws azure gcp
+    #   local: local data center (default)
+    #          if ha.vip and ha.mask is defined and Number of master hosts > 1 will install haproxy and keepalived keep HA
+    #   aws: Amazon Web Services
+    #          if ha.vip and ha.mask is defined will use cloud slb keep HA
     #   azure: azure cloud
+    #          if ha.vip and ha.mask is defined will use cloud slb keep HA
     #   gcp: Google Compute Engine
+    #          if ha.vip and ha.mask is defined will use cloud slb keep HA
     type: local
     # file: /etc/kubernetes/cloud.conf
 
   # kube-apiserver HA configuration
-  # cloud.type is local, will deployment haproxy and keepalived on master
-  # if cloud.type isn't local, will use cloud slb
-  ha:
-    vip: 172.16.16.10
-    mask: 16
+  # ha:
+  #   vip: 172.16.16.10
+  #   mask: 16
 
   # choose: none flannel calico canal
   #   none: not deployment any network plugin

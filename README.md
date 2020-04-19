@@ -1,5 +1,7 @@
 # kube-ansible
 
+Refer to the `README.md` and `group_vars/template.yml` files for project configuration
+
 ## Cloud Support
 
 * [ ] Azure
@@ -126,15 +128,15 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 # issue
 
 * ~~New node kube-proxy not ready~~
-* K8S custom setting CIDR
-* Add check svc、pod ip is on host cird
+* ~~K8S custom setting CIDR~~
 * ~~Deploy flannel failure~~
+* Add check svc、pod ip is on host cird
 * Flag --experimental-encryption-provider-config has been deprecated, use --encryption-provider-config
 
 # future
 
-* Support ca update
-* Support version update
+* ~~Support version update~~
+* ca update Support
 * Standardize log
 
 <!-- 
@@ -168,4 +170,52 @@ systemctl start kube-apiserver.service kube-scheduler.service kube-controller-ma
 systemctl restart kube-apiserver.service kube-scheduler.service kube-controller-manager.service kube-proxy.service kubelet.service
 
 Minion: 
-systemctl stop kube-proxy.service kubelet.service -->
+systemctl stop kube-proxy.service kubelet.service 
+
+
+
+
+
+    {% if groups['master'] | length == 1 and kubernetes.cloud.type == "local" %}
+      {% set KUBE_APISERVER_ADDR=ansible_default_ipv4.address %}
+      {% set KUBE_APISERVER_PORT=6443 %}
+    {% elif groups['master'] | length != 1 and kubernetes.cloud.type == "local" %}
+      {% if kubernetes.ha.vip is defined and kubernetes.ha.mask is defined %}
+        {% set KUBE_APISERVER_ADDR=kubernetes.ha.vip %}
+        {% set KUBE_APISERVER_PORT=8443 %}
+      {% else %}
+        {% set KUBE_APISERVER_ADDR=ansible_default_ipv4.address %}
+        {% set KUBE_APISERVER_PORT=6443 %}
+      {% endif %}
+    {% elif groups['master'] | length == 1 and kubernetes.cloud.type != "local" %}
+      {% if kubernetes.ha.vip is defined and kubernetes.ha.mask is defined %}
+        {% set KUBE_APISERVER_ADDR=kubernetes.ha.vip %}
+        {% set KUBE_APISERVER_PORT=6443 %}
+      {% else %}
+        {% set KUBE_APISERVER_ADDR=ansible_default_ipv4.address %}
+        {% set KUBE_APISERVER_PORT=6443 %}
+      {% endif %}
+    {% elif groups['master'] | length == 1 and kubernetes.cloud.type != "local" %}
+      {% if kubernetes.ha.vip is defined and kubernetes.ha.mask is defined %}
+        {% set KUBE_APISERVER_ADDR=kubernetes.ha.vip %}
+        {% set KUBE_APISERVER_PORT=6443 %}
+      {% else %}
+        {% set KUBE_APISERVER_ADDR=ansible_default_ipv4.address %}
+        {% set KUBE_APISERVER_PORT=6443 %}
+      {% endif %}
+    {% endif %}
+    
+    {% if groups['master'] | length == 1 kubernetes.cloud.type == "local" %}
+    {% set KUBE_APISERVER_ADDR= %}
+    {% set KUBE_APISERVER_PORT=6443 %}
+    {% elif groups['master'] | length != 1 kubernetes.cloud.type == "local" and kubernetes.ha is defined %}
+    {% set KUBE_APISERVER_ADDR= %}
+    {% set KUBE_APISERVER_PORT=6443 %}
+    {% else %}
+    {% set KUBE_APISERVER_ADDR=ansible_default_ipv4.address %}
+    {% set KUBE_APISERVER_PORT=6443 %}
+
+      --server=https://{% if groups['master'] | length !=1 %}{{ kubernetes.ha.vip }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% else %}{{  }}:{% if kubernetes.cloud.type != "local" %}6443{% else %}8443{% endif %}{% endif %} \
+
+
+-->
