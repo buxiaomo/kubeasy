@@ -11,7 +11,7 @@ check_pod_ready() {
 }
 
 echo -e "\033[32mDeploy test service...\033[0m"
-kubectl apply -f test.yaml
+kubectl apply -f check-cluster.yaml
 
 echo -e "\033[32mWait resources ready...\033[0m"
 CHECK_POD_LIST="app=nginx01 app=nginx02"
@@ -56,4 +56,4 @@ do
 done
 
 echo -e "\033[32mClean up...\033[0m"
-kubectl delete -f test.yaml
+kubectl delete -f check-cluster.yaml
