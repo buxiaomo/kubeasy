@@ -65,7 +65,7 @@ data:
         health
         hosts {
             {%- for host in groups['all'] -%}
-            {{ host }} {{ host.hostname }} {% if nodename is defined %}{{ host.nodename }} {% endif %}
+            {{ host }} {{ hostvars[host].hostname }} {% if nodename is defined %}{{ host.nodename }} {% endif %}
             {%- endfor -%}
             fallthrough
         }
