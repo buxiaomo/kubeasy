@@ -1,7 +1,7 @@
 ---
-# ansible_ssh_port: 22
-# ansible_ssh_user: 'root'
-# ansible_ssh_pass: 'root'
+ansible_ssh_port: 22
+ansible_ssh_user: 'root'
+ansible_ssh_pass: 'root'
 
 # timezone: 'Asia/Shanghai'
 
@@ -89,10 +89,10 @@ kubernetes:
 
   # choose: none flannel calico canal
   #   none: not deployment any network plugin
-  #   flannel: will deployment flannel plugin (default)
+  #   flannel: will deployment flannel plugin
   #   calico: will deployment calico plugin
-  #   canal: will deployment canal plugin
-  network: flannel
+  #   canal: will deployment canal plugin (default)
+  network: canal
 
   settings:
     master_run_pod: false
@@ -173,12 +173,9 @@ kubernetes:
       logFile: kube-proxy.log
 
   addon:
-    dashboard_enabled: true
-    helm_enabled: false
-    registry_enabled: false
-    metrics_server_enabled: false
-    ingress_nginx_enabled: false
-
+    # not support
+    # metrics_server_enabled: false
+    # ingress_nginx_enabled: false
     location: /etc/kubernetes/addon
     image: 
       coredns: coredns/coredns:1.6.7
@@ -194,3 +191,12 @@ kubernetes:
         typha: quay.io/calico/typha:v3.1.7
         flexvol: calico/pod2daemon-flexvol:v3.13.2
         controllers: calico/kube-controllers:v3.13.2
+
+  # monitoring:
+      es: 
+        username: none
+        passsword: none
+        server: 
+          - ip1
+          - ip2
+          - ip3
