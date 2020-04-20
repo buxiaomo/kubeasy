@@ -31,6 +31,17 @@
     src: kubelet-conf.yml.j2
     dest: /etc/kubernetes/kubelet-conf.yml
 
+- name: Create kube endpoints
+  template: 
+    src: '{{ item.src }}'
+    dest: '/etc/kubernetes/manifests/{{ item.dest }}'
+  with_items:
+    - { src: 'kube-controller-manager.ep.yaml.j2', dest: 'kube-controller-manager.ep.yaml' }
+    - { src: 'kube-controller-manager.svc.yaml.j2', dest: 'kube-controller-manager.svc.yaml' }
+    - { src: 'kube-scheduler.ep.yaml.j2', dest: 'kube-scheduler.ep.yaml' }
+    - { src: 'kube-scheduler.svc.yaml.j2', dest: 'kube-scheduler.svc.yaml' }
+  when: inventory_hostname in groups['master']
+
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
