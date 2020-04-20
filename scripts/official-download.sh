@@ -1,6 +1,6 @@
 #!/bin/bash
 if ${DEBUG};then
-  set -ex
+  set -x
 fi
 
 function printb(){
