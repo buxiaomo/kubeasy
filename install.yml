@@ -33,7 +33,7 @@
   roles:
     - haproxy
     - keepalived
-    - cni-plugins
+    # - cni-plugins
     - docker
     - kubectl
     - kube-apiserver
@@ -47,7 +47,7 @@
 - name: Deployment kube worker
   hosts: worker
   roles:
-    - cni-plugins
+    # - cni-plugins
     - docker
     - kubectl
     - kubelet
