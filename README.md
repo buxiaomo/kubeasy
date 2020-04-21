@@ -45,7 +45,9 @@ make runtime
 
 #### <span id = "download">Download binaries</span>
 
-if you want to use local package files, Reference [here](#local).
+if you want to use local package files, reference [here](#local).
+
+if you want to download package from nexus, reference [here](#nexus).
 
 ```
 # default version
@@ -53,6 +55,12 @@ make download
 
 # custom version
 make download KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+
+# download from nexus
+make download DOWNLOAD_WAY=nexus \
+NEXUS_DOMAIN_NAME=nexus.xiaomo.site NEXUS_REPOSITORY=kube-ansible \
+NEXUS_HTTP_USERNAME=admin NEXUS_HTTP_PASSWORD=admin \
+KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
 ### Kubernetes management
@@ -88,6 +96,22 @@ Download new kubernetes binaries, Reference [here](#download).
 ```
 make upgrade KUBE_VERSION=1.18.2 DOCKER_VERSION=19.03.8
 ```
+
+## <span id = "nexus">about nexus package</span>
+
+create an raw repository, and upload the binaries package.
+
+component attributes of directory format:
+
+* /linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
+* /coreos/flannel/releases/download/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
+* /coreos/etcd/releases/download/v${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz
+* /kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-apiserver
+* /kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager
+* /kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-scheduler
+* /kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl
+* /kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-proxy
+* /kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubelet
 
 ## <span id = "local">use local package</span>
 
@@ -129,7 +153,7 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 
 * ~~New node kube-proxy not ready~~
 * ~~K8S custom setting CIDR~~
-* ~~Deploy flannel failure~~
+* Deploy flannel failure
 * Add check svc、pod ip is on host cird
 * Flag --experimental-encryption-provider-config has been deprecated, use --encryption-provider-config
 
