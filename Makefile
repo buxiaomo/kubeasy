@@ -10,8 +10,10 @@ FLANNEL_VERSION := "0.12.0"
 ETCD_VERSION := "3.4.5"
 CNI_VERSION := "0.8.5"
 
-HTTP_USERNAME := ""
-HTTP_PASSWORD := ""
+NEXUS_HTTP_USERNAME := ""
+NEXUS_HTTP_PASSWORD := ""
+NEXUS_DOMAIN_NAME := "nexus.xiaomo.site"
+NEXUS_REPOSITORY := "kube-ansible"
 
 force := false
 
@@ -44,8 +46,10 @@ download:
 	&& export FLANNEL_VERSION=$(FLANNEL_VERSION) \
 	&& export ETCD_VERSION=$(ETCD_VERSION) \
 	&& export CNI_VERSION=$(CNI_VERSION) \
-	&& export HTTP_USERNAME=$(HTTP_USERNAME) \
-	&& export HTTP_PASSWORD=$(HTTP_PASSWORD) \
+	&& export NEXUS_HTTP_USERNAME=$(NEXUS_HTTP_USERNAME) \
+	&& export NEXUS_HTTP_PASSWORD=$(NEXUS_HTTP_PASSWORD) \
+	&& export NEXUS_DOMAIN_NAME=$(NEXUS_DOMAIN_NAME) \
+	&& export NEXUS_REPOSITORY=$(NEXUS_REPOSITORY) \
 	&& bash scripts/$(DOWNLOAD_WAY)-download.sh
 
 runtime:
