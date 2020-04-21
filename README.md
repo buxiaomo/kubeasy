@@ -101,6 +101,8 @@ make upgrade KUBE_VERSION=1.18.2 DOCKER_VERSION=19.03.8
 
 create an raw repository, and upload the binaries package.
 
+you can use `scripts/upload-nexus.py` file
+
 component attributes of directory format:
 
 * /linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
