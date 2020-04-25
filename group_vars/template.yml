@@ -178,7 +178,7 @@ kubernetes:
     # ingress_nginx_enabled: false
     location: /etc/kubernetes/addon
     image: 
-      coredns: coredns/coredns:1.6.7
+      coredns: coredns/coredns:1.6.9
       flannel: quay.io/coreos/flannel:v0.12.0
       canal:
         node: calico/node:v3.13.2
@@ -192,7 +192,7 @@ kubernetes:
         flexvol: calico/pod2daemon-flexvol:v3.13.2
         controllers: calico/kube-controllers:v3.13.2
 
-  # monitoring:
+  monitoring:
       es: 
         username: none
         passsword: none

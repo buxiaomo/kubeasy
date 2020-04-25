@@ -29,6 +29,7 @@
     - socat
     - bash-completion
     - nfs-utils
+    - bind-utils
 
 - name: Set the Hostname
   hostname: 
