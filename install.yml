@@ -62,6 +62,7 @@
 
 - name: Clean up the data
   hosts: all
+  become: yes
   roles:
     - cleanup
   tags:
@@ -69,6 +70,7 @@
 
 - name: Deployment add-on
   hosts: master
+  become: yes
   roles:
     - coredns
     - flannel
