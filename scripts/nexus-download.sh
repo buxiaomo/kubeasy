@@ -7,7 +7,7 @@ function printb(){
   echo -e "\033[32m$1\033[0m"
 }
 
-pushd $(dirname $0)
+pushd $(dirname $0) > /dev/null 2>&1
 
 mkdir -p binaries
 
@@ -24,14 +24,14 @@ mkdir -p binaries/docker/${DOCKER_VERSION}
 grep -q "^${DOCKER_VERSION}\$" binaries/docker/${DOCKER_VERSION}/.docker 2>/dev/null || {
   if [ ! -f src/docker-${DOCKER_VERSION}.tgz ];then
     printb "Download from the Internet..."
-    curl ${DOWNLOAD_OPTION} http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz -o binaries/docker/${DOCKER_VERSION}/docker-${DOCKER_VERSION}.tgz
+    curl ${DOWNLOAD_OPTION} http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz -o binaries/docker/${DOCKER_VERSION}/docker-${DOCKER_VERSION}.tgz
     tar -zxf binaries/docker/${DOCKER_VERSION}/docker-${DOCKER_VERSION}.tgz --strip-components 1 -C binaries/docker/${DOCKER_VERSION}
     rm -rf binaries/docker/${DOCKER_VERSION}/docker-${DOCKER_VERSION}.tgz
   else
     printb "Use local binary packages..."
     tar -zxf src/docker-${DOCKER_VERSION}.tgz --strip-components 1 -C binaries/docker/${DOCKER_VERSION}
   fi
-  echo ${DOCKER_VERSION} > binaries/docker/${DOCKER_VERSION}/.docker
+  binaries/docker/${DOCKER_VERSION}/dockerd --version > /dev/null 2>&1 && echo ${DOCKER_VERSION} > binaries/docker/${DOCKER_VERSION}/.docker
 }
 
 # flannel
@@ -41,7 +41,7 @@ mkdir -p binaries/flannel/${FLANNEL_VERSION}
 grep -q "^${FLANNEL_VERSION}\$" binaries/flannel/${FLANNEL_VERSION}/.flannel 2>/dev/null || {
   if [ ! -f src/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz ];then
     printb "Download from the Internet..."
-    curl ${DOWNLOAD_OPTION} http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/coreos/flannel/releases/download/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -o binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
+    curl ${DOWNLOAD_OPTION} http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/coreos/flannel/releases/download/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -o binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
     tar -zxf binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz -C binaries/flannel/${FLANNEL_VERSION}/ flanneld mk-docker-opts.sh
     rm -rf binaries/flannel/${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz
   else
@@ -58,14 +58,14 @@ mkdir -p binaries/etcd/${ETCD_VERSION}
 grep -q "^${ETCD_VERSION}\$" binaries/etcd/${ETCD_VERSION}/.etcd 2>/dev/null || {
   if [ ! -f src/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz ];then
     printb "Download from the Internet..."
-    curl ${DOWNLOAD_OPTION} http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/coreos/etcd/releases/download/v${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz -o binaries/etcd/${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz
+    curl ${DOWNLOAD_OPTION} http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/coreos/etcd/releases/download/v${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz -o binaries/etcd/${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz
     tar -zxf binaries/etcd/${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/etcd/${ETCD_VERSION}/ etcd-v${ETCD_VERSION}-linux-amd64/etcd etcd-v${ETCD_VERSION}-linux-amd64/etcdctl 
     rm -rf binaries/etcd/${ETCD_VERSION}/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz
   else
     printb "Use local binary packages..."
     tar -zxf src/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/etcd/${ETCD_VERSION}/ etcd-v${ETCD_VERSION}-linux-amd64/etcd etcd-v${ETCD_VERSION}-linux-amd64/etcdctl 
   fi
-  echo ${ETCD_VERSION} > binaries/etcd/${ETCD_VERSION}/.etcd
+  binaries/etcd/${ETCD_VERSION}/etcd -version > /dev/null 2>&1 && echo binaries/etcd/${ETCD_VERSION}/.etcd
 }
 
 # kubernetes
@@ -75,17 +75,24 @@ mkdir -p binaries/kubernetes/${KUBE_VERSION}
 grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/dev/null || {
   if [ ! -f src/kubernetes-client-linux-amd64.v${KUBE_VERSION}.tar.gz ] || [ ! -f src/kubernetes-server-linux-amd64.v${KUBE_VERSION}.tar.gz ];then
     printb "Download from the Internet..."
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-apiserver" -o binaries/kubernetes/${KUBE_VERSION}/kube-apiserver
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager" -o binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-scheduler" -o binaries/kubernetes/${KUBE_VERSION}/kube-scheduler
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" -o binaries/kubernetes/${KUBE_VERSION}/kubectl
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-proxy" -o binaries/kubernetes/${KUBE_VERSION}/kube-proxy
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubelet" -o binaries/kubernetes/${KUBE_VERSION}/kubelet
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-apiserver" -o binaries/kubernetes/${KUBE_VERSION}/kube-apiserver
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager" -o binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-scheduler" -o binaries/kubernetes/${KUBE_VERSION}/kube-scheduler
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" -o binaries/kubernetes/${KUBE_VERSION}/kubectl
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kube-proxy" -o binaries/kubernetes/${KUBE_VERSION}/kube-proxy
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubelet" -o binaries/kubernetes/${KUBE_VERSION}/kubelet
+    chmod +x binaries/kubernetes/${KUBE_VERSION}/*
   else
     printb "Use local binary packages..."
     tar -zxf src/kubernetes-client-linux-amd64.v${KUBE_VERSION}.tar.gz --strip-components 3 -C binaries/kubernetes/${KUBE_VERSION}/
     tar -zxf src/kubernetes-server-linux-amd64.v${KUBE_VERSION}.tar.gz --strip-components 3 -C binaries/kubernetes/${KUBE_VERSION}/
   fi
+  binaries/kubernetes/${KUBE_VERSION}/kube-apiserver --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kube-scheduler --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kubectl version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kube-proxy --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kubelet --version > /dev/null 2>&1 && \
   echo ${KUBE_VERSION} > binaries/kubernetes/${KUBE_VERSION}/.kubernetes
 }
 
@@ -96,7 +103,7 @@ mkdir -p binaries/cni-plugins/${CNI_VERSION}
 grep -q "^${CNI_VERSION}\$" binaries/cni-plugins/${CNI_VERSION}/.cni 2>/dev/null || {
   if [ ! -f src/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz ];then
     printb "Download from the Internet..."
-    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/NEXUS_REPOSITORY/${NEXUS_REPOSITORY}/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+    curl ${DOWNLOAD_OPTION} "http://${NEXUS_DOMAIN_NAME}/repository/${NEXUS_REPOSITORY}/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz" -o binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
     tar -zxf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz --strip-components 1 -C binaries/cni-plugins/${CNI_VERSION}/
     rm -rf binaries/cni-plugins/${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
   else

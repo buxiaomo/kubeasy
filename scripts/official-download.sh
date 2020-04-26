@@ -7,16 +7,9 @@ function printb(){
   echo -e "\033[32m$1\033[0m"
 }
 
-pushd $(dirname $0)
+pushd $(dirname $0) > /dev/null 2>&1
 
 mkdir -p binaries
-
-# if [ "${HTTP_USERNAME}" = "" ] || [ ${HTTP_PASSWORD} = "" ];then
-#   Download="curl -f --connect-timeout 20 --retry 5 --location --insecure"
-# else
-#   Download="curl -u '${HTTP_USERNAME}:${HTTP_PASSWORD}' -f --connect-timeout 20 --retry 5 --location --insecure"
-# fi
-
 
 # docker
 DOCKER_VERSION=${DOCKER_VERSION:-"19.03.8"}
@@ -32,7 +25,7 @@ grep -q "^${DOCKER_VERSION}\$" binaries/docker/${DOCKER_VERSION}/.docker 2>/dev/
     printb "Use local binary packages..."
     tar -zxf src/docker-${DOCKER_VERSION}.tgz --strip-components 1 -C binaries/docker/${DOCKER_VERSION}
   fi
-  echo ${DOCKER_VERSION} > binaries/docker/${DOCKER_VERSION}/.docker
+  binaries/docker/${DOCKER_VERSION}/dockerd --version > /dev/null 2>&1 && echo ${DOCKER_VERSION} > binaries/docker/${DOCKER_VERSION}/.docker
 }
 
 # flannel
@@ -66,7 +59,7 @@ grep -q "^${ETCD_VERSION}\$" binaries/etcd/${ETCD_VERSION}/.etcd 2>/dev/null || 
     printb "Use local binary packages..."
     tar -zxf src/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/etcd/${ETCD_VERSION}/ etcd-v${ETCD_VERSION}-linux-amd64/etcd etcd-v${ETCD_VERSION}-linux-amd64/etcdctl 
   fi
-  echo ${ETCD_VERSION} > binaries/etcd/${ETCD_VERSION}/.etcd
+  binaries/etcd/${ETCD_VERSION}/etcd -version > /dev/null 2>&1 && echo binaries/etcd/${ETCD_VERSION}/.etcd
 }
 
 # kubernetes
@@ -87,6 +80,12 @@ grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/
     tar -zxf src/kubernetes-client-linux-amd64.v${KUBE_VERSION}.tar.gz --strip-components 3 -C binaries/kubernetes/${KUBE_VERSION}/
     tar -zxf src/kubernetes-server-linux-amd64.v${KUBE_VERSION}.tar.gz --strip-components 3 -C binaries/kubernetes/${KUBE_VERSION}/
   fi
+  binaries/kubernetes/${KUBE_VERSION}/kube-apiserver --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kube-scheduler --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kubectl version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kube-proxy --version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kubelet --version > /dev/null 2>&1 && \
   echo ${KUBE_VERSION} > binaries/kubernetes/${KUBE_VERSION}/.kubernetes
 }
 
