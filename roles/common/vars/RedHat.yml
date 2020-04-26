@@ -16,3 +16,4 @@ package:
   - bash-completion
   - nfs-utils
   - bind-utils
+  - libselinux-python
