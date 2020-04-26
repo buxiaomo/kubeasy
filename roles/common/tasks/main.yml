@@ -14,22 +14,7 @@
   package: 
     name: '{{ item }}'
     state: present
-  with_items:
-    - conntrack
-    - net-tools
-    - sysstat
-    - unzip
-    - tcpdump
-    - telnet
-    - lsof
-    - strace
-    - wget
-    - psmisc
-    - ipset
-    - socat
-    - bash-completion
-    - nfs-utils
-    - bind-utils
+  with_items: "{{ package }}"
 
 - name: Set the Hostname
   hostname: 
