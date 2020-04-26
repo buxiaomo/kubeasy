@@ -21,8 +21,7 @@
 - name: Install kubectl completion
   copy: 
     src: kubectl.sh
-    dest: /etc/bash_completion.d/kubectl.sh
-    mode: 0755
+    dest: /etc/bash_completion.d/kubectl
     owner: root
     group: root
 

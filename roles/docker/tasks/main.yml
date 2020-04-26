@@ -42,6 +42,6 @@
 - name: Install docker completion
   get_url: 
     url: https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker
-    dest: /etc/bash_completion.d/docker.sh
+    dest: /etc/bash_completion.d/docker
     mode: 0755
   ignore_errors: True
