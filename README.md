@@ -73,7 +73,7 @@ make sync
 make install
 
 # custom version
-make sync
+make sync KUBE_VERSION=1.16.8
 make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
