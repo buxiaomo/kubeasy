@@ -23,13 +23,13 @@ auto: runtime download sync
 install:
 	@echo -e "\033[32mDeploy kubernetes...\033[0m"
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
-	@[ -f ./inventory/hosts ] || echo "Create asset information"
+	@[ -f ./inventory/hosts ] || ( echo "Please Create asset information" && exit 1 )
 	@ansible-playbook install.yml -e force=$(force)
 	@echo "source /etc/bash_completion.d/kubectl.sh"
 
 scale: download sync
 	@echo -e "\033[32mScale kubernetes node...\033[0m"
-	@ansible-playbook scale.yml
+	@ansible-playbook scale.yml	
 
 upgrade: download sync
 	@echo -e "\033[32mUpgrade kubernetes...\033[0m"
