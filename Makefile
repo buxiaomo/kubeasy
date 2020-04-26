@@ -23,20 +23,21 @@ auto: runtime download sync
 install:
 	@echo -e "\033[32mDeploy kubernetes...\033[0m"
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
-	@ansible-playbook -i hosts install.yml -e force=$(force)
+	@[ -f ./inventory/hosts ] || echo "Create asset information"
+	@ansible-playbook install.yml -e force=$(force)
 	@echo "source /etc/bash_completion.d/kubectl.sh"
 
 scale: download sync
 	@echo -e "\033[32mScale kubernetes node...\033[0m"
-	@ansible-playbook -i hosts scale.yml
+	@ansible-playbook scale.yml
 
 upgrade: download sync
 	@echo -e "\033[32mUpgrade kubernetes...\033[0m"
-	@ansible-playbook -i hosts upgrade.yml
+	@ansible-playbook upgrade.yml
 
 uninstall:
 	@echo -e "\033[32mUninstall kubernetes...\033[0m"
-	@ansible-playbook -i hosts uninstall.yml
+	@ansible-playbook uninstall.yml
 
 download:
 	@echo -e "\033[32mDownload the binaries package to ./scripts/binaries directory...\033[0m"
@@ -70,6 +71,6 @@ sync:
 	@echo -e "\033[32mPlaybook is ready. Enjoy!\033[0m"
 
 # check:
-# 	@ansible -i hosts all -m ping
-# 	# @ansible-playbook -i hosts --check install.yml
+# 	@ansible all -m ping
+# 	# @ansible-playbook --check install.yml
 # 	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null
