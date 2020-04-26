@@ -38,3 +38,10 @@
     src: docker.service.j2
     dest: /etc/systemd/system/docker.service
   notify: Start docker
+
+- name: Install docker completion
+  get_url: 
+    url: https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker
+    dest: /etc/bash_completion.d/docker.sh
+    mode: 0755
+  ignore_errors: True
