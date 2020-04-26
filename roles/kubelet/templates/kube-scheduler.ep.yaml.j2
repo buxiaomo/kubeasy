@@ -8,7 +8,7 @@ metadata:
 subsets:
 - addresses:
 {% for host in groups['master'] %}
-  - ip: {{ hostvars[host].inventory_hostname }}
+  - ip: {{ hostvars[host].inventory_hostname | lower }}
 {% endfor %}
   ports:
   - name: http-metrics

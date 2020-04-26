@@ -10,7 +10,7 @@ ExecStart=/usr/local/bin/kubelet \
   --kubeconfig=/etc/kubernetes/kubelet.kubeconfig \
   --config=/etc/kubernetes/kubelet-conf.yml \
 {% if nodename is defined %}
-  --hostname-override={{ nodename }} \
+  --hostname-override={{ nodename | lower }} \
 {% endif %}
   --pod-infra-container-image={{ kubernetes.kubelet.pod_infra_container_image }} \
   --image-pull-progress-deadline={{ kubernetes.kubelet.image_pull_progress_deadline }} \
