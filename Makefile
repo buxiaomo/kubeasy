@@ -23,7 +23,7 @@ auto: runtime download sync
 install:
 	@echo -e "\033[32mDeploy kubernetes...\033[0m"
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
-	@[ -f ./inventory/hosts ] || ( echo "Please Create asset information" && exit 1 )
+	@[ -f ./inventory/hosts ] || ( echo -e "\033[31mPlease Create asset information...\033[0m" && exit 1 )
 	@ansible-playbook install.yml -e force=$(force)
 	@echo "source /etc/bash_completion.d/kubectl.sh"
 
