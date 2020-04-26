@@ -4,7 +4,7 @@ Refer to the `README.md` and `group_vars/template.yml` files for project configu
 
 ## Cloud Support
 
-* [ ] Azure
+* [x] Azure
 * [ ] Aws
 * [x] GCP(Apiserver HA use the TCP Load balancing)
 
@@ -58,9 +58,14 @@ make download KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 
 
 # download from nexus
 make download DOWNLOAD_WAY=nexus \
-NEXUS_DOMAIN_NAME=nexus.xiaomo.site NEXUS_REPOSITORY=kube-ansible \
-NEXUS_HTTP_USERNAME=admin NEXUS_HTTP_PASSWORD=admin \
-KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+NEXUS_DOMAIN_NAME=nexus.xiaomo.site \
+NEXUS_REPOSITORY=kube-ansible \
+NEXUS_HTTP_USERNAME=admin \
+NEXUS_HTTP_PASSWORD=admin \
+KUBE_VERSION=1.16.8 \
+DOCKER_VERSION=19.03.8 \
+FLANNEL_VERSION=0.12.0 \
+ETCD_VERSION=3.4.5
 ```
 
 ### Kubernetes management
@@ -73,8 +78,8 @@ make sync
 make install
 
 # custom version
-make sync KUBE_VERSION=1.16.8
-make install KUBE_VERSION=1.16.8 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
+make sync KUBE_VERSION=1.14.4
+make install KUBE_VERSION=1.14.4 DOCKER_VERSION=19.03.8 FLANNEL_VERSION=0.12.0 ETCD_VERSION=3.4.5
 ```
 
 #### Scale
