@@ -48,7 +48,7 @@ grep -q "^${FLANNEL_VERSION}\$" binaries/flannel/${FLANNEL_VERSION}/.flannel 2>/
     printb "Use local binary packages..."
     tar -zxf src/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/flannel/${FLANNEL_VERSION}/ flanneld mk-docker-opts.sh
   fi
-  echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
+  binaries/flannel/${FLANNEL_VERSION}/flanneld -version && echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
 }
 
 # ectd
@@ -65,7 +65,7 @@ grep -q "^${ETCD_VERSION}\$" binaries/etcd/${ETCD_VERSION}/.etcd 2>/dev/null || 
     printb "Use local binary packages..."
     tar -zxf src/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/etcd/${ETCD_VERSION}/ etcd-v${ETCD_VERSION}-linux-amd64/etcd etcd-v${ETCD_VERSION}-linux-amd64/etcdctl 
   fi
-  binaries/etcd/${ETCD_VERSION}/etcd -version > /dev/null 2>&1 && echo binaries/etcd/${ETCD_VERSION}/.etcd
+  binaries/etcd/${ETCD_VERSION}/etcd -version > /dev/null 2>&1 && echo ${ETCD_VERSION} > binaries/etcd/${ETCD_VERSION}/.etcd
 }
 
 # kubernetes
