@@ -59,8 +59,11 @@ runtime:
 
 sync:
 	@echo -e "\033[32mSync binary...\033[0m"
+	@echo "Sync docker binaries from scripts/binaries"
 	@rsync -a ./scripts/binaries/docker/$(DOCKER_VERSION)/* ./roles/docker/files/ --delete
+	@echo "Sync etcd binaries from scripts/binaries"
 	@rsync -a ./scripts/binaries/etcd/$(ETCD_VERSION)/* ./roles/etcd/files/ --delete
+	@echo "Sync kubernetes binaries from scripts/binaries"
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-apiserver ./roles/kube-apiserver/files/kube-apiserver --delete	
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kubectl ./roles/kubectl/files/kubectl --delete
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kubelet ./roles/kubelet/files/kubelet --delete
@@ -69,8 +72,3 @@ sync:
 	@rsync -a ./scripts/binaries/kubernetes/$(KUBE_VERSION)/kube-proxy ./roles/kube-proxy/files/kube-proxy --delete
 	@rsync -a ./scripts/binaries/cni-plugins/$(CNI_VERSION)/* ./roles/cni-plugins/files/ --delete
 	@echo -e "\033[32mPlaybook is ready. Enjoy!\033[0m"
-
-# check:
-# 	@ansible all -m ping
-# 	# @ansible-playbook --check install.yml
-# 	@ping -c 3 $(awk -F "=" "/^VIP/{print \$2}" hosts) 2> /dev/null
