@@ -1,7 +1,5 @@
 ---
 # defaults file for common
-timezone: 'Asia/Shanghai'
-
 modprobe:
   filename: /etc/modules
   params:
