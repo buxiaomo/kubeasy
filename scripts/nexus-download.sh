@@ -31,6 +31,7 @@ grep -q "^${DOCKER_VERSION}\$" binaries/docker/${DOCKER_VERSION}/.docker 2>/dev/
     printb "Use local binary packages..."
     tar -zxf src/docker-${DOCKER_VERSION}.tgz --strip-components 1 -C binaries/docker/${DOCKER_VERSION}
   fi
+  chmod +x binaries/docker/${DOCKER_VERSION}/*
   binaries/docker/${DOCKER_VERSION}/dockerd --version > /dev/null 2>&1 && echo ${DOCKER_VERSION} > binaries/docker/${DOCKER_VERSION}/.docker
 }
 
@@ -48,6 +49,7 @@ grep -q "^${FLANNEL_VERSION}\$" binaries/flannel/${FLANNEL_VERSION}/.flannel 2>/
     printb "Use local binary packages..."
     tar -zxf src/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/flannel/${FLANNEL_VERSION}/ flanneld mk-docker-opts.sh
   fi
+  chmod +x binaries/flannel/${FLANNEL_VERSION}/*
   binaries/flannel/${FLANNEL_VERSION}/flanneld -version && echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
 }
 
@@ -65,6 +67,7 @@ grep -q "^${ETCD_VERSION}\$" binaries/etcd/${ETCD_VERSION}/.etcd 2>/dev/null || 
     printb "Use local binary packages..."
     tar -zxf src/etcd-v${ETCD_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/etcd/${ETCD_VERSION}/ etcd-v${ETCD_VERSION}-linux-amd64/etcd etcd-v${ETCD_VERSION}-linux-amd64/etcdctl 
   fi
+  chmod +x binaries/etcd/${ETCD_VERSION}/*
   binaries/etcd/${ETCD_VERSION}/etcd -version > /dev/null 2>&1 && echo ${ETCD_VERSION} > binaries/etcd/${ETCD_VERSION}/.etcd
 }
 
@@ -87,6 +90,7 @@ grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/
     tar -zxf src/kubernetes-client-linux-amd64.v${KUBE_VERSION}.tar.gz --strip-components 3 -C binaries/kubernetes/${KUBE_VERSION}/
     tar -zxf src/kubernetes-server-linux-amd64.v${KUBE_VERSION}.tar.gz --strip-components 3 -C binaries/kubernetes/${KUBE_VERSION}/
   fi
+  chmod +x binaries/kubernetes/${KUBE_VERSION}/*
   binaries/kubernetes/${KUBE_VERSION}/kube-apiserver --version > /dev/null 2>&1 && \
   binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager --version > /dev/null 2>&1 && \
   binaries/kubernetes/${KUBE_VERSION}/kube-scheduler --version > /dev/null 2>&1 && \

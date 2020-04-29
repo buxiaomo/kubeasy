@@ -4,12 +4,14 @@ build:
 	@podman build -t centos:7-systemd ./centos-7/.
 	@podman build -t ubuntu:16.04-systemd ./ubuntu-16.04/.
 	@podman build -t ubuntu:18.04-systemd ./ubuntu-18.04/.
+	@podman build -t ansible:systemd ./ansible/.
 
 run:
 	@[ -d ./ssh ] || mkdir -p ssh
 	@[ -f ./ssh/id_rsa ] || ssh-keygen -t rsa -P "" -f ./ssh/id_rsa
 	@[ -f ./ssh/authorized_keys ] || cp ./ssh/id_rsa.pub ./ssh/authorized_keys
 	@podman network create kube || true
+	@podman run -d --name ansible --network kube --privileged --hostname ansible -v ./ssh:/root/.ssh ansible:systemd
 	@podman run -d --name master01 --network kube --privileged --hostname master01 -v ./ssh:/root/.ssh $(RUNTIME)
 	@podman run -d --name master02 --network kube --privileged --hostname master02 -v ./ssh:/root/.ssh $(RUNTIME)
 	@podman run -d --name master03 --network kube --privileged --hostname master03 -v ./ssh:/root/.ssh $(RUNTIME)
@@ -24,8 +26,8 @@ clean:
 
 test: build run
 	@./host.sh
-	@podman exec -it master01 apt install git make -y
-	@podman exec -it master01 git clone https://github.com/buxiaomo/kube-ansible.git /usr/local/src/kube-ansible
-	@podman cp all.yml master01:/usr/local/src/kube-ansible/group_vars/all.yml
-	@podman cp hosts master01:/usr/local/src/kube-ansible/inventory/hosts
-	@podman exec -it -w /usr/local/src/kube-ansible master01 make
+	@podman exec -it ansible apt install git make -y
+	@podman exec -it ansible git clone https://github.com/buxiaomo/kube-ansible.git /usr/local/src/kube-ansible
+	@podman cp all.yml ansible:/usr/local/src/kube-ansible/group_vars/all.yml
+	@podman cp hosts ansible:/usr/local/src/kube-ansible/inventory/hosts
+	@podman exec -it -w /usr/local/src/kube-ansible ansible make
