@@ -1,5 +1,3 @@
-SHELL := /bin/bash
-
 DEBUG := false
 
 DOWNLOAD_WAY := "official"
