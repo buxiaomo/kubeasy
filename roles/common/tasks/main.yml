@@ -26,6 +26,7 @@
     name: '{{ svc_name }}'
     enabled: no
     state: stopped
+  ignore_errors: True
 
 - name: Close SeLinux
   lineinfile:
