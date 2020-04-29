@@ -1,12 +1,13 @@
 ---
+# Ansible settings
 ansible_become: yes
 ansible_ssh_port: 22
 # ansible_ssh_user: 'root'
 # ansible_ssh_pass: 'root'
-
 # ansible_sudo_user: 'root'
 # ansible_sudo_pass: 'root'
 
+# timezone settings, default is Asia/Shanghai
 # timezone: 'Asia/Shanghai'
 
 # modprobe:
@@ -195,12 +196,3 @@ kubernetes:
         typha: quay.io/calico/typha:v3.1.7
         flexvol: calico/pod2daemon-flexvol:v3.13.2
         controllers: calico/kube-controllers:v3.13.2
-
-  monitoring:
-      es: 
-        username: none
-        passsword: none
-        server: 
-          - ip1
-          - ip2
-          - ip3
