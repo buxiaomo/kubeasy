@@ -72,6 +72,8 @@ ETCD_VERSION=3.4.5
 
 #### Deploy
 
+[![asciicast](https://asciinema.org/a/325326.svg)](https://asciinema.org/a/325326)
+
 ```
 # default version
 make sync
