@@ -102,6 +102,12 @@ Download new kubernetes binaries, Reference [here](#download).
 make upgrade KUBE_VERSION=1.18.2 DOCKER_VERSION=19.03.8
 ```
 
+### Kubernetes Extended application
+
+This repo only deploy a kubernetes cluster and core application like 'coredns', 'calico', 'canal', 'flannel', not support extended application, like 'jenkins', 'ingress'...
+
+if you want to deploy extended application, please reference [here](https://github.com/buxiaomo/kubernetes-manifests.git).
+
 ## <span id = "nexus">about nexus package</span>
 
 create an raw repository, and upload the binaries package.
@@ -170,7 +176,18 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 * ca update Support
 * Standardize log
 
+
+
 <!-- 
+openssl_certificate                                           Generate and/...
+openssl_certificate_info                                      Provide infor...
+openssl_csr                                                   Generate Open...
+openssl_csr_info                                              Provide infor...
+openssl_dhparam                                               Generate Open...
+openssl_pkcs12                                                Generate Open...
+openssl_privatekey                                            Generate Open...
+openssl_privatekey_info                                       Provide infor...
+openssl_publickey
 
 NS
 env=
