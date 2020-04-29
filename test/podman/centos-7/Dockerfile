@@ -23,7 +23,8 @@ RUN yum install git make conntrack \
     bash-completion \
     nfs-utils \
     bind-utils \
-    libselinux-python -y
+    libselinux-python \
+    firewalld -y
 
 EXPOSE 22
 

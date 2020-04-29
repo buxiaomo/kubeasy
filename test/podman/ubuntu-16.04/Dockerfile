@@ -25,7 +25,8 @@ RUN apt-get update \
         socat \
         bash-completion \
         nfs-common \
-        dnsutils -y
+        dnsutils \
+        ufw -y
 
 EXPOSE 22
 
