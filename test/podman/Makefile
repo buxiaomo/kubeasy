@@ -10,10 +10,10 @@ run:
 	@[ -f ./ssh/id_rsa ] || ssh-keygen -t rsa -P "" -f ./ssh/id_rsa
 	@[ -f ./ssh/authorized_keys ] || cp ./ssh/id_rsa.pub ./ssh/authorized_keys
 	@podman network create kube || true
-	@podman run -d --name master01 --network kube --hostname master01 -v ./ssh:/root/.ssh $(RUNTIME)
-	@podman run -d --name master02 --network kube --hostname master02 -v ./ssh:/root/.ssh $(RUNTIME)
-	@podman run -d --name master03 --network kube --hostname master03 -v ./ssh:/root/.ssh $(RUNTIME)
-	@podman run -d --name worker01 --network kube --hostname worker01 -v ./ssh:/root/.ssh $(RUNTIME)
+	@podman run -d --name master01 --network kube --privileged --hostname master01 -v ./ssh:/root/.ssh $(RUNTIME)
+	@podman run -d --name master02 --network kube --privileged --hostname master02 -v ./ssh:/root/.ssh $(RUNTIME)
+	@podman run -d --name master03 --network kube --privileged --hostname master03 -v ./ssh:/root/.ssh $(RUNTIME)
+	@podman run -d --name worker01 --network kube --privileged --hostname worker01 -v ./ssh:/root/.ssh $(RUNTIME)
 
 clean:
 	@podman rm -f master01
