@@ -13,19 +13,23 @@ check_pod_ready() {
 echo -e "\033[32mDeploy test service...\033[0m"
 kubectl apply -f check-cluster.yaml
 
-echo -e "\033[32mWait resources ready...\033[0m"
+echo -e "\033[32mWaiting for the resources ready...\033[0m"
 CHECK_POD_LIST="app=nginx01 app=nginx02"
 for pod in ${CHECK_POD_LIST};do
   retry_times=0
-  RETRY=60
+  RETRY=120
   while [ "$retry_times" -lt $RETRY ]; do
-      if [ "$(check_pod_ready test ${pod})" -eq 0 ];then
-        break
-      else
-        retry_times=$((retry_times+1))
-        sleep 1
-      fi
+    if [ "$(check_pod_ready test ${pod})" -eq 0 ];then
+      break
+    else
+      retry_times=$((retry_times+1))
+      sleep 1
+    fi
   done
+  if [ $RETRY -ge 120 ];then
+    echo -e "\033[31mWaiting for a resource ready timeout, exit.\033[0m"
+    exit 1
+  fi
 done
 
 SVC01=$(kubectl get svc --selector=app=nginx01 -n test -o jsonpath='{.items[0].metadata.name}')
