@@ -10,13 +10,12 @@ ansible_ssh_pass: 'password'
 # timezone settings, default is Asia/Shanghai
 # timezone: 'Asia/Shanghai'
 
-# modprobe:
-#   filename: /etc/modules
-#   params:
-#     - nf_conntrack
-#     - nf_conntrack_ipv4
-#     - br_netfilter
-#     - overlay
+modprobe:
+  filename: /etc/modules
+  params:
+    - nf_conntrack
+    - nf_conntrack_ipv4
+    - overlay
 
 # ipvs:
 #   filename: /etc/modules
