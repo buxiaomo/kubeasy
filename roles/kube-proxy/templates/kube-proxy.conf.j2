@@ -16,7 +16,7 @@ conntrack:
     tcpEstablishedTimeout: 24h0m0s
 enableProfiling: false
 healthzBindAddress: {{ ansible_default_ipv4.address }}:10256
-hostnameOverride: {{ hostvars[inventory_hostname].hostname | lower }}
+hostnameOverride: {{ hostvars[inventory_hostname].ansible_fqdn | lower }}
 iptables:
     masqueradeAll: true
     masqueradeBit: 14
