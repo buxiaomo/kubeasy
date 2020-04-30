@@ -8,13 +8,6 @@
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- endif %}
-
-{%- set tmp_hostname="" -%}
-{%- if hostname is not defined %}
-    {%- set tmp_hostname = ansible_hostname -%}
-{%- else%}
-    {%- set tmp_hostname = hostname -%}
-{%- endif %}
 [Unit]
 Description=etcd
 Documentation=https://github.com/coreos/etcd
@@ -28,13 +21,13 @@ RestartSec=5s
 LimitNOFILE=40000
 TimeoutStartSec=0
 
-ExecStart=/usr/local/bin/etcd --name {{ tmp_hostname | lower }} \
+ExecStart=/usr/local/bin/etcd --name {{ ansible_fqdn | lower }} \
   --data-dir {{ kubernetes.etcd.datadir }} \
   --listen-client-urls https://{{ ansible_default_ipv4.address }}:2379 \
   --advertise-client-urls https://{{ ansible_default_ipv4.address }}:2379 \
   --listen-peer-urls https://{{ ansible_default_ipv4.address }}:2380 \
   --initial-advertise-peer-urls https://{{ ansible_default_ipv4.address }}:2380 \
-  --initial-cluster {% for host in etcdnode %}{{ tmp_hostname | lower }}=https://{{ host }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
+  --initial-cluster {% for host in etcdnode %}{{ hostvars[host].ansible_fqdn | lower }}=https://{{ host }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
   --initial-cluster-token {{ kubernetes.etcd.initialclustertoken }} \
   --initial-cluster-state {{ kubernetes.etcd.initialclusterstate }} \
   --auto-compaction-retention {{ kubernetes.etcd.autocompactionretention }} \
