@@ -18,13 +18,14 @@ run:
 	@podman run -d --name worker01 --network kube --privileged --hostname worker01 -v ./ssh:/root/.ssh $(RUNTIME)
 
 clean:
-	@podman rm -f master01
-	@podman rm -f master02
-	@podman rm -f master03
-	@podman rm -f worker01
+	@podman rm -f master01 || true
+	@podman rm -f master02 || true
+	@podman rm -f master03 || true
+	@podman rm -f worker01 || true
+	@podman rm -f ansible || true
 	@podman network rm kube || true
 
-test: build run
+test: build clean run
 	@./host.sh
 	@podman exec -it ansible apt install git make -y
 	@podman exec -it ansible git clone https://github.com/buxiaomo/kube-ansible.git /usr/local/src/kube-ansible
