@@ -25,7 +25,7 @@ RUN yum install git make conntrack \
     bind-utils \
     libselinux-python \
     firewalld \
-    kmod vim -y
+    kmod vim tzdata -y
 
 EXPOSE 22
 

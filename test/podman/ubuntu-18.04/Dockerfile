@@ -27,7 +27,7 @@ RUN apt-get update \
         nfs-common \
         dnsutils \
         ufw \
-        kmod vim -y
+        kmod vim tzdata -y
 
 EXPOSE 22
 
