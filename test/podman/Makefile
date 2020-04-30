@@ -25,7 +25,7 @@ clean:
 	@podman rm -f ansible || true
 	@podman network rm kube || true
 
-test: build clean run
+test:
 	@./host.sh
 	@podman exec -it ansible apt install git make -y
 	@podman exec -it ansible git clone https://github.com/buxiaomo/kube-ansible.git /usr/local/src/kube-ansible
