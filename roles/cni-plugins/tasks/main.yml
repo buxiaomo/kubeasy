@@ -5,7 +5,7 @@
     name: /opt/cni/bin
     state: directory
     mode: '0755'
-  when: (not kubernetes.settings.master_run_pod | default(false) | bool and inventory_hostname in groups['master']) or (inventory_hostname in groups['worker'])
+  when: kubernetes.network == "flannel"
 
 - name: Install the binary
   copy: 
@@ -29,4 +29,4 @@
     - static
     - tuning
     - vlan
-  when: (not kubernetes.settings.master_run_pod | default(false) | bool and inventory_hostname in groups['master']) or (inventory_hostname in groups['worker'])
+  when: kubernetes.network == "flannel"

@@ -1,18 +1,22 @@
+# Debug model
 DEBUG := false
 
+# binary file download way, official or nexus
 DOWNLOAD_WAY := "official"
 
+# binary version
 KUBE_VERSION := "1.17.5"
 DOCKER_VERSION := "19.03.8"
-FLANNEL_VERSION := "0.12.0"
 ETCD_VERSION := "3.4.5"
 CNI_VERSION := "0.8.5"
 
+# nexus information
 NEXUS_HTTP_USERNAME := ""
 NEXUS_HTTP_PASSWORD := ""
 NEXUS_DOMAIN_NAME := "nexus.xiaomo.site"
 NEXUS_REPOSITORY := "kube-ansible"
 
+# force refresh tls
 force := false
 
 auto: runtime download sync
@@ -23,7 +27,7 @@ install:
 	@[ -f group_vars/all.yml ] || cp group_vars/template.yml group_vars/all.yml
 	@[ -f ./inventory/hosts ] || ( echo -e "\033[31mPlease Create asset information...\033[0m" && exit 1 )
 	@ansible-playbook install.yml -e force=$(force)
-	@echo "source /etc/bash_completion.d/kubectl.sh"
+	@echo "source /etc/bash_completion.d/kubectl"
 
 scale: download sync
 	@echo -e "\033[32mScale kubernetes node...\033[0m"

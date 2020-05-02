@@ -37,7 +37,6 @@
   roles:
     - haproxy
     - keepalived
-    # - cni-plugins
     - docker
     - kubectl
     - kube-apiserver
@@ -45,6 +44,7 @@
     - kube-controller-manager
     - kubelet
     - kube-proxy
+    - cni-plugins
   tags:
     - kube-master
 
@@ -52,11 +52,11 @@
   hosts: worker
   become: yes
   roles:
-    # - cni-plugins
     - docker
     - kubectl
     - kubelet
     - kube-proxy
+    - cni-plugins
   tags:
     - kube-worker
 
