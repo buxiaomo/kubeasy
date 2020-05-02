@@ -13,7 +13,6 @@ check_pod_ready() {
 echo -e "\033[32mDeploy test service...\033[0m"
 kubectl apply -f check-cluster.yaml
 
-echo -e "\033[32mWaiting for the resources ready...\033[0m"
 CHECK_POD_LIST="app=nginx01 app=nginx02"
 for pod in ${CHECK_POD_LIST};do
   retry_times=0
@@ -22,11 +21,12 @@ for pod in ${CHECK_POD_LIST};do
     if [ "$(check_pod_ready test ${pod})" -eq 0 ];then
       break
     else
+      echo -e "\033[32mWaiting for the resources ready - ${retry_times}...\033[0m"
       retry_times=$((retry_times+1))
       sleep 1
     fi
   done
-  if [ $RETRY -ge 120 ];then
+  if [ $retry_times -ge 120 ];then
     echo -e "\033[31mWaiting for a resource ready timeout, exit.\033[0m"
     exit 1
   fi
