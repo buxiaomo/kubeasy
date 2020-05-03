@@ -21,7 +21,7 @@ for pod in ${CHECK_POD_LIST};do
     if [ "$(check_pod_ready test ${pod})" -eq 0 ];then
       break
     else
-      echo -e "\033[32mWaiting for the resources ready - ${retry_times}...\033[0m"
+      echo -e "\033[32mWaiting for the resources(${pod}) ready - ${retry_times}...\033[0m"
       retry_times=$((retry_times+1))
       sleep 1
     fi

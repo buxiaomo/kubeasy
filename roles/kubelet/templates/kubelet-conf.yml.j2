@@ -7,7 +7,7 @@ authentication:
     cacheTTL: 2m0s
     enabled: true
   x509:
-    clientCAFile: {{ ca.kubernetes.location }}/ca.crt
+    clientCAFile: {{ kubernetes.ssl.location }}/ca.crt
 authorization:
   mode: AlwaysAllow
   webhook:

@@ -94,7 +94,7 @@ grep -q "^${KUBE_VERSION}\$" binaries/kubernetes/${KUBE_VERSION}/.kubernetes 2>/
   binaries/kubernetes/${KUBE_VERSION}/kube-apiserver --version > /dev/null 2>&1 && \
   binaries/kubernetes/${KUBE_VERSION}/kube-controller-manager --version > /dev/null 2>&1 && \
   binaries/kubernetes/${KUBE_VERSION}/kube-scheduler --version > /dev/null 2>&1 && \
-  binaries/kubernetes/${KUBE_VERSION}/kubectl version > /dev/null 2>&1 && \
+  binaries/kubernetes/${KUBE_VERSION}/kubectl version --client=true > /dev/null 2>&1 && \
   binaries/kubernetes/${KUBE_VERSION}/kube-proxy --version > /dev/null 2>&1 && \
   binaries/kubernetes/${KUBE_VERSION}/kubelet --version > /dev/null 2>&1 && \
   echo ${KUBE_VERSION} > binaries/kubernetes/${KUBE_VERSION}/.kubernetes

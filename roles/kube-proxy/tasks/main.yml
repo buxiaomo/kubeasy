@@ -16,22 +16,22 @@
     state: directory
     mode: '0755'
 
-- name: Create data directory
+- name: Create ssl directory
   file: 
     name: '{{ item }}'
     state: directory
     mode: '0755'
   with_items:
-    - '{{ca.kubernetes.location }}'
+    - '{{ kubernetes.ssl.location }}'
 
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
-    dest: '{{ca.kubernetes.location }}'
+    dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
   with_items:
-    - '{{ca.kubernetes.location }}/ca.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
 
 - name: Create kube-proxy sa crb --- part.1
   copy: 
@@ -61,22 +61,22 @@
   shell: |
     {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
     {% if kubernetes.ha is defined %}
-      {% if kubernetes.cloud.type == "local" %}
-        {% if groups['master'] | length > 1 %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 8443 %}
+      {% if inventory_hostname in groups['master'] %}
+        {% if kubernetes.cloud.type == "local" and groups['master'] | length > 1 %}
+            {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 8443 %}
         {% else %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
+          {% if kubernetes.cloud.type == "local"  %}
+            {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
+          {% else %}
+            {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 6443 %}
+          {% endif %}
         {% endif %}
       {% else %}
-        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 6443 %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = hostvars[groups['master'][0]].inventory_hostname, 6443 %}
       {% endif %}
     {% else %}
-      {% if groups['master'] | length != 1 %}
-        {% if inventory_hostname in groups['master'] %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
-        {% else %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = hostvars[groups['master'][0]].inventory_hostname, 6443 %}
-        {% endif %}
+      {% if inventory_hostname in groups['master'] %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
       {% else %}
         {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = hostvars[groups['master'][0]].inventory_hostname, 6443 %}
       {% endif %}
@@ -84,7 +84,7 @@
 
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --embed-certs=true \
-      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
+      --certificate-authority={{ kubernetes.ssl.location }}/ca.crt \
       --server=https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 

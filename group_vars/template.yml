@@ -60,16 +60,16 @@ ansible_ssh_port: 22
 #     net.netfilter.nf_conntrack_tcp_timeout_established: 86400
 #     net.netfilter.nf_conntrack_tcp_timeout_close_wait: 3600
 
-ca:
-  # Certificate validity
-  # default: 10 years
-  days: 3652
-  kubernetes:
-    location: /etc/kubernetes/pki
-  etcd:
-    location: /etc/kubernetes/pki/etcd
-
 kubernetes:
+  # project name use for tls directory(/etc/ssl/$project).
+  project: "kube-ansible"
+
+  ssl:
+    # Certificate validity
+    # default: 10 years
+    days: 3652
+    location: /etc/kubernetes/pki
+
   # defaullt: kubernetes
   name: kubernetes
 
@@ -94,10 +94,10 @@ kubernetes:
 
   # choose: none flannel calico canal
   #   none: not deployment any network plugin
-  #   flannel: will deployment flannel plugin
+  #   flannel: will deployment flannel plugin (default)
   #   calico: will deployment calico plugin
-  #   canal: will deployment canal plugin (default)
-  network: canal
+  #   canal: will deployment canal plugin
+  network: flannel
 
   settings:
     master_run_pod: false

@@ -6,8 +6,8 @@
     state: directory
     mode: '0755'
   with_items:
-  - '{{ ca.kubernetes.location }}'
-  - '{{ ca.etcd.location }}'
+  - '/etc/ssl/{{ kubernetes.project }}'
+  - '/etc/ssl/{{ kubernetes.project }}/etcd'
 
 - name: Create certificate directory
   file: 
@@ -17,55 +17,55 @@
 - name: Create openssl template
   template: 
     src: openssl.cnf.j2
-    dest: '{{ ca.kubernetes.location }}/openssl.cnf'
+    dest: '/etc/ssl/{{ kubernetes.project }}/openssl.cnf'
   register: openssl_file
 
 - name: Check kubernetes ca certificate expired(30 days)
   shell: |
-    [ -f {{ ca.kubernetes.location }}/ca.crt ] && 
-    openssl x509 -in {{ ca.kubernetes.location }}/ca.crt -noout -text -checkend 2592000
+    [ -f /etc/ssl/{{ kubernetes.project }}/ca.crt ] && 
+    openssl x509 -in /etc/ssl/{{ kubernetes.project }}/ca.crt -noout -text -checkend 2592000
   register: kubernetes_ca_check
   ignore_errors: True
 
 - name: Create kubernetes ca
   shell: |
     openssl genrsa -out ca.key 2048 && \
-    openssl req -x509 -new -nodes -key ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out ca.crt -days {{ ca.days | default(3652) }}
+    openssl req -x509 -new -nodes -key ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out ca.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 - name: Check etcd ca certificate expired(30 days)
   shell: |
-    [ -f {{ ca.etcd.location }}/ca.crt ] && 
-    openssl x509 -in {{ ca.etcd.location }}/ca.crt -noout -text -checkend 2592000
+    [ -f /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt ] &&
+    openssl x509 -in /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt -noout -text -checkend 2592000
   register: etcd_ca_check
   ignore_errors: True
 
 - name: Create etcd ca
   shell: |
-    openssl genrsa -out {{ ca.etcd.location }}/ca.key 2048 && \
-    openssl req -x509 -new -nodes -key {{ ca.etcd.location }}/ca.key -config openssl.cnf -subj "/CN=etcd-ca" -extensions v3_ca -out {{ ca.etcd.location }}/ca.crt -days {{ ca.days | default(3652) }}
+    openssl genrsa -out /etc/ssl/{{ kubernetes.project }}/etcd/ca.key 2048 && \
+    openssl req -x509 -new -nodes -key /etc/ssl/{{ kubernetes.project }}/etcd/ca.key -config openssl.cnf -subj "/CN=etcd-ca" -extensions v3_ca -out /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: Check front-proxy ca certificate expired(30 days)
   shell: |
-    [ -f {{ ca.kubernetes.location }}/front-proxy-ca.crt ] && 
-    openssl x509 -in {{ ca.kubernetes.location }}/front-proxy-ca.crt -noout -text -checkend 2592000
+    [ -f /etc/ssl/{{ kubernetes.project }}/front-proxy-ca.crt ] && 
+    openssl x509 -in /etc/ssl/{{ kubernetes.project }}/front-proxy-ca.crt -noout -text -checkend 2592000
   register: front_proxy_ca_check
   ignore_errors: True
 
 - name: Create front-proxy-ca
   shell: |
     openssl genrsa -out front-proxy-ca.key 2048 && \
-    openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ ca.days | default(3652) }}
+    openssl req -x509 -new -nodes -key front-proxy-ca.key -config openssl.cnf -subj "/CN=kubernetes-ca" -extensions v3_ca -out front-proxy-ca.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: front_proxy_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -74,42 +74,42 @@
   shell: |
     openssl genrsa -out apiserver-etcd-client.key 2048 && \
     openssl req -new -key apiserver-etcd-client.key -subj "/CN=apiserver-etcd-client/O=system:masters" -out apiserver-etcd-client.csr && \
-    openssl x509 -in apiserver-etcd-client.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out apiserver-etcd-client.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -in apiserver-etcd-client.csr -req -CA /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt -CAkey /etc/ssl/{{ kubernetes.project }}/etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out apiserver-etcd-client.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: Create kube etcd
   shell: |
-    openssl genrsa -out {{ ca.etcd.location }}/server.key 2048 && \
-    openssl req -new -key {{ ca.etcd.location }}/server.key -subj "/CN=etcd-server" -out {{ ca.etcd.location }}/server.csr && \
-    openssl x509 -in {{ ca.etcd.location }}/server.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out {{ ca.etcd.location }}/server.crt -days {{ ca.days | default(3652) }}
+    openssl genrsa -out /etc/ssl/{{ kubernetes.project }}/etcd/server.key 2048 && \
+    openssl req -new -key /etc/ssl/{{ kubernetes.project }}/etcd/server.key -subj "/CN=etcd-server" -out /etc/ssl/{{ kubernetes.project }}/etcd/server.csr && \
+    openssl x509 -in /etc/ssl/{{ kubernetes.project }}/etcd/server.csr -req -CA /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt -CAkey /etc/ssl/{{ kubernetes.project }}/etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out /etc/ssl/{{ kubernetes.project }}/etcd/server.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: kube-etcd-peer
   shell: |
-    openssl genrsa -out {{ ca.etcd.location }}/peer.key 2048 && \
-    openssl req -new -key {{ ca.etcd.location }}/peer.key -subj "/CN=etcd-peer" -out {{ ca.etcd.location }}/peer.csr && \
-    openssl x509 -in {{ ca.etcd.location }}/peer.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out {{ ca.etcd.location }}/peer.crt -days {{ ca.days | default(3652) }}
+    openssl genrsa -out /etc/ssl/{{ kubernetes.project }}/etcd/peer.key 2048 && \
+    openssl req -new -key /etc/ssl/{{ kubernetes.project }}/etcd/peer.key -subj "/CN=etcd-peer" -out /etc/ssl/{{ kubernetes.project }}/etcd/peer.csr && \
+    openssl x509 -in /etc/ssl/{{ kubernetes.project }}/etcd/peer.csr -req -CA /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt -CAkey /etc/ssl/{{ kubernetes.project }}/etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out /etc/ssl/{{ kubernetes.project }}/etcd/peer.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
 
 - name: kube-etcd-healthcheck-client
   shell: |
-    openssl genrsa -out {{ ca.etcd.location }}/healthcheck-client.key 2048 && \
-    openssl req -new -key {{ ca.etcd.location }}/healthcheck-client.key -subj "/CN=etcd-client" -out {{ ca.etcd.location }}/healthcheck-client.csr && \
-    openssl x509 -in {{ ca.etcd.location }}/healthcheck-client.csr -req -CA {{ ca.etcd.location }}/ca.crt -CAkey {{ ca.etcd.location }}/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out {{ ca.etcd.location }}/healthcheck-client.crt -days {{ ca.days | default(3652) }}
+    openssl genrsa -out /etc/ssl/{{ kubernetes.project }}/etcd/healthcheck-client.key 2048 && \
+    openssl req -new -key /etc/ssl/{{ kubernetes.project }}/etcd/healthcheck-client.key -subj "/CN=etcd-client" -out /etc/ssl/{{ kubernetes.project }}/etcd/healthcheck-client.csr && \
+    openssl x509 -in /etc/ssl/{{ kubernetes.project }}/etcd/healthcheck-client.csr -req -CA /etc/ssl/{{ kubernetes.project }}/etcd/ca.crt -CAkey /etc/ssl/{{ kubernetes.project }}/etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out /etc/ssl/{{ kubernetes.project }}/etcd/healthcheck-client.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: etcd_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -118,9 +118,9 @@
   shell: |
     openssl genrsa -out apiserver.key 2048 && \
     openssl req -new -key apiserver.key -subj "/CN=kube-apiserver" -config openssl.cnf -out apiserver.csr && \
-    openssl x509 -req -in apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_apiserver -extfile openssl.cnf -out apiserver.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -req -in apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_apiserver -extfile openssl.cnf -out apiserver.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -129,9 +129,9 @@
   shell: |
     openssl genrsa -out  apiserver-kubelet-client.key 2048 && \
     openssl req -new -key apiserver-kubelet-client.key -subj "/CN=apiserver-kubelet-client/O=system:masters" -out apiserver-kubelet-client.csr && \
-    openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out apiserver-kubelet-client.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out apiserver-kubelet-client.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -140,9 +140,9 @@
   shell: |
     openssl genrsa -out  front-proxy-client.key 2048 && \
     openssl req -new -key front-proxy-client.key -subj "/CN=front-proxy-client" -out front-proxy-client.csr && \
-    openssl x509 -req -in front-proxy-client.csr -CA front-proxy-ca.crt -CAkey front-proxy-ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out front-proxy-client.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -req -in front-proxy-client.csr -CA front-proxy-ca.crt -CAkey front-proxy-ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out front-proxy-client.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: front_proxy_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -151,9 +151,9 @@
   shell: |
     openssl genrsa -out  kube-scheduler.key 2048 && \
     openssl req -new -key kube-scheduler.key -subj "/CN=system:kube-scheduler" -out kube-scheduler.csr && \
-    openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out kube-scheduler.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out kube-scheduler.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -163,9 +163,9 @@
     openssl ecparam -name secp521r1 -genkey -noout -out sa.key && \
     openssl ec -in sa.key -outform PEM -pubout -out sa.pub && \
     openssl req -new -sha256 -key sa.key -subj "/CN=system:kube-controller-manager" -out sa.csr && \
-    openssl x509 -req -in sa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out sa.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -req -in sa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out sa.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed
 
@@ -173,8 +173,8 @@
   shell: |
     openssl genrsa -out  admin.key 2048 && \
     openssl req -new -key admin.key -subj "/CN=kubernetes-admin/O=system:masters" -out admin.csr && \
-    openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out admin.crt -days {{ ca.days | default(3652) }}
+    openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out admin.crt -days {{ kubernetes.ca.days | default(3652) }}
   args:
-    chdir: '{{ ca.kubernetes.location }}'
+    chdir: '/etc/ssl/{{ kubernetes.project }}'
     executable: /bin/bash
   when: kubernetes_ca_check.rc != 0 or ( force | default(false) | bool  ) or openssl_file.changed

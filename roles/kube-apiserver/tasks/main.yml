@@ -16,45 +16,43 @@
     state: directory
     mode: '0755'
 
-- name: Create data directory
+- name: Create ssl directory
   file: 
     name: '{{ item }}'
     state: directory
     mode: '0755'
   with_items:
-    - '{{ca.kubernetes.location }}'
-    - '{{ca.kubernetes.location }}/etcd'
+    - '{{ kubernetes.ssl.location }}'
+    - '{{ kubernetes.ssl.location }}/etcd'
 
 - name: Distribution of etcd certificate
   copy: 
-    src: '{{ item }}'
-    dest: '{{ca.kubernetes.location }}/etcd'
+    src: '/etc/ssl/{{ kubernetes.project }}/etcd/ca.crt'
+    dest: '{{ kubernetes.ssl.location }}/etcd'
     owner: root
     group: root
-  with_items:
-    - '{{ca.kubernetes.location }}/etcd/ca.crt'
 
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
-    dest: '{{ca.kubernetes.location }}'
+    dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
   with_items:
-    - '{{ ca.kubernetes.location }}/ca.crt'
-    - '{{ ca.kubernetes.location }}/apiserver-etcd-client.crt'
-    - '{{ ca.kubernetes.location }}/apiserver-etcd-client.key'
-    - '{{ ca.kubernetes.location }}/apiserver-kubelet-client.crt'
-    - '{{ ca.kubernetes.location }}/apiserver-kubelet-client.key'
-    - '{{ ca.kubernetes.location }}/sa.pub'
-    - '{{ ca.kubernetes.location }}/sa.crt'
-    - '{{ ca.kubernetes.location }}/apiserver.crt'
-    - '{{ ca.kubernetes.location }}/apiserver.key'
-    - '{{ ca.kubernetes.location }}/front-proxy-ca.crt'
-    - '{{ ca.kubernetes.location }}/front-proxy-client.crt'
-    - '{{ ca.kubernetes.location }}/front-proxy-client.key'
-    - '{{ ca.kubernetes.location }}/admin.crt'
-    - '{{ ca.kubernetes.location }}/admin.key'
+    - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver-etcd-client.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver-etcd-client.key'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver-kubelet-client.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver-kubelet-client.key'
+    - '/etc/ssl/{{ kubernetes.project }}/sa.pub'
+    - '/etc/ssl/{{ kubernetes.project }}/sa.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver.key'
+    - '/etc/ssl/{{ kubernetes.project }}/front-proxy-ca.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/front-proxy-client.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/front-proxy-client.key'
+    - '/etc/ssl/{{ kubernetes.project }}/admin.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/admin.key'
 
 - name: Stat encryption config file
   stat: 

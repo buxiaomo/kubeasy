@@ -9,75 +9,62 @@
     group: root
   with_items:
     - kubectl
+  register: binary
 
-- name: Create data directory
+- name: Create ssl directory
   file: 
     name: '{{ item }}'
     state: directory
     mode: '0755'
   with_items:
-    - /etc/kubernetes
-
-- name: Install kubectl completion
-  copy: 
-    src: kubectl.sh
-    dest: /etc/bash_completion.d/kubectl
-    owner: root
-    group: root
-
-- name: Create data directory
-  file: 
-    name: '{{ item }}'
-    state: directory
-    mode: '0755'
-  with_items:
-    - '{{ca.kubernetes.location }}'
+    - '{{ kubernetes.ssl.location }}'
 
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
-    dest: '{{ca.kubernetes.location }}'
+    dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
   with_items:
-    - '{{ ca.kubernetes.location }}/ca.crt'
-    - '{{ ca.kubernetes.location }}/admin.crt'
-    - '{{ ca.kubernetes.location }}/admin.key'
+    - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/admin.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/admin.key'
+  register: certificate
 
 - name: Create kubeconfig
   shell: |
     {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
     {% if kubernetes.ha is defined %}
-      {% if kubernetes.cloud.type == "local" %}
-        {% if groups['master'] | length > 1 %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 8443 %}
+      {% if inventory_hostname in groups['master'] %}
+        {% if kubernetes.cloud.type == "local" and groups['master'] | length > 1 %}
+            {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 8443 %}
         {% else %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
+          {% if kubernetes.cloud.type == "local"  %}
+            {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
+          {% else %}
+            {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 6443 %}
+          {% endif %}
         {% endif %}
       {% else %}
-        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = kubernetes.ha.vip, 6443 %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = hostvars[groups['master'][0]].inventory_hostname, 6443 %}
       {% endif %}
     {% else %}
-      {% if groups['master'] | length != 1 %}
-        {% if inventory_hostname in groups['master'] %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
-        {% else %}
-          {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = hostvars[groups['master'][0]].inventory_hostname, 6443 %}
-        {% endif %}
+      {% if inventory_hostname in groups['master'] %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ansible_default_ipv4.address, 6443 %}
       {% else %}
         {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = hostvars[groups['master'][0]].inventory_hostname, 6443 %}
       {% endif %}
     {% endif %}
 
     kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
-      --certificate-authority={{ ca.kubernetes.location }}/ca.crt \
+      --certificate-authority={{ kubernetes.ssl.location }}/ca.crt \
       --server=https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }} \
       --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
     kubectl config set-credentials {{ item.KUBE_USER }} \
-      --client-certificate={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.crt \
-      --client-key={{ ca.kubernetes.location }}/{{ item.KUBE_CERT }}.key \
+      --client-certificate={{ kubernetes.ssl.location }}/{{ item.KUBE_CERT }}.crt \
+      --client-key={{ kubernetes.ssl.location }}/{{ item.KUBE_CERT }}.key \
       --embed-certs=true \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
@@ -89,6 +76,8 @@
     kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubernetes-admin', KUBE_CERT: 'admin', KUBE_CONFIG: 'admin.kubeconfig'}
+  # register: kubeconfig
+  # when: certificate.changed or binary.changed
 
 - name: Create user kube directory
   file: 
@@ -101,3 +90,11 @@
     src: /etc/kubernetes/admin.kubeconfig
     dest: ~/.kube/config
     remote_src: yes
+  # when: kubeconfig.changed
+
+- name: Install kubectl completion
+  copy: 
+    src: kubectl.sh
+    dest: /etc/bash_completion.d/kubectl
+    owner: root
+    group: root
