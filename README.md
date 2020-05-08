@@ -166,9 +166,6 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.5/cni
 
 # issue
 
-* ~~New node kube-proxy not ready~~
-* ~~K8S custom setting CIDR~~
-* Deploy flannel failure
 * Add check svc、pod ip is on host cird
 * Flag --experimental-encryption-provider-config has been deprecated, use --encryption-provider-config
 
