@@ -9,7 +9,6 @@ ExecStart=/usr/local/bin/kubelet \
   --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig \
   --kubeconfig=/etc/kubernetes/kubelet.conf \
   --config=/etc/kubernetes/kubelet-conf.yml \
-  --protect-kernel-defaults=true \
   --read-only-port=0 \
 {% if nodename is defined %}
   --hostname-override={{ nodename | lower }} \
