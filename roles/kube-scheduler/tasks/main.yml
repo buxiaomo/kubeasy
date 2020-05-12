@@ -30,6 +30,7 @@
     dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
+    mode: 0644
   with_items:
     - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
     - '/etc/ssl/{{ kubernetes.project }}/kube-scheduler.crt'
@@ -78,8 +79,15 @@
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
      kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+     chmod 0644 /etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
-    - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.kubeconfig'}
+    - { KUBE_USER: 'system:kube-scheduler', KUBE_CERT: "kube-scheduler", KUBE_CONFIG: 'scheduler.conf'}
+
+- name: Change file permissions
+  file:
+    path: /etc/kubernetes/scheduler.conf
+    mode: '0644'
 
 - name: Install systemd file
   template: 
@@ -95,11 +103,11 @@
 
 - name: Health check
   uri: 
-    url: http://{{ ansible_default_ipv4.address }}:10251/healthz
+    url: 'http://{% if kubernetes.scheduler.bind != "0.0.0.0" %}127.0.0.1{% else %}{{ ansible_default_ipv4.address }}{% endif %}:10251/healthz'
     validate_certs: no
     return_content: yes
   register: this
   until: "'ok' in this.content"
   retries: 30
-  delay: 5
+  delay: 1
   connection: local

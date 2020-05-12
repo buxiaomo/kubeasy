@@ -1,11 +1,11 @@
 ---
 # Ansible settings
-ansible_become: yes
 ansible_ssh_port: 22
-# ansible_ssh_user: 'root'
+ansible_ssh_user: 'root'
 # ansible_ssh_pass: 'root'
 # ansible_sudo_user: 'root'
 # ansible_sudo_pass: 'root'
+ansible_become: "{% if ansible_ssh_user != 'root' %}yes{% else %}no{% endif %}"
 
 # timezone settings, default is Asia/Shanghai
 # timezone: 'Asia/Shanghai'
@@ -137,6 +137,7 @@ kubernetes:
 
   # kubelet parameter configuration
   kubelet: 
+    bind: 0.0.0.0
     log:
       logLevel: 2
       logDir: /var/log/kubernetes

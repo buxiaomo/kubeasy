@@ -1,12 +1,17 @@
 ---
 # tasks file for etcd
+# - name: Add the etcd user
+#   user:
+#     name: etcd
+#     shell: /bin/bash
+#     comment: etcd user
+#     system: true
+
 - name: Install the binary
   copy: 
     src: '{{ item }}'
     dest: /usr/local/bin/
     mode: 0755
-    owner: root
-    group: root
   with_items:
     - etcd
     - etcdctl
@@ -14,19 +19,25 @@
 - name: Create data directory
   file: 
     name: '{{ kubernetes.etcd.datadir }}'
+    recurse: yes
     state: directory
+    mode: 0700
 
 - name: Create certificate directory
   file: 
     name: '{{ kubernetes.ssl.location }}/etcd'
+    recurse: yes
     state: directory
+    # owner: etcd
+    # group: etcd
 
 - name: Distribution of certificate
   copy: 
     src: '{{ item }}'
     dest: '{{ kubernetes.ssl.location }}/etcd'
-    owner: root
-    group: root
+    # owner: etcd
+    # group: etcd
+    mode: 0644
   with_items:
     - '/etc/ssl/{{ kubernetes.project }}/etcd/ca.crt'
     - '/etc/ssl/{{ kubernetes.project }}/etcd/server.crt'

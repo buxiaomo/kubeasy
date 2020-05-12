@@ -38,21 +38,23 @@
     dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
+    mode: 0644
   with_items:
     - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
     - '/etc/ssl/{{ kubernetes.project }}/apiserver-etcd-client.crt'
-    - '/etc/ssl/{{ kubernetes.project }}/apiserver-etcd-client.key'
     - '/etc/ssl/{{ kubernetes.project }}/apiserver-kubelet-client.crt'
-    - '/etc/ssl/{{ kubernetes.project }}/apiserver-kubelet-client.key'
     - '/etc/ssl/{{ kubernetes.project }}/sa.pub'
     - '/etc/ssl/{{ kubernetes.project }}/sa.crt'
     - '/etc/ssl/{{ kubernetes.project }}/apiserver.crt'
-    - '/etc/ssl/{{ kubernetes.project }}/apiserver.key'
     - '/etc/ssl/{{ kubernetes.project }}/front-proxy-ca.crt'
     - '/etc/ssl/{{ kubernetes.project }}/front-proxy-client.crt'
-    - '/etc/ssl/{{ kubernetes.project }}/front-proxy-client.key'
     - '/etc/ssl/{{ kubernetes.project }}/admin.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver-etcd-client.key'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver-kubelet-client.key'
+    - '/etc/ssl/{{ kubernetes.project }}/apiserver.key'
+    - '/etc/ssl/{{ kubernetes.project }}/front-proxy-client.key'
     - '/etc/ssl/{{ kubernetes.project }}/admin.key'
+
 
 - name: Stat encryption config file
   stat: 
@@ -69,12 +71,14 @@
   template: 
     src: encryption-config.yaml.j2
     dest: /etc/kubernetes/pki/encryption-config.yaml
+    mode: '0644'
   when: not encryption_config_file.stat.exists
 
 - name: Install audit policy
   template: 
     src: audit-policy-minimal.yaml.j2
     dest: /etc/kubernetes/pki/audit-policy-minimal.yaml
+    mode: '0644'
 
 - name: Install systemd file
   template: 
@@ -96,7 +100,7 @@
 
 - name: Health check
   uri: 
-    url: https://{{ ansible_default_ipv4.address }}:6443/healthz
+    url: 'https://{% if kubernetes.apiserver.bind != "0.0.0.0" %}127.0.0.1{% else %}{{ ansible_default_ipv4.address }}{% endif %}:6443/healthz'
     validate_certs: no
     return_content: yes
   register: this

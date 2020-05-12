@@ -6,13 +6,13 @@ After=network.target
 [Service]
 ExecStart=/usr/local/bin/kube-controller-manager \
   --allocate-node-cidrs=true \
-  --authentication-kubeconfig=/etc/kubernetes/controller-manager.kubeconfig \
-  --authorization-kubeconfig=/etc/kubernetes/controller-manager.kubeconfig \
-  --bind-address={{ kubernetes.controllerManager.bind }} \
+  --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf \
+  --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf \
+  --kubeconfig=/etc/kubernetes/controller-manager.conf \
+  --bind-address={{ kubernetes.controllerManager.bind | default('127.0.0.1') }} \
   --client-ca-file={{ kubernetes.ssl.location }}/ca.crt \
   --cluster-signing-cert-file={{ kubernetes.ssl.location }}/ca.crt \
   --cluster-signing-key-file={{ kubernetes.ssl.location }}/ca.key \
-  --kubeconfig=/etc/kubernetes/controller-manager.kubeconfig \
   --leader-elect=true \
   --cluster-cidr={{ kubernetes.settings.PodCIDR }} \
   --service-cluster-ip-range={{ kubernetes.settings.SvcCIDR }} \
@@ -22,7 +22,8 @@ ExecStart=/usr/local/bin/kube-controller-manager \
   --use-service-account-credentials=true \
   --controllers=*,bootstrapsigner,tokencleaner \
   --experimental-cluster-signing-duration=86700h \
-  --feature-gates=RotateKubeletClientCertificate=true \
+  --feature-gates=RotateKubeletServerCertificate=true \
+  --profiling=false \
 {% if kubernetes.controllerManager.terminatedPodGcThreshold is defined %}
   --terminated-pod-gc-threshold={{ kubernetes.controllerManager.terminatedPodGcThreshold }} \
 {% endif %}

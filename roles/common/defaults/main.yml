@@ -41,3 +41,4 @@ sysctl:
     vm.panic_on_oom: 0
     net.netfilter.nf_conntrack_tcp_timeout_established: 86400
     net.netfilter.nf_conntrack_tcp_timeout_close_wait: 3600
+    kernel.pid_max: 65535

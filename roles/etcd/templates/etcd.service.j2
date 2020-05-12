@@ -20,7 +20,6 @@ Restart=always
 RestartSec=5s
 LimitNOFILE=40000
 TimeoutStartSec=0
-
 ExecStart=/usr/local/bin/etcd --name {{ ansible_fqdn | lower }} \
   --data-dir {{ kubernetes.etcd.datadir }} \
   --listen-client-urls https://{{ ansible_default_ipv4.address }}:2379 \

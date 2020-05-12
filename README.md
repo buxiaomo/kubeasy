@@ -194,22 +194,19 @@ name=
 project=
 
 
-ansible-playbook -i hosts install.yml -t kube-master --start-at-task "Install some applications"
-
-ansible-playbook -i hosts install.yml --list-tags
-
-ansible-playbook -i hosts install.yml --list-tasks
-
-ansible-playbook -i hosts install.yml -e force=$(force)
-ansible-playbook -i hosts install.yml -t common
-ansible-playbook -i hosts install.yml -t ca
-ansible-playbook -i hosts install.yml -t etcd
-ansible-playbook -i hosts install.yml -t kubernetes-init
-ansible-playbook -i hosts install.yml -t kube-master
-ansible-playbook -i hosts install.yml -t kube-worker
-ansible-playbook -i hosts install.yml -t cleanup
-ansible-playbook -i hosts install.yml -t addons
-ansible-playbook -i hosts install.yml -t test
+ansible-playbook -i inventory/hosts install.yml -t kube-master --start-at-task "Install some applications"
+ansible-playbook -i inventory/hosts install.yml --list-tags
+ansible-playbook -i inventory/hosts install.yml --list-tasks
+ansible-playbook -i inventory/hosts install.yml -e force=$(force)
+ansible-playbook -i inventory/hosts install.yml -t common
+ansible-playbook -i inventory/hosts install.yml -t ca
+ansible-playbook -i inventory/hosts install.yml -t etcd
+ansible-playbook -i inventory/hosts install.yml -t kubernetes-init
+ansible-playbook -i inventory/hosts install.yml -t kube-master
+ansible-playbook -i inventory/hosts install.yml -t kube-worker
+ansible-playbook -i inventory/hosts install.yml -t cleanup
+ansible-playbook -i inventory/hosts install.yml -t addons
+ansible-playbook -i inventory/hosts install.yml -t test
 
 Master: 
 systemctl stop kube-apiserver.service kube-scheduler.service kube-controller-manager.service kube-proxy.service kubelet.service etcd.service

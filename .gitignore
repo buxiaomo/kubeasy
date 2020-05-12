@@ -26,3 +26,6 @@ scripts/src/*.gz
 scripts/src/*.tgz
 scripts/tmp
 inventory/terraform
+
+inventory/hosts
+group_vars/all.yml

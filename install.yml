@@ -1,7 +1,6 @@
 ---
 - name: Base environment configuration
   hosts: all
-  become: yes
   roles:
     - common
     - chrony
@@ -17,7 +16,6 @@
 
 - name: Deployment etcd cluster
   hosts: "{% if groups['etcd'] is not defined %}master{% else %}kube-etcd{% endif %}"
-  become: yes
   roles:
     - etcd
   tags:
@@ -25,7 +23,6 @@
 
 - name: Init all kubernetes node
   hosts: kubernetes
-  become: yes
   roles:
     - ipvs
   tags:
@@ -33,7 +30,6 @@
 
 - name: Deployment kube master
   hosts: master
-  become: yes
   roles:
     - haproxy
     - keepalived
@@ -50,7 +46,6 @@
 
 - name: Deployment kube worker
   hosts: worker
-  become: yes
   roles:
     - docker
     - kubectl
@@ -62,7 +57,6 @@
 
 - name: Clean up the data
   hosts: all
-  become: yes
   roles:
     - cleanup
   tags:

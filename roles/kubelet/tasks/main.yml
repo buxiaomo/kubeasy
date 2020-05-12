@@ -198,7 +198,7 @@
 
 - name: Health check
   uri: 
-    url: http://{{ ansible_default_ipv4.address }}:10248/healthz
+    url: 'http://{% if kubernetes.kubelet.bind != "0.0.0.0" %}127.0.0.1{% else %}{{ ansible_default_ipv4.address }}{% endif %}:10248/healthz'
     validate_certs: no
     return_content: yes
   register: this

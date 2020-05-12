@@ -30,6 +30,7 @@
     dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
+    mode: 0644
   with_items:
     - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
     - '/etc/ssl/{{ kubernetes.project }}/ca.key'
@@ -80,7 +81,12 @@
 
      kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }} 
   with_items:
-    - { KUBE_USER: 'system:kube-controller-manager', KUBE_CERT: "sa", KUBE_CONFIG: 'controller-manager.kubeconfig' }
+    - { KUBE_USER: 'system:kube-controller-manager', KUBE_CERT: "sa", KUBE_CONFIG: 'controller-manager.conf' }
+
+- name: Change file permissions
+  file:
+    path: /etc/kubernetes/controller-manager.conf
+    mode: '0644'
 
 - name: Install systemd file
   template: 
@@ -96,7 +102,7 @@
 
 - name: Health check
   uri: 
-    url: http://{{ ansible_default_ipv4.address }}:10252/healthz
+    url: 'http://{% if kubernetes.controllerManager.bind != "0.0.0.0" %}127.0.0.1{% else %}{{ ansible_default_ipv4.address }}{% endif %}:10252/healthz'
     validate_certs: no
     return_content: yes
   register: this

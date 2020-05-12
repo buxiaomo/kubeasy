@@ -30,6 +30,7 @@
     dest: '{{ kubernetes.ssl.location }}'
     owner: root
     group: root
+    mode: 0644
   with_items:
     - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
 
@@ -99,7 +100,12 @@
 
     kubectl config use-context {{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
-    - { KUBE_CONFIG: 'kube-proxy.kubeconfig'}
+    - { KUBE_CONFIG: 'proxy.conf'}
+
+- name: Change file permissions
+  file:
+    path: /etc/kubernetes/proxy.conf
+    mode: '0644'
 
 - name: Install config file
   template: 
