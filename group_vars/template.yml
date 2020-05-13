@@ -62,7 +62,7 @@ ansible_become: "{% if ansible_ssh_user != 'root' %}yes{% else %}no{% endif %}"
 
 kubernetes:
   # project name use for tls directory(/etc/ssl/$project).
-  project: "kube-ansible"
+  project: kubernetes
 
   ssl:
     # Certificate validity
