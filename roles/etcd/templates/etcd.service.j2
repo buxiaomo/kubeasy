@@ -21,25 +21,25 @@ RestartSec=5s
 LimitNOFILE=40000
 TimeoutStartSec=0
 ExecStart=/usr/local/bin/etcd \
-  --name etcd-{{ play_hosts.index(inventory_hostname) }} \
-  --data-dir {{ kubernetes.etcd.datadir }} \
-  --listen-client-urls https://127.0.0.1:2379,https://{{ ansible_default_ipv4.address }}:2379 \
-  --advertise-client-urls https://{{ ansible_default_ipv4.address }}:2379 \
-  --listen-peer-urls https://{{ ansible_default_ipv4.address }}:2380 \
-  --initial-advertise-peer-urls https://{{ ansible_default_ipv4.address }}:2380 \
-  --initial-cluster {% for host in etcdnode %}etcd-{{ play_hosts.index(host) }}=https://{{ host }}:2380{% if not loop.last %},{% endif %}{% endfor %} \ \
-  --initial-cluster-token {{ kubernetes.etcd.initialclustertoken }} \
-  --initial-cluster-state {{ kubernetes.etcd.initialclusterstate }} \
-  --client-cert-auth true \
-  --trusted-ca-file {{ kubernetes.ssl.location }}/etcd/ca.crt \
-  --cert-file {{ kubernetes.ssl.location }}/etcd/server.crt \
-  --key-file {{ kubernetes.ssl.location }}/etcd/server.key \
-  --peer-client-cert-auth true \
-  --peer-trusted-ca-file {{ kubernetes.ssl.location }}/etcd/ca.crt \
-  --peer-cert-file {{ kubernetes.ssl.location }}/etcd/peer.crt \
-  --peer-key-file {{ kubernetes.ssl.location }}/etcd/peer.key \
-  --snapshot-count 10000 \
-  --listen-metrics-urls http://127.0.0.1:2381
+  --name=etcd-{{ play_hosts.index(inventory_hostname) }} \
+  --data-dir={{ kubernetes.etcd.datadir }} \
+  --listen-client-urls=https://127.0.0.1:2379,https://{{ ansible_default_ipv4.address }}:2379 \
+  --advertise-client-urls=https://{{ ansible_default_ipv4.address }}:2379 \
+  --listen-peer-urls=https://{{ ansible_default_ipv4.address }}:2380 \
+  --initial-advertise-peer-urls=https://{{ ansible_default_ipv4.address }}:2380 \
+  --initial-cluster={% for host in etcdnode %}etcd-{{ play_hosts.index(host) }}=https://{{ host }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
+  --initial-cluster-token={{ kubernetes.etcd.initialclustertoken }} \
+  --initial-cluster-state={{ kubernetes.etcd.initialclusterstate }} \
+  --client-cert-auth=true \
+  --trusted-ca-file={{ kubernetes.ssl.location }}/etcd/ca.crt \
+  --cert-file={{ kubernetes.ssl.location }}/etcd/server.crt \
+  --key-file={{ kubernetes.ssl.location }}/etcd/server.key \
+  --peer-client-cert-auth=true \
+  --peer-trusted-ca-file={{ kubernetes.ssl.location }}/etcd/ca.crt \
+  --peer-cert-file={{ kubernetes.ssl.location }}/etcd/peer.crt \
+  --peer-key-file={{ kubernetes.ssl.location }}/etcd/peer.key \
+  --snapshot-count=10000 \
+  --listen-metrics-urls=http://127.0.0.1:2381
 
 [Install]
 WantedBy=multi-user.target
