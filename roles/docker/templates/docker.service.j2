@@ -4,6 +4,7 @@ Documentation=http://docs.docker.com
 After=network.target
 
 [Service]
+ExecStartPre=/sbin/iptables -P FORWARD ACCEPT
 ExecStart=/usr/local/bin/dockerd
 ExecReload=/bin/kill -s HUP $MAINPID
 Restart=on-failure

@@ -8,7 +8,7 @@ ansible_ssh_user: 'root'
 ansible_become: "{% if ansible_ssh_user != 'root' %}yes{% else %}no{% endif %}"
 
 # timezone settings, default is Asia/Shanghai
-# timezone: 'Asia/Shanghai'
+timezone: 'Asia/Shanghai'
 
 # modprobe:
 #   filename: /etc/modules
@@ -110,9 +110,6 @@ kubernetes:
 
   # etcd parameter configuration
   etcd: 
-    enablepprof: true
-    autocompactionretention: 1
-    debug: true
     datadir: /var/lib/etcd
     initialclustertoken: 'kubernetes'
     initialclusterstate: 'new'
@@ -131,8 +128,11 @@ kubernetes:
         - "overlay2.override_kernel_check=true"
       log-driver: "json-file"
       log-opts: 
-        max-size: "500m"
-        max-file: "2"
+        max-size: "100m"
+        max-file: "5"
+      max-concurrent-downloads: 20
+      max-concurrent-uploads: 10
+      live-restore: true
       debug: true
 
   # kubelet parameter configuration

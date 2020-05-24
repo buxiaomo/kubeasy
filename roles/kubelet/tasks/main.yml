@@ -55,6 +55,7 @@
   command: kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].metadata.name}"
   register: bootstrap_token
   ignore_errors: True
+  run_once: true
 
 - name: Register token id
   shell: |

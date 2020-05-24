@@ -5,7 +5,7 @@ Refer to the `README.md` and `group_vars/template.yml` files for project configu
 ## Cloud Support
 
 * [x] Azure
-* [ ] Aws
+* [x] Aws(Apiserver HA use the CLB)
 * [x] GCP(Apiserver HA use the TCP Load balancing)
 
 ## OS Support
