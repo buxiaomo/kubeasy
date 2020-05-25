@@ -1,27 +1,38 @@
-{%- set allnode,etcdnode=[],[] -%}
-{%- if kubernetes.vip is defined %}
-{{ allnode.append(kubernetes.vip) }}
-{%- endif %}
+{%- set allnode,etcdnode, extDomain=[],[],[] -%}
 
 {%- for host in groups['master'] -%}
     {{ allnode.append(host) }}
-{%- endfor%}
+{%- endfor %}
 {%- for host in groups['worker'] -%}
     {{ allnode.append(host) }}
-{%- endfor%}
+{%- endfor %}
 
 {%- if groups['etcd'] is not defined %}
     {%- for host in groups['master'] -%}
         {{ etcdnode.append(host) }}
-    {%- endfor%}
-{%- else%}
+    {%- endfor %}
+{%- else %}
         {%- for host in groups['etcd'] -%}
         {{ etcdnode.append(host) }}
-    {%- endfor%}
+    {%- endfor %}
 {%- endif %}
 
-{%- if kubernetes.ha.mask is defined %}
-{{ allnode.append(kubernetes.ha.vip) }}
+{%- if kubernetes.ha is defined %}
+    {%- if kubernetes.ha.vip is search("^[\d.]+$") -%}
+        {{ allnode.append(kubernetes.ha.vip) }}
+    {%- else -%}
+        {{ extDomain.append(kubernetes.ha.vip) }}
+    {%- endif -%}
+{%- endif %}
+
+{%- if kubernetes.ssl.extension is defined %}
+    {%- for Domain in kubernetes.ssl.extension %}
+        {%- if Domain is search("^[\d.]+$") -%}
+            {{ allnode.append(Domain) }}
+        {%- else -%}
+            {{ extDomain.append(Domain) }}
+        {%- endif -%}
+    {%- endfor %}
 {%- endif %}
 [ req ]
 default_bits = 2048
@@ -57,13 +68,15 @@ extendedKeyUsage = serverAuth, clientAuth
 subjectAltName = @alt_names_etcd
 
 [ alt_names_cluster ]
-DNS.1 = kubernetes
-DNS.2 = kubernetes.default
-DNS.3 = kubernetes.default.svc
-DNS.4 = kubernetes.default.svc.cluster.local
-DNS.5 = localhost
-{% if kubernetes.ha.mask is not defined %}
-DNS.6 = {{ kubernetes.ha.vip }}
+DNS.1 = localhost
+DNS.2 = kubernetes
+DNS.3 = kubernetes.default
+DNS.4 = kubernetes.default.svc
+DNS.5 = kubernetes.default.svc.cluster.local
+{% if  extDomain | length > 0 %}
+{% for Domain in extDomain %}
+DNS.{{ loop.index + 5 }} = {{ Domain }}
+{% endfor %}
 {% endif %}
 IP.1 = {{ kubernetes.settings.SvcIP }}
 IP.2 = 127.0.0.1

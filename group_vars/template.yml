@@ -69,6 +69,10 @@ kubernetes:
     # default: 10 years
     days: 3652
     location: /etc/kubernetes/pki
+    # for porxy reserved
+    # extension:
+    #   - *.xiaomo.io
+    #   - 192.168.1.1
 
   # defaullt: kubernetes
   name: kubernetes
@@ -89,10 +93,10 @@ kubernetes:
 
   # kube-apiserver HA configuration
   # ha:
-  #   vip: 172.16.16.10
+  #   vip: 172.16.17.10
   #   mask: 16
 
-  # choose: none flannel calico canal
+  # choose: none flannel calico canals
   #   none: not deployment any network plugin
   #   flannel: will deployment flannel plugin (default)
   #   calico: will deployment calico plugin
