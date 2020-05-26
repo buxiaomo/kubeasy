@@ -14,12 +14,12 @@
       run_once: true
 
     - name: Clean old deployment
-      shell: 'kubectl delete -f {{ kubernetes.addon.location }}/flannel/flannel.yaml'
+      shell: '/usr/local/bin/kubectl delete -f {{ kubernetes.addon.location }}/flannel/flannel.yaml'
       run_once: true
       when: flannel_yaml_file.stat.exists
 
     - name: Waiting deployment delete
-      shell: kubectl get po -n kube-system
+      shell: /usr/local/bin/kubectl get po -n kube-system
       register: waiting_for_delete_deployment_done
       until: waiting_for_delete_deployment_done.rc == 0 and waiting_for_delete_deployment_done.stdout.find("kube-flannel") == -1
       retries: 30
@@ -34,6 +34,6 @@
         dest: '{{ kubernetes.addon.location }}/flannel/flannel.yaml'
 
     - name: Deployment flannel --- part.2
-      shell: 'kubectl apply -f {{ kubernetes.addon.location }}/flannel/flannel.yaml'
+      shell: '/usr/local/bin/kubectl apply -f {{ kubernetes.addon.location }}/flannel/flannel.yaml'
       run_once: true
   when: kubernetes.network == "flannel"

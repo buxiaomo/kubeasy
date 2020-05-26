@@ -52,7 +52,7 @@
     - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
 
 - name: Check bootstrap token
-  command: kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].metadata.name}"
+  command: /usr/local/bin/kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].metadata.name}"
   register: bootstrap_token
   ignore_errors: True
   run_once: true
@@ -60,12 +60,12 @@
 - name: Register token id
   shell: |
     {% if bootstrap_token.rc == 0 %}
-      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
+    /usr/local/bin/kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
       openssl rand -hex 3 | base64
       {% else %}
-      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
+      /usr/local/bin/kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-id}"
       {% endif %}
     {% endif %}
   register: TOKEN_ID
@@ -74,12 +74,12 @@
 - name: Register token secret
   shell: |
     {% if bootstrap_token.rc == 0 %}
-      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
+      /usr/local/bin/kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
     {% else %}
       {% if inventory_hostname in groups['master'] %}
-      openssl rand -hex 8 | base64
+        openssl rand -hex 8 | base64
       {% else %}
-      kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
+        /usr/local/bin/kubectl get secret -n kube-system -l ansible=true --output="jsonpath={.items[0].data.token-secret}"
       {% endif %}
     {% endif %}
   register: TOKEN_SECRET
@@ -87,7 +87,7 @@
 
 - name: Create bootstrap token
   shell: |
-    kubectl -n kube-system create secret generic bootstrap-token-{{ TOKEN_ID.stdout | b64decode | trim  }} \
+    /usr/local/bin/kubectl -n kube-system create secret generic bootstrap-token-{{ TOKEN_ID.stdout | b64decode | trim  }} \
     --type 'bootstrap.kubernetes.io/token' \
     --from-literal description="cluster bootstrap token" \
     --from-literal token-id={{ TOKEN_ID.stdout | b64decode | trim }} \
@@ -95,7 +95,7 @@
     --from-literal usage-bootstrap-authentication=true \
     --from-literal usage-bootstrap-signing=true
 
-    kubectl label secrets -n kube-system bootstrap-token-{{ TOKEN_ID.stdout | b64decode | trim }} ansible=true
+    /usr/local/bin/kubectl label secrets -n kube-system bootstrap-token-{{ TOKEN_ID.stdout | b64decode | trim }} ansible=true
   run_once: true
   when: bootstrap_token.rc != 0 and inventory_hostname in groups['master']
 
@@ -162,7 +162,7 @@
   when: inventory_hostname in groups['master']
 
 - name: Create auto-approve --- part.2
-  command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
+  command: '/usr/local/bin/kubectl apply -f /etc/kubernetes/{{ item }}'
   run_once: true
   with_items:
     - auto-approve-csrs-for-group.yml
@@ -209,7 +209,7 @@
   connection: local
 
 - name: Waiting node on-line
-  shell: kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
+  shell: /usr/local/bin/kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].hostname | lower }}{% endif %}
   register: waiting_for_node
   until: waiting_for_node.rc == 0 and (waiting_for_node.stdout.find("NotReady") != -1 or waiting_for_node.stdout.find("Ready") != -1)
   retries: 15
