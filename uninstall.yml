@@ -1,0 +1,179 @@
+---
+- name: Uninstall Worker Nodes
+  hosts: worker
+  tasks:
+    - name: Stop the service
+      systemd:
+        name: '{{ item }}'
+        state: stopped
+        enabled: no
+        daemon_reload: no
+      with_items: 
+        - kubelet
+        - docker
+        - kube-proxy
+      ignore_errors: true
+      notify:
+        - Remove systemd
+
+    - name: Delete binary file
+      file:
+        path: '/usr/local/bin/{{ item }}'
+        state: absent
+      with_items:
+        - kubelet
+        - kube-proxy
+        - containerd
+        - containerd-shim
+        - ctr
+        - docker
+        - dockerd
+        - docker-init
+        - docker-proxy
+        - runc
+        - kubectl
+
+    - name: Delete configuration file
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /etc/kubernetes
+        - /etc/docker
+        - /etc/bash_completion.d/kubectl
+        # - /var/lib/kubelet
+        # - /var/lib/docker
+
+    - name: Remove systemd
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /etc/systemd/system/kubelet.service
+        - /etc/systemd/system/kube-proxy.service
+        - /etc/systemd/system/docker.service
+
+    - name: Reboot system
+      shell: sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1
+      async: 1
+      poll: 0
+      ignore_errors: true
+
+    - name: Wait for server to restart
+      local_action:
+        module: wait_for
+          host={{ inventory_hostname }}
+          port=22
+          delay=10
+
+    - name: Delete data file
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /var/lib/kubelet
+        - /var/lib/docker
+
+- name: Uninstall Master Nodes
+  hosts: master
+  tasks:
+    - name: Stop the service
+      systemd:
+        name: '{{ item }}'
+        state: stopped
+        enabled: no
+        daemon_reload: yes
+      with_items: 
+        - kubelet
+        - docker
+        - kube-proxy
+        - kube-apiserver
+        - kube-controller-manager
+        - kube-scheduler
+        - etcd
+        - keepalived
+        - haproxy
+      ignore_errors: true
+
+    - name: remove the package
+      package:
+        name: '{{ item }}'
+        state: absent
+      with_items: 
+        - keepalived
+        - haproxy
+
+    - name: Delete binary file
+      file:
+        path: '/usr/local/bin/{{ item }}'
+        state: absent
+      with_items:
+        - kubelet
+        - kube-proxy
+        - containerd
+        - containerd-shim
+        - ctr
+        - docker
+        - dockerd
+        - docker-init
+        - docker-proxy
+        - runc
+        - kube-apiserver
+        - kube-controller-manager
+        - kubectl
+        - kube-scheduler
+        - etcd-health-check
+        - etcdctl
+        - etcd
+
+    - name: Delete configuration file
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /etc/kubernetes
+        - /etc/docker
+        - /var/lib/etcd
+        - /etc/bash_completion.d/kubectl
+        # - /var/lib/kubelet
+        # - /var/lib/docker
+
+    - name: Remove systemd
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /etc/systemd/system/kubelet.service
+        - /etc/systemd/system/kube-proxy.service
+        - /etc/systemd/system/docker.service
+        - /etc/systemd/system/kube-apiserver.service
+        - /etc/systemd/system/kube-controller-manager.service
+        - /etc/systemd/system/kube-scheduler.service
+        - /etc/systemd/system/etcd.service
+
+    - name: Reboot system
+      shell: sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1
+      async: 1
+      poll: 0
+      ignore_errors: true
+      when: ansible_env.SSH_CLIENT.find( ansible_default_ipv4.address ) == -1
+
+    - name: Wait for server to restart
+      local_action:
+        module: wait_for
+          host={{ inventory_hostname }}
+          port=22
+          delay=10
+
+    - name: Delete data file
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /var/lib/kubelet
+        - /var/lib/docker
+
+    - name: Information to remind
+      debug:
+        msg: "if task server is in your cluster, please reboot the server and remove '/var/lib/kubelet' and '/var/lib/docker' directory"
+      run_once: true

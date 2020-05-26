@@ -37,7 +37,7 @@
   shell: |
     openssl genrsa -out etcd/server.key 2048 && \
     openssl req -new -key etcd/server.key -subj "/CN=etcd-server" -out etcd/server.csr && \
-    openssl x509 -in etcd/server.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/server.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -in etcd/server.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/server.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
@@ -46,7 +46,7 @@
   shell: |
     openssl genrsa -out etcd/peer.key 2048 && \
     openssl req -new -key etcd/peer.key -subj "/CN=etcd-peer" -out etcd/peer.csr && \
-    openssl x509 -in etcd/peer.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/peer.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -in etcd/peer.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/peer.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
@@ -55,7 +55,7 @@
   shell: |
     openssl genrsa -out etcd/healthcheck-client.key 2048 && \
     openssl req -new -key etcd/healthcheck-client.key -subj "/CN=etcd-client" -out etcd/healthcheck-client.csr && \
-    openssl x509 -in etcd/healthcheck-client.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/healthcheck-client.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -in etcd/healthcheck-client.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/healthcheck-client.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
