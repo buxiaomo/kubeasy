@@ -81,7 +81,7 @@ DNS.{{ loop.index + 5 }} = {{ Domain }}
 IP.1 = {{ kubernetes.settings.SvcIP }}
 IP.2 = 127.0.0.1
 {% if  allnode | length > 0 %}
-{% for host in allnode %}IP.{{ loop.index + 2 }} = {{ host }}
+{% for host in allnode | unique  %}IP.{{ loop.index + 2 }} = {{ host }}
 {% endfor %}
 {% endif %}
 
