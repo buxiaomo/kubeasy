@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: busybox
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: busybox
+          image: busybox:1.31.1-glibc
+          command:
+            - sleep
+            - "3600"
