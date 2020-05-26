@@ -72,4 +72,4 @@ do
 done
 
 echo -e "\033[32m-> Clean up...\033[0m"
-kubectl delete -f check-cluster.yaml
+kubectl delete -f check-cluster.yaml -f dnsutils.yaml
