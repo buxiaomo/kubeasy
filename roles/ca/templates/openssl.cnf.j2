@@ -74,14 +74,14 @@ DNS.3 = kubernetes.default
 DNS.4 = kubernetes.default.svc
 DNS.5 = kubernetes.default.svc.cluster.local
 {% if  extDomain | length > 0 %}
-{% for Domain in extDomain %}
+{% for Domain in extDomain | unique  %}
 DNS.{{ loop.index + 5 }} = {{ Domain }}
 {% endfor %}
 {% endif %}
 IP.1 = {{ kubernetes.settings.SvcIP }}
 IP.2 = 127.0.0.1
 {% if  allnode | length > 0 %}
-{% for host in allnode | unique  %}IP.{{ loop.index + 2 }} = {{ host }}
+{% for host in allnode | unique %}IP.{{ loop.index + 2 }} = {{ host }}
 {% endfor %}
 {% endif %}
 
