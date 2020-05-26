@@ -2,8 +2,8 @@
 # tasks file for test
 - name: Generate a Self Signed OpenSSL certificate
   openssl_certificate:
-    path: '/etc/kubernetes/pki/apiserver-etcd-client.crt'
-    csr_path: '/etc/kubernetes/pki/apiserver-etcd-client.csr'
+    path: '/etc/ssl/kubernetes/ca.crt'
+    csr_path: '/etc/ssl/kubernetes/ca.csr'
     provider: selfsigned
   register: result
 
@@ -11,26 +11,32 @@
   debug:
     msg: "{{ result }}"
 
-# - name: Create a Service object from an inline definition
-#   k8s:
-#     state: present
-#     force: yes
-#     kubeconfig: /etc/kubernetes/admin.kubeconfig
-#     definition:
-#       apiVersion: v1
-#       kind: Service
-#       metadata:
-#         name: web
-#         namespace: testing
-#         labels:
-#           app: galaxy
-#           service: web
-#       spec:
-#         selector:
-#           app: galaxy
-#           service: web
-#         ports:
-#         - protocol: TCP
-#           targetPort: 8000
-#           name: port-8000-tcp
-#           port: 8000
+- name: Create a Service object from an inline definition
+  k8s:
+    state: present
+    force: yes
+    kubeconfig: /etc/kubernetes/admin.kubeconfig
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: web
+        namespace: testing
+        labels:
+          app: galaxy
+          service: web
+      spec:
+        selector:
+          app: galaxy
+          service: web
+        ports:
+        - protocol: TCP
+          targetPort: 8000
+          name: port-8000-tcp
+          port: 8000
+
+- name: Search for all Pods labelled app=web
+  k8s_info:
+    kind: Pod
+    label_selectors:
+      - app = web

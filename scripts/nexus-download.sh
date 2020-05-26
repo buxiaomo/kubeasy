@@ -50,7 +50,7 @@ grep -q "^${FLANNEL_VERSION}\$" binaries/flannel/${FLANNEL_VERSION}/.flannel 2>/
     tar -zxf src/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz --strip-components 1 -C binaries/flannel/${FLANNEL_VERSION}/ flanneld mk-docker-opts.sh
   fi
   chmod +x binaries/flannel/${FLANNEL_VERSION}/*
-  binaries/flannel/${FLANNEL_VERSION}/flanneld -version && echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
+  binaries/flannel/${FLANNEL_VERSION}/flanneld -version > /dev/null 2>&1 && echo ${FLANNEL_VERSION} > binaries/flannel/${FLANNEL_VERSION}/.flannel
 }
 
 # ectd

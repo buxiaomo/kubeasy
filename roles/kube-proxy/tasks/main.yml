@@ -33,30 +33,40 @@
     mode: 0644
   with_items:
     - '/etc/ssl/{{ kubernetes.project }}/ca.crt'
+    - '/etc/ssl/{{ kubernetes.project }}/ca.key'
 
-- name: Create kube-proxy sa crb --- part.1
-  copy: 
-    src: '{{ item }}'
-    dest: '/etc/kubernetes/{{ item }}'
-  run_once: true
-  with_items:
-    - kube-proxy-crb.yml
-    - kube-proxy-sa.yml
-  when: inventory_hostname in groups['master']
-
-- name: Create kube-proxy sa crb --- part.2
-  command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
-  run_once: true
-  with_items:
-    - kube-proxy-crb.yml
-    - kube-proxy-sa.yml
-  when: inventory_hostname in groups['master']
-
-- name: Register jwt token
+- name: Create kube-proxy
   shell: |
-    secret=$(kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}')
-    kubectl -n kube-system get secret/${secret} --output=jsonpath='{.data.token}' | base64 -d
-  register: JWT_TOKEN
+    openssl genrsa -out kube-proxy.key 2048 && \
+    openssl req -new -key kube-proxy.key -subj "/CN=system:kube-proxy" -out kube-proxy.csr && \
+    openssl x509 -req -in kube-proxy.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out kube-proxy.crt -days {{ kubernetes.ssl.days | default(3652) }}
+  args:
+    chdir: '{{ kubernetes.ssl.location }}'
+    executable: /bin/bash
+
+# - name: Create kube-proxy sa crb --- part.1
+#   copy: 
+#     src: '{{ item }}'
+#     dest: '/etc/kubernetes/{{ item }}'
+#   run_once: true
+#   with_items:
+#     - kube-proxy-crb.yml
+#     - kube-proxy-sa.yml
+#   when: inventory_hostname in groups['master']
+
+# - name: Create kube-proxy sa crb --- part.2
+#   command: 'kubectl apply -f /etc/kubernetes/{{ item }}'
+#   run_once: true
+#   with_items:
+#     - kube-proxy-crb.yml
+#     - kube-proxy-sa.yml
+#   when: inventory_hostname in groups['master']
+
+# - name: Register jwt token
+#   shell: |
+#     secret=$(kubectl -n kube-system get sa kube-proxy --output=jsonpath='{.secrets[0].name}')
+#     kubectl -n kube-system get secret/${secret} --output=jsonpath='{.data.token}' | base64 -d
+#   register: JWT_TOKEN
 
 - name: Create kubeconfig
   shell: |
@@ -83,28 +93,30 @@
       {% endif %}
     {% endif %}
 
-    kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
+    /usr/local/bin/kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --embed-certs=true \
       --certificate-authority={{ kubernetes.ssl.location }}/ca.crt \
       --server=https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-context {{ kubernetes.name | default("kubernetes") }} \
+    /usr/local/bin/kubectl config set-credentials {{ item.KUBE_USER }} \
+      --embed-certs=true \
+      --client-certificate={{ kubernetes.ssl.location }}/{{ item.KUBE_CERT }}.crt \
+      --client-key={{ kubernetes.ssl.location }}/{{ item.KUBE_CERT }}.key \
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+
+    /usr/local/bin/kubectl config set-context {{ kubernetes.name | default("kubernetes") }} \
       --cluster={{ kubernetes.name | default("kubernetes") }} \
-      --user={{ kubernetes.name | default("kubernetes") }} \
+      --user={{ item.KUBE_USER }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-credentials {{ kubernetes.name | default("kubernetes") }} \
-      --token={{ JWT_TOKEN.stdout }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
-
-    kubectl config use-context {{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+    /usr/local/bin/kubectl config use-context {{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
-    - { KUBE_CONFIG: 'proxy.conf'}
+    - { KUBE_USER: 'kube-proxy', KUBE_CERT: 'kube-proxy', KUBE_CONFIG: 'kube-proxy.kubeconfig' }
 
 - name: Change file permissions
   file:
-    path: /etc/kubernetes/proxy.conf
+    path: /etc/kubernetes/kube-proxy.kubeconfig
     mode: '0644'
 
 - name: Install config file
@@ -123,6 +135,22 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
+
+# - name: Waiting for the service
+#   wait_for:
+#     port: 10256
+#     delay: 30
+#     state: started
+
+- name: Health check
+  uri: 
+    url: 'http://{% if kubernetes.controllerManager.bind != "0.0.0.0" %}127.0.0.1{% else %}{{ ansible_default_ipv4.address }}{% endif %}:10256/healthz'
+    validate_certs: no
+  register: this
+  until: this.status == 200
+  retries: 30
+  delay: 5
+  connection: local
 
 - name: Clean kube-proxy ca and crb yml file
   file:

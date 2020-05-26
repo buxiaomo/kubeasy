@@ -1,13 +1,7 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: test
----
-apiVersion: v1
 kind: Service
 metadata:
   name: nginx01
-  namespace: test
   labels:
     app: nginx01
 spec:
@@ -16,22 +10,17 @@ spec:
     port: 80
     protocol: TCP
     targetPort: 80
-    nodePort: 30000
   selector:
     app: nginx01
   type: NodePort
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: nginx01-deployment
-  namespace: test
+  name: nginx01
   labels:
     app: nginx01
 spec:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
   selector:
     matchLabels:
       app: nginx01
@@ -40,18 +29,20 @@ spec:
       labels:
         app: nginx01
     spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
       containers:
-      - name: nginx01
-        image: nginx:1.17.9-alpine
-        imagePullPolicy: IfNotPresent
-        ports:
-          - containerPort: 80
+        - name: nginx01
+          image: nginx:1.17.9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nginx02
-  namespace: test
   labels:
     app: nginx02
 spec:
@@ -64,16 +55,12 @@ spec:
     app: nginx02
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: nginx02-deployment
-  namespace: test
+  name: nginx02
   labels:
     app: nginx02
 spec:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
   selector:
     matchLabels:
       app: nginx02
@@ -82,9 +69,12 @@ spec:
       labels:
         app: nginx02
     spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
       containers:
-      - name: nginx02
-        image: nginx:1.17.9-alpine
-        imagePullPolicy: IfNotPresent
-        ports:
-          - containerPort: 80
+        - name: nginx02
+          image: nginx:1.17.9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

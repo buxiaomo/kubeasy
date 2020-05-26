@@ -7,6 +7,13 @@
   tags:
     - common
 
+- name: Certificate of the cluster
+  hosts: all
+  roles:
+    - ca
+  tags:
+    - ca
+
 - name: Init all kubernetes node
   hosts: worker
   roles:

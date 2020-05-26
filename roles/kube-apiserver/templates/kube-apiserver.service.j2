@@ -35,7 +35,7 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --etcd-keyfile={{ kubernetes.ssl.location }}/apiserver-etcd-client.key \
   --etcd-servers={% for host in etcdnode %}https://{{ host }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
   --event-ttl=1h \
-  --experimental-encryption-provider-config=/etc/kubernetes/pki/encryption-config.yaml \
+  --experimental-encryption-provider-config=/etc/kubernetes/encryption-config.yaml \
   --enable-bootstrap-token-auth \
   --client-ca-file={{ kubernetes.ssl.location }}/ca.crt \
   --kubelet-https \
@@ -45,10 +45,10 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --runtime-config=api/all=true \
   --service-cluster-ip-range={{ kubernetes.settings.SvcCIDR }} \
   --service-node-port-range={{ kubernetes.settings.NodePortRange }} \
-  --service-account-key-file={{ kubernetes.ssl.location }}/sa.pub \
+  --service-account-key-file={{ kubernetes.ssl.location }}/ca.crt \
   --tls-cert-file={{ kubernetes.ssl.location }}/apiserver.crt \
   --tls-private-key-file={{ kubernetes.ssl.location }}/apiserver.key \
-  --requestheader-client-ca-file={{ kubernetes.ssl.location }}/front-proxy-ca.crt \
+  --requestheader-client-ca-file={{ kubernetes.ssl.location }}/ca.crt \
   --requestheader-username-headers=X-Remote-User \
   --requestheader-group-headers=X-Remote-Group \
   --requestheader-allowed-names=front-proxy-client \

@@ -1,18 +1,17 @@
 #!/bin/bash
-
-{%- set etcdnode=[] -%}
+{%- set etcdnode=[] %}
 {%- if groups['etcd'] is not defined %}
-    {%- for host in groups['master'] -%}
+    {%- for host in groups['master'] %}
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- else%}
-    {%- for host in groups['etcd'] -%}
+    {%- for host in groups['etcd'] %}
         {{ etcdnode.append(host) }}
     {%- endfor%}
 {%- endif %}
 
 ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}{{ host }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
 --cacert {{ kubernetes.ssl.location }}/etcd/ca.crt \
---cert {{ kubernetes.ssl.location }}/etcd/server.crt \
---key {{ kubernetes.ssl.location }}/etcd/server.key \
+--cert {{ kubernetes.ssl.location }}/etcd/healthcheck-client.crt \
+--key {{ kubernetes.ssl.location }}/etcd/healthcheck-client.key \
 endpoint health

@@ -6,9 +6,19 @@ After=network.target
 [Service]
 ExecStart=/usr/local/bin/kube-scheduler \
   --leader-elect=true \
-  --kubeconfig=/etc/kubernetes/scheduler.conf \
+  --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
+  --authorization-kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
+  --authentication-kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
+  --client-ca-file={{ kubernetes.ssl.location }}/ca.crt \
   --profiling=false \
   --bind-address={{ kubernetes.scheduler.bind | default('127.0.0.1') }} \
+  --tls-cert-file={{ kubernetes.ssl.location }}/kube-scheduler.crt \
+  --tls-private-key-file={{ kubernetes.ssl.location }}/kube-scheduler.key \
+  --requestheader-allowed-names="" \
+  --requestheader-client-ca-file={{ kubernetes.ssl.location }}/ca.crt \
+  --requestheader-extra-headers-prefix="X-Remote-Extra-" \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-username-headers=X-Remote-User \
 {% if kubernetes.scheduler.log is defined %}
   --logtostderr=true \
   --log-dir={{ kubernetes.scheduler.log.logDir }} \

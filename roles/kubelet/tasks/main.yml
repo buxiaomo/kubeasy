@@ -131,22 +131,22 @@
       {% endif %}
     {% endif %}
 
-    kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
+    /usr/local/bin/kubectl config set-cluster {{ kubernetes.name | default("kubernetes") }} \
       --embed-certs=true \
       --certificate-authority={{ kubernetes.ssl.location }}/ca.crt \
       --server=https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} \
+    /usr/local/bin/kubectl config set-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} \
       --cluster={{ kubernetes.name | default("kubernetes") }} \
       --user={{ item.KUBE_USER }} \
       --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
 
-    kubectl config set-credentials {{ item.KUBE_USER }} \
+    /usr/local/bin/kubectl config set-credentials {{ item.KUBE_USER }} \
       --token={{ TOKEN_ID.stdout | b64decode | trim }}.{{ TOKEN_SECRET.stdout | b64decode | trim }} \
-      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+      --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONssFIG }}
 
-    kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
+    /usr/local/bin/kubectl config use-context {{ item.KUBE_USER }}@{{ kubernetes.name | default("kubernetes") }} --kubeconfig=/etc/kubernetes/{{ item.KUBE_CONFIG }}
   with_items:
     - { KUBE_USER: 'kubelet-bootstrap', KUBE_CONFIG: 'bootstrap.kubeconfig' }
 

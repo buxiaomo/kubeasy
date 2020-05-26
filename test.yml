@@ -1,0 +1,7 @@
+---
+- name: Test
+  hosts: localhost
+  roles:
+    - test
+  tags:
+    - test
