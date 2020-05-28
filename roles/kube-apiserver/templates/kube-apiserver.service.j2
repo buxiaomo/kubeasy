@@ -15,16 +15,16 @@ Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-apiserver \
-  --authorization-mode=Node,RBAC \
+  --authorization-mode={{ kubernetes.apiserver.authorization_modes | join(',') }} \
+  --enable-admission-plugins={{ kubernetes.apiserver.enable_admission_plugins | join(',') }} \
   --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256 \
-  --enable-admission-plugins=AlwaysPullImages,ServiceAccount,NamespaceLifecycle,NodeRestriction,LimitRanger,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset \
   --advertise-address={{ ansible_default_ipv4.address }} \
   --bind-address={{ kubernetes.apiserver.bind | default('0.0.0.0') }}  \
   --secure-port=6443 \
   --insecure-port=0 \
   --allow-privileged=true \
   --audit-log-path=/var/log/audit.log \
-  --audit-policy-file=/etc/kubernetes/pki/audit-policy-minimal.yaml \
+  --audit-policy-file=/etc/kubernetes/audit-policy-minimal.yaml \
   --audit-log-format=json \
   --audit-log-maxage=30 \
   --audit-log-maxbackup=10 \
