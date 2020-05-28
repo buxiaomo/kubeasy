@@ -4,6 +4,11 @@ Documentation=http://docs.docker.com
 After=network.target
 
 [Service]
+{% if kubernetes.docker.systemd.service is defined %}
+{% for opt in kubernetes.docker.systemd.service %}
+{{ opt }}}
+{% endfor %}
+{% endif %}
 ExecStartPre=/sbin/iptables -P FORWARD ACCEPT
 ExecStart=/usr/local/bin/dockerd
 ExecReload=/bin/kill -s HUP $MAINPID

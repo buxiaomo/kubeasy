@@ -138,6 +138,11 @@ kubernetes:
       max-concurrent-uploads: 10
       live-restore: true
       debug: true
+    systemd:
+      service:
+        - Environment="HTTP_PROXY=http://user01:password@10.10.10.10:8080/"
+        - Environment="HTTPS_PROXY=https://user01:password@10.10.10.10:8080/"
+        - Environment="NO_PROXY=localhost,.docker.io,.docker.com,.daocloud.io"
 
   # kubelet parameter configuration
   kubelet: 
@@ -218,3 +223,17 @@ kubernetes:
         typha: quay.io/calico/typha:v3.1.7
         flexvol: calico/pod2daemon-flexvol:v3.13.2
         controllers: calico/kube-controllers:v3.13.2
+
+      # coredns: coredns/coredns:1.6.9
+      # flannel: registry.cn-shenzhen.aliyuncs.com/quayio_aliyun/flannel:v0.12.0
+      # canal:
+      #   node: calico/node:v3.13.2
+      #   flannel: registry.cn-shenzhen.aliyuncs.com/quayio_aliyun/flannel:v0.11.0
+      #   cni: calico/cni:v3.13.2
+      #   flexvol: calico/pod2daemon-flexvol:v3.13.2
+      # calico: 
+      #   node: calico/node:v3.13.2
+      #   cni: calico/cni:v3.13.2
+      #   typha: quay.io/calico/typha:v3.1.7
+      #   flexvol: calico/pod2daemon-flexvol:v3.13.2
+      #   controllers: calico/kube-controllers:v3.13.2
