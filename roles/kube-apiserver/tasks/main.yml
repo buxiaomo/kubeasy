@@ -38,7 +38,7 @@
   shell: |
     openssl genrsa -out apiserver.key 2048 && \
     openssl req -new -key apiserver.key -subj "/CN=kube-apiserver" -config openssl.cnf -out apiserver.csr && \
-    openssl x509 -req -in apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_apiserver -extfile openssl.cnf -out apiserver.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -req -in apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_apiserver -extfile openssl.cnf -out apiserver.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
@@ -47,7 +47,7 @@
   shell: |
     openssl genrsa -out front-proxy-client.key 2048 && \
     openssl req -new -key front-proxy-client.key -subj "/CN=front-proxy-client" -out front-proxy-client.csr && \
-    openssl x509 -req -in front-proxy-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out front-proxy-client.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -req -in front-proxy-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out front-proxy-client.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
@@ -56,7 +56,7 @@
   shell: |
     openssl genrsa -out apiserver-kubelet-client.key 2048 && \
     openssl req -new -key apiserver-kubelet-client.key -subj "/CN=apiserver-kubelet-client/O=system:masters" -out apiserver-kubelet-client.csr && \
-    openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out apiserver-kubelet-client.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extensions v3_req_client -extfile openssl.cnf -out apiserver-kubelet-client.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
@@ -65,7 +65,7 @@
   shell: |
     openssl genrsa -out apiserver-etcd-client.key 2048 && \
     openssl req -new -key apiserver-etcd-client.key -subj "/CN=apiserver-etcd-client/O=system:masters" -out apiserver-etcd-client.csr && \
-    openssl x509 -in apiserver-etcd-client.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out apiserver-etcd-client.crt -days {{ kubernetes.ca.days | default(3652) }}
+    openssl x509 -in apiserver-etcd-client.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out apiserver-etcd-client.crt -days {{ kubernetes.ssl.days | default(3652) }}
   args:
     chdir: '{{ kubernetes.ssl.location }}'
     executable: /bin/bash
