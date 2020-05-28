@@ -152,6 +152,23 @@ kubernetes:
   # kube-apiserver parameter configuration
   apiserver: 
     bind: 0.0.0.0
+    enable_admission_plugins:
+      - AlwaysPullImages
+      - ServiceAccount
+      - NamespaceLifecycle
+      - NodeRestriction
+      - LimitRanger
+      - PersistentVolumeClaimResize
+      - DefaultStorageClass
+      - DefaultTolerationSeconds
+      - MutatingAdmissionWebhook
+      - ValidatingAdmissionWebhook
+      - ResourceQuota
+      - Priority
+      - PodPreset
+    authorization_modes:
+      - Node
+      - RBAC
     log:
       logLevel: 2
       logDir: /var/log/kubernetes
