@@ -91,7 +91,7 @@
 - name: Install audit policy
   template: 
     src: audit-policy-minimal.yaml.j2
-    dest: /etc/kubernetes/pki/audit-policy-minimal.yaml
+    dest: /etc/kubernetes/audit-policy-minimal.yaml
     mode: '0644'
 
 - name: Install systemd file
