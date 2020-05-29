@@ -205,9 +205,6 @@ kubernetes:
       logFile: kube-proxy.log
 
   addon:
-    # not support
-    # metrics_server_enabled: false
-    # ingress_nginx_enabled: false
     location: /etc/kubernetes/addon
     image: 
       coredns: coredns/coredns:1.6.9
