@@ -6,7 +6,7 @@ After=network.target
 [Service]
 {% if kubernetes.docker.systemd.service is defined %}
 {% for opt in kubernetes.docker.systemd.service %}
-{{ opt }}}
+{{ opt }}
 {% endfor %}
 {% endif %}
 ExecStartPre=/sbin/iptables -P FORWARD ACCEPT
