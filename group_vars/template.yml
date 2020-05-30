@@ -138,11 +138,11 @@ kubernetes:
       max-concurrent-uploads: 10
       live-restore: true
       debug: true
-    systemd:
-      service:
-        - Environment="HTTP_PROXY=http://user01:password@10.10.10.10:8080/"
-        - Environment="HTTPS_PROXY=https://user01:password@10.10.10.10:8080/"
-        - Environment="NO_PROXY=localhost,.docker.io,.docker.com,.daocloud.io"
+    # systemd:
+    #   service:
+    #     - Environment="HTTP_PROXY=http://user01:password@10.10.10.10:8080/"
+    #     - Environment="HTTPS_PROXY=https://user01:password@10.10.10.10:8080/"
+    #     - Environment="NO_PROXY=localhost,.docker.io,.docker.com,.daocloud.io"
 
   # kubelet parameter configuration
   kubelet: 
@@ -205,7 +205,10 @@ kubernetes:
       logFile: kube-proxy.log
 
   addon:
+    # add-on manifests directory
     location: /etc/kubernetes/addon
+
+    # addon images
     image: 
       coredns: coredns/coredns:1.6.9
       flannel: quay.io/coreos/flannel:v0.12.0
