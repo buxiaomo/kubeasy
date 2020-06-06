@@ -74,4 +74,4 @@
 - name: Settings limits
   copy: 
     src: limits.conf
-    dest: /etc/security/limits.d/kubernetes.conf
+    dest: /etc/security/limits.d/99-kubernetes.conf
