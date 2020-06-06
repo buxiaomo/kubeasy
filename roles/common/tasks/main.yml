@@ -70,3 +70,8 @@
 - name: Disable swap
   command: swapoff -a
   when: ansible_swaptotal_mb > 0
+
+- name: Settings limits
+  copy: 
+    src: limits.conf
+    dest: /etc/security/limits.d/kubernetes.conf
