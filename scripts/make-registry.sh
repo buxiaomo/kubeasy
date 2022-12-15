@@ -18,33 +18,33 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull calico/cni:v3.18.6
-docker tag calico/cni:v3.18.6 ${REGISTRY_URL}/calico/cni:v3.18.6
-docker push ${REGISTRY_URL}/calico/cni:v3.18.6
+docker pull calico/cni:v3.20.6
+docker tag calico/cni:v3.20.6 ${REGISTRY_URL}/calico/cni:v3.20.6
+docker push ${REGISTRY_URL}/calico/cni:v3.20.6
 
-docker pull calico/pod2daemon-flexvol:v3.18.6
-docker tag calico/pod2daemon-flexvol:v3.18.6 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.18.6
-docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.18.6
+docker pull calico/pod2daemon-flexvol:v3.20.6
+docker tag calico/pod2daemon-flexvol:v3.20.6 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.20.6
+docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.20.6
 
-docker pull calico/node:v3.18.6
-docker tag calico/node:v3.18.6 ${REGISTRY_URL}/calico/node:v3.18.6
-docker push ${REGISTRY_URL}/calico/node:v3.18.6
+docker pull calico/node:v3.20.6
+docker tag calico/node:v3.20.6 ${REGISTRY_URL}/calico/node:v3.20.6
+docker push ${REGISTRY_URL}/calico/node:v3.20.6
 
-docker pull calico/kube-controllers:v3.18.6
-docker tag calico/kube-controllers:v3.18.6 ${REGISTRY_URL}/calico/kube-controllers:v3.18.6
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.18.6
+docker pull calico/kube-controllers:v3.20.6
+docker tag calico/kube-controllers:v3.20.6 ${REGISTRY_URL}/calico/kube-controllers:v3.20.6
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.20.6
 
 
 # canal
-docker pull quay.io/coreos/flannel:v0.12.0
-docker tag quay.io/coreos/flannel:v0.12.0 ${REGISTRY_URL}/coreos/flannel:v0.12.0
-docker push ${REGISTRY_URL}/coreos/flannel:v0.12.0
+docker pull quay.io/coreos/flannel:v0.14.0
+docker tag quay.io/coreos/flannel:v0.14.0 ${REGISTRY_URL}/coreos/flannel:v0.14.0
+docker push ${REGISTRY_URL}/coreos/flannel:v0.14.0
 
 
 # coredns
-docker pull coredns/coredns:1.6.7
-docker tag coredns/coredns:1.6.7 ${REGISTRY_URL}/coredns/coredns:1.6.7
-docker push ${REGISTRY_URL}/coredns/coredns:1.6.7
+docker pull coredns/coredns:1.7.0
+docker tag coredns/coredns:1.7.0 ${REGISTRY_URL}/coredns/coredns:1.7.0
+docker push ${REGISTRY_URL}/coredns/coredns:1.7.0
 
 
 # flannel
