@@ -5,6 +5,5 @@ kubelet:
     - "--anonymous-auth=false"
     - "--authorization-mode=Webhook"
     - "--allowed-unsafe-sysctls=net.*"
-    - "--network-plugin=cni"
   log:
     level: 1

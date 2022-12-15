@@ -11,8 +11,8 @@ from ansible.utils.version import SemanticVersion
 # pip3 install jmespath
 def component_version(value):
     version_map = {
-        "1.23": {
-            "etcd": "3.5.1",
+        "1.24": {
+            "etcd": "3.5.3",
             "cni": "1.1.1",
             "runtime": {
                 "docker": "20.10.17",
