@@ -21,3 +21,11 @@
   when: not PKI_URL is defined
   tags:
     - renew
+
+- name: Cilium ca
+  include_tasks: cilium.yml
+  when:
+    - not PKI_URL is defined
+    - KUBE_NETWORK == 'cilium'
+  tags:
+    - renew

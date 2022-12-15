@@ -8,8 +8,8 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.15.12
-ETCD_VERSION:=3.3.10
+KUBE_VERSION:=1.16.15
+ETCD_VERSION:=3.3.15
 CNI_VERSION:=0.7.5
 
 # kubernetes container runtime
@@ -22,7 +22,7 @@ CRICTL_VERSION:=1.20.0
 RUNC_VERSION:=1.1.2
 
 # kubernetes network plugin
-# flannel, calico, canal, none
+# flannel, calico, canal, cilium, none
 KUBE_NETWORK:=flannel
 
 # Private registry
@@ -47,7 +47,7 @@ NEXUS_PASSWORD:=
 PKI_URL:=
 
 # e2e test software version
-SONOBUOY_VERSION:=0.17.2
+SONOBUOY_VERSION:=0.18.5
 
 # Install ansible on depoy server
 runtime:

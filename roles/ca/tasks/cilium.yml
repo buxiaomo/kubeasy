@@ -1,0 +1,135 @@
+# ca
+- name: Generate an cilium private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key"
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Generate an cilium ca csr
+  community.crypto.openssl_csr:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key"
+    common_name: Cilium CA
+    basic_constraints: "CA:TRUE"
+    basic_constraints_critical: true
+    key_usage_critical: true
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+      - keyCertSign
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Sign cilium ca certificate
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt"
+    csr_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key"
+    mode: 0644
+    force: "{{ expired | default(false) }}"
+    provider: selfsigned
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+# hubble-relay-client
+- name: Generate hubble-relay-client private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.key"
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+    - update
+
+- name: Generate hubble-relay-client csr
+  community.crypto.openssl_csr:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.key"
+    common_name: "*.hubble-relay.cilium.io"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    subject_alt_name: "DNS:*.hubble-relay.cilium.io"
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+    - update
+
+- name: Generate hubble-relay-client certificate
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.crt"
+    csr_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.csr"
+    ownca_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt"
+    ownca_privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key"
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+    - update
+
+# hubble-relay-server
+- name: Generate hubble-server private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.key"
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+    - update
+
+- name: Generate hubble-server csr
+  community.crypto.openssl_csr:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.key"
+    common_name: "*.default.hubble-grpc.cilium.io"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    subject_alt_name: "DNS:*.default.hubble-grpc.cilium.io"
+  delegate_to: localhost
+  run_once: true
+
+- name: Generate hubble-server certificate
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.crt"
+    csr_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.csr"
+    ownca_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt"
+    ownca_privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key"
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+    - update

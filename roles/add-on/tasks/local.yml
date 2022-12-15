@@ -1,0 +1,43 @@
+- name: Distribution cilium ca to master
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt",
+        dest: "/etc/kubernetes/pki/cilium.crt",
+        mode: 644,
+      }
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key",
+        dest: "/etc/kubernetes/pki/cilium.key",
+        mode: 600,
+      }
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.crt",
+        dest: "/etc/kubernetes/pki/hubble-relay.crt",
+        mode: 644,
+      }
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.key",
+        dest: "/etc/kubernetes/pki/hubble-relay.key",
+        mode: 600,
+      }
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.crt",
+        dest: "/etc/kubernetes/pki/hubble-server.crt",
+        mode: 644,
+      }
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.key",
+        dest: "/etc/kubernetes/pki/hubble-server.key",
+        mode: 600,
+      }
+  when:
+    - KUBE_NETWORK == 'cilium'
+  tags:
+    - upgrade
+    - update

@@ -9,6 +9,68 @@
     - upgrade
     - update
 
+- name: Distribution cilium certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  when:
+    - KUBE_NETWORK == 'cilium'
+  tags:
+    - renew
+    - update
+
+- name: Distribution cilium certificate
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    checksum: "{{ item.checksum }}"
+    owner: root
+    group: root
+    timeout: 3
+  retries: 3
+  with_items:
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/cilium.crt",
+        dest: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/cilium.crt.sha256sum",
+        mode: 644
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/cilium.key",
+        dest: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/cilium.key.sha256sum",
+        mode: 600
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-relay.crt",
+        dest: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-relay.crt.sha256sum",
+        mode: 644
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-relay.key",
+        dest: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-relay.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-relay.key.sha256sum",
+        mode: 600
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-server.crt",
+        dest: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-server.crt.sha256sum",
+        mode: 644
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-server.key",
+        dest: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/hubble-server.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/hubble-server.key.sha256sum",
+        mode: 600
+      }
+  when:
+    - KUBE_NETWORK == 'cilium'
+    - PKI_URL is defined
+  tags:
+    - renew
+    - update
+
 - name: Distribution cni to the cluster
   vars:
     ipv6_query: "[*].{device: device, ipv4: ipv4, ipv6: ipv6[? address == '{{ inventory_hostname }}']}[?ipv6]"

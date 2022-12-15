@@ -18,33 +18,33 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull calico/cni:v3.13.5
-docker tag calico/cni:v3.13.5 ${REGISTRY_URL}/calico/cni:v3.13.5
-docker push ${REGISTRY_URL}/calico/cni:v3.13.5
+docker pull calico/cni:v3.16.10
+docker tag calico/cni:v3.16.10 ${REGISTRY_URL}/calico/cni:v3.16.10
+docker push ${REGISTRY_URL}/calico/cni:v3.16.10
 
-docker pull calico/pod2daemon-flexvol:v3.13.5
-docker tag calico/pod2daemon-flexvol:v3.13.5 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.13.5
-docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.13.5
+docker pull calico/pod2daemon-flexvol:v3.16.10
+docker tag calico/pod2daemon-flexvol:v3.16.10 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.16.10
+docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.16.10
 
-docker pull calico/node:v3.13.5
-docker tag calico/node:v3.13.5 ${REGISTRY_URL}/calico/node:v3.13.5
-docker push ${REGISTRY_URL}/calico/node:v3.13.5
+docker pull calico/node:v3.16.10
+docker tag calico/node:v3.16.10 ${REGISTRY_URL}/calico/node:v3.16.10
+docker push ${REGISTRY_URL}/calico/node:v3.16.10
 
-docker pull calico/kube-controllers:v3.13.5
-docker tag calico/kube-controllers:v3.13.5 ${REGISTRY_URL}/calico/kube-controllers:v3.13.5
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.13.5
+docker pull calico/kube-controllers:v3.16.10
+docker tag calico/kube-controllers:v3.16.10 ${REGISTRY_URL}/calico/kube-controllers:v3.16.10
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.16.10
 
 
 # canal
-docker pull quay.io/coreos/flannel:v0.11.0
-docker tag quay.io/coreos/flannel:v0.11.0 ${REGISTRY_URL}/coreos/flannel:v0.11.0
-docker push ${REGISTRY_URL}/coreos/flannel:v0.11.0
+docker pull quay.io/coreos/flannel:v0.12.0
+docker tag quay.io/coreos/flannel:v0.12.0 ${REGISTRY_URL}/coreos/flannel:v0.12.0
+docker push ${REGISTRY_URL}/coreos/flannel:v0.12.0
 
 
 # coredns
-docker pull coredns/coredns:1.3.1
-docker tag coredns/coredns:1.3.1 ${REGISTRY_URL}/coredns/coredns:1.3.1
-docker push ${REGISTRY_URL}/coredns/coredns:1.3.1
+docker pull coredns/coredns:1.6.2
+docker tag coredns/coredns:1.6.2 ${REGISTRY_URL}/coredns/coredns:1.6.2
+docker push ${REGISTRY_URL}/coredns/coredns:1.6.2
 
 
 # flannel
@@ -67,6 +67,28 @@ docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.5.2
 docker pull registry.aliyuncs.com/google_containers/pause:3.1
 docker tag registry.aliyuncs.com/google_containers/pause:3.1 ${REGISTRY_URL}/google_containers/pause:3.1
 docker push ${REGISTRY_URL}/google_containers/pause:3.1
+
+
+# cilium
+docker pull quay.io/cilium/cilium:v1.12.3
+docker tag quay.io/cilium/cilium:v1.12.3 ${REGISTRY_URL}/cilium/cilium:v1.12.3
+docker push ${REGISTRY_URL}/cilium/cilium:v1.12.3
+
+docker pull quay.io/cilium/operator-generic:v1.12.3
+docker tag quay.io/cilium/operator-generic:v1.12.3 ${REGISTRY_URL}/cilium/operator-generic:v1.12.3
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.12.3
+
+docker pull quay.io/cilium/hubble-ui-backend:v0.9.2
+docker tag quay.io/cilium/hubble-ui-backend:v0.9.2 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.9.2
+docker push ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.9.2
+
+docker pull quay.io/cilium/hubble-ui:v0.9.2
+docker tag quay.io/cilium/hubble-ui:v0.9.2 ${REGISTRY_URL}/cilium/hubble-ui:v0.9.2
+docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.9.2
+
+docker pull quay.io/cilium/hubble-relay:v1.12.3
+docker tag quay.io/cilium/hubble-relay:v1.12.3 ${REGISTRY_URL}/cilium/hubble-relay:v1.12.3
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.12.3
 
 
 # nvidia-device-plugin
