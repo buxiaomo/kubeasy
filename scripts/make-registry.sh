@@ -18,21 +18,21 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull calico/cni:v3.17.6
-docker tag calico/cni:v3.17.6 ${REGISTRY_URL}/calico/cni:v3.17.6
-docker push ${REGISTRY_URL}/calico/cni:v3.17.6
+docker pull calico/cni:v3.18.6
+docker tag calico/cni:v3.18.6 ${REGISTRY_URL}/calico/cni:v3.18.6
+docker push ${REGISTRY_URL}/calico/cni:v3.18.6
 
-docker pull calico/pod2daemon-flexvol:v3.17.6
-docker tag calico/pod2daemon-flexvol:v3.17.6 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.17.6
-docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.17.6
+docker pull calico/pod2daemon-flexvol:v3.18.6
+docker tag calico/pod2daemon-flexvol:v3.18.6 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.18.6
+docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.18.6
 
-docker pull calico/node:v3.17.6
-docker tag calico/node:v3.17.6 ${REGISTRY_URL}/calico/node:v3.17.6
-docker push ${REGISTRY_URL}/calico/node:v3.17.6
+docker pull calico/node:v3.18.6
+docker tag calico/node:v3.18.6 ${REGISTRY_URL}/calico/node:v3.18.6
+docker push ${REGISTRY_URL}/calico/node:v3.18.6
 
-docker pull calico/kube-controllers:v3.17.6
-docker tag calico/kube-controllers:v3.17.6 ${REGISTRY_URL}/calico/kube-controllers:v3.17.6
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.17.6
+docker pull calico/kube-controllers:v3.18.6
+docker tag calico/kube-controllers:v3.18.6 ${REGISTRY_URL}/calico/kube-controllers:v3.18.6
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.18.6
 
 
 # canal
@@ -42,9 +42,9 @@ docker push ${REGISTRY_URL}/coreos/flannel:v0.12.0
 
 
 # coredns
-docker pull coredns/coredns:1.6.5
-docker tag coredns/coredns:1.6.5 ${REGISTRY_URL}/coredns/coredns:1.6.5
-docker push ${REGISTRY_URL}/coredns/coredns:1.6.5
+docker pull coredns/coredns:1.6.7
+docker tag coredns/coredns:1.6.7 ${REGISTRY_URL}/coredns/coredns:1.6.7
+docker push ${REGISTRY_URL}/coredns/coredns:1.6.7
 
 
 # flannel
@@ -64,9 +64,9 @@ docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.5.2
 
 
 # pause
-docker pull registry.aliyuncs.com/google_containers/pause:3.1
-docker tag registry.aliyuncs.com/google_containers/pause:3.1 ${REGISTRY_URL}/google_containers/pause:3.1
-docker push ${REGISTRY_URL}/google_containers/pause:3.1
+docker pull registry.aliyuncs.com/google_containers/pause:3.2
+docker tag registry.aliyuncs.com/google_containers/pause:3.2 ${REGISTRY_URL}/google_containers/pause:3.2
+docker push ${REGISTRY_URL}/google_containers/pause:3.2
 
 
 # cilium

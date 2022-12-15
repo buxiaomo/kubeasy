@@ -8,9 +8,9 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.17.17
+KUBE_VERSION:=1.18.20
 ETCD_VERSION:=3.4.3
-CNI_VERSION:=0.7.5
+CNI_VERSION:=0.8.5
 
 # kubernetes container runtime
 # docker, containerd
@@ -47,7 +47,7 @@ NEXUS_PASSWORD:=
 PKI_URL:=
 
 # e2e test software version
-SONOBUOY_VERSION:=0.18.5
+SONOBUOY_VERSION:=0.56.9
 
 # Install ansible on depoy server
 runtime:
