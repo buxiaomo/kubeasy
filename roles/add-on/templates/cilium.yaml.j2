@@ -699,6 +699,7 @@ spec:
       port: 443
       protocol: TCP
       targetPort: 4244
+  internalTrafficPolicy: Local
 ---
 # Source: cilium/templates/cilium-agent/daemonset.yaml
 apiVersion: apps/v1
