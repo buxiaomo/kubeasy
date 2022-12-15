@@ -8,14 +8,14 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.20.15
+KUBE_VERSION:=1.21.14
 ETCD_VERSION:=3.4.13
-CNI_VERSION:=0.8.7
+CNI_VERSION:=1.1.1
 
 # kubernetes container runtime
 # docker, containerd
 KUBE_RUNTIME:=docker
-DOCKER_VERSION:=19.03.9
+DOCKER_VERSION:=20.10.17
 
 CONTAINERD_VERSION:=1.5.13
 CRICTL_VERSION:=1.20.0
