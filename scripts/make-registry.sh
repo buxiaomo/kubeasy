@@ -42,9 +42,9 @@ docker push ${REGISTRY_URL}/coreos/flannel:v0.15.1
 
 
 # coredns
-docker pull coredns/coredns:1.8.4
-docker tag coredns/coredns:1.8.4 ${REGISTRY_URL}/coredns/coredns:1.8.4
-docker push ${REGISTRY_URL}/coredns/coredns:1.8.4
+docker pull coredns/coredns:1.8.6
+docker tag coredns/coredns:1.8.6 ${REGISTRY_URL}/coredns/coredns:1.8.6
+docker push ${REGISTRY_URL}/coredns/coredns:1.8.6
 
 
 # flannel
@@ -64,9 +64,9 @@ docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.6.1
 
 
 # pause
-docker pull registry.aliyuncs.com/google_containers/pause:3.5
-docker tag registry.aliyuncs.com/google_containers/pause:3.5 ${REGISTRY_URL}/google_containers/pause:3.5
-docker push ${REGISTRY_URL}/google_containers/pause:3.5
+docker pull registry.aliyuncs.com/google_containers/pause:3.6
+docker tag registry.aliyuncs.com/google_containers/pause:3.6 ${REGISTRY_URL}/google_containers/pause:3.6
+docker push ${REGISTRY_URL}/google_containers/pause:3.6
 
 
 # cilium
@@ -89,6 +89,7 @@ docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.9.2
 docker pull quay.io/cilium/hubble-relay:v1.12.3
 docker tag quay.io/cilium/hubble-relay:v1.12.3 ${REGISTRY_URL}/cilium/hubble-relay:v1.12.3
 docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.12.3
+
 
 # nvidia-device-plugin
 docker pull nvcr.io/nvidia/k8s-device-plugin:v0.12.3
