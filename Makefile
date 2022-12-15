@@ -8,8 +8,8 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.16.15
-ETCD_VERSION:=3.3.15
+KUBE_VERSION:=1.17.17
+ETCD_VERSION:=3.4.3
 CNI_VERSION:=0.7.5
 
 # kubernetes container runtime

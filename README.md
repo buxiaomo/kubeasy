@@ -82,7 +82,7 @@ apt-get install git make -y
 yum install git make vim -y
 
 # Install ansible
-git clone -b v1.16 https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
+git clone -b v1.17 https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
 cd /usr/local/src/kubeasy
 ```
 #### Install ansible
@@ -184,7 +184,7 @@ For version upgrades, reference [here](https://kubernetes.io/zh-cn/releases/vers
 ```
 cd /usr/local/src/kubeasy
 git pull
-git checkout v1.17
+git checkout v1.18
 make upgrade KUBE_VERSION=<New Version>
 ```
 
@@ -209,7 +209,7 @@ If use the kubeasy-offline-v${KUBEASY_VERSION}.tar.gz, you need a deployment ser
 [![asciicast](https://asciinema.org/a/533648.svg)](https://asciinema.org/a/533648)
 
 ```
-KUBEASY_VERSION=1.16.15
+KUBEASY_VERSION=1.17.17
 wget https://github.com/buxiaomo/kubeasy/releases/download/v${KUBEASY_VERSION}/kubeasy-v${KUBEASY_VERSION}.tar.gz -O /usr/local/src/kubeasy-v${KUBEASY_VERSION}.tar.gz
 tar -zxf /usr/local/src/kubeasy-v${KUBEASY_VERSION}.tar.gz -C /usr/local/src
 wget https://github.com/buxiaomo/kubeasy/releases/download/v${KUBEASY_VERSION}/kubeasy-registry-v${KUBEASY_VERSION}.tar.gz -O /usr/local/src/kubeasy/scripts/src/kubeasy-registry-v${KUBEASY_VERSION}.tar.gz
@@ -228,7 +228,7 @@ make deploy REGISTRY_URL=http://<IP Addr>:5000
 [![asciicast](https://asciinema.org/a/533677.svg)](https://asciinema.org/a/533677)
 
 ```
-KUBEASY_VERSION=1.16.15
+KUBEASY_VERSION=1.17.17
 wget https://github.com/buxiaomo/kubeasy/releases/download/v${KUBEASY_VERSION}/kubeasy-offline-v${KUBEASY_VERSION}.tar.gz -O /usr/local/src/kubeasy-offline-v${KUBEASY_VERSION}.tar.gz
 tar -zxf /usr/local/src/kubeasy-offline-v${KUBEASY_VERSION}.tar.gz -C /usr/local/src
 cd /usr/local/src/kubeasy-offline-v${KUBEASY_VERSION}

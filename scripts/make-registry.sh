@@ -18,21 +18,21 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull calico/cni:v3.16.10
-docker tag calico/cni:v3.16.10 ${REGISTRY_URL}/calico/cni:v3.16.10
-docker push ${REGISTRY_URL}/calico/cni:v3.16.10
+docker pull calico/cni:v3.17.6
+docker tag calico/cni:v3.17.6 ${REGISTRY_URL}/calico/cni:v3.17.6
+docker push ${REGISTRY_URL}/calico/cni:v3.17.6
 
-docker pull calico/pod2daemon-flexvol:v3.16.10
-docker tag calico/pod2daemon-flexvol:v3.16.10 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.16.10
-docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.16.10
+docker pull calico/pod2daemon-flexvol:v3.17.6
+docker tag calico/pod2daemon-flexvol:v3.17.6 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.17.6
+docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.17.6
 
-docker pull calico/node:v3.16.10
-docker tag calico/node:v3.16.10 ${REGISTRY_URL}/calico/node:v3.16.10
-docker push ${REGISTRY_URL}/calico/node:v3.16.10
+docker pull calico/node:v3.17.6
+docker tag calico/node:v3.17.6 ${REGISTRY_URL}/calico/node:v3.17.6
+docker push ${REGISTRY_URL}/calico/node:v3.17.6
 
-docker pull calico/kube-controllers:v3.16.10
-docker tag calico/kube-controllers:v3.16.10 ${REGISTRY_URL}/calico/kube-controllers:v3.16.10
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.16.10
+docker pull calico/kube-controllers:v3.17.6
+docker tag calico/kube-controllers:v3.17.6 ${REGISTRY_URL}/calico/kube-controllers:v3.17.6
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.17.6
 
 
 # canal
@@ -42,9 +42,9 @@ docker push ${REGISTRY_URL}/coreos/flannel:v0.12.0
 
 
 # coredns
-docker pull coredns/coredns:1.6.2
-docker tag coredns/coredns:1.6.2 ${REGISTRY_URL}/coredns/coredns:1.6.2
-docker push ${REGISTRY_URL}/coredns/coredns:1.6.2
+docker pull coredns/coredns:1.6.5
+docker tag coredns/coredns:1.6.5 ${REGISTRY_URL}/coredns/coredns:1.6.5
+docker push ${REGISTRY_URL}/coredns/coredns:1.6.5
 
 
 # flannel
