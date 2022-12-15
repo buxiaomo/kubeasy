@@ -1,0 +1,31 @@
+---
+# handlers file for kube-apiserver
+- name: restarted kube-apiserver
+  ansible.builtin.systemd:
+    name: kube-apiserver
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"
+
+- name: Clean kube-apiserver csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/apiserver.csr
+    state: absent
+
+- name: Clean front-proxy-client csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/front-proxy-client.csr
+    state: absent
+    
+- name: Clean apiserver-kubelet-client csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/apiserver-kubelet-client.csr
+    state: absent
+
+- name: Clean apiserver-etcd-client csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/apiserver-etcd-client.csr
+    state: absent

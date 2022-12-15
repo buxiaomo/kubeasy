@@ -1,0 +1,39 @@
+global_defs {
+    enable_script_security
+}
+
+vrrp_script haproxy-check {
+    user root
+    script "/bin/bash /etc/keepalived/check_haproxy.sh"
+    interval 3
+    weight -2
+    fall 10
+    rise 2
+}
+
+vrrp_instance haproxy-vip {
+    state BACKUP
+    priority 101
+{% if inventory_hostname | ip == 4 %}
+    interface {{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list | selectattr('ipv4.address', 'equalto', inventory_hostname) | first | json_query('device') }}
+{% elif inventory_hostname | ip == 6 %}
+    interface {{ ansible_facts | dict2items | selectattr('value.ipv6', 'defined') | map(attribute='value') | list | json_query(ipv6_query) | first | json_query('device') }}
+{% endif %}
+    virtual_router_id 47
+    advert_int 3
+    unicast_src_ip {{ inventory_hostname | ip_format }}
+    unicast_peer {
+{% for host in groups['master'] %}
+{% if host != inventory_hostname %}
+    {{ inventory_hostname | ip_format }}
+{% endif %}
+{% endfor %}
+    }
+    virtual_ipaddress {
+        {{ ha.vip }}/{{ ha.mask }}
+    }
+
+    track_script {
+        haproxy-check
+    }
+}

@@ -1,0 +1,9 @@
+- name: Add specified repository into sources list
+  get_url:
+    url: https://nvidia.github.io/nvidia-container-runtime/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-container-runtime.repo
+    dest: /etc/yum.d.conf/nvidia-container-runtime.repo
+
+- name: Install nvidia-container-runtime
+  yum:
+    name: nvidia-container-runtime
+    state: latest

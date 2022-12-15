@@ -1,0 +1,72 @@
+---
+# tasks file for apps
+- name: Create application directory
+  ansible.builtin.file:
+    name: /etc/kubernetes/apps
+    state: directory
+    mode: "0755"
+  tags:
+    - upgrade
+    - update
+
+- name: Distribution cni to the cluster
+  vars:
+    ipv6_query: "[*].{device: device, ipv4: ipv4, ipv6: ipv6[? address == '{{ inventory_hostname }}']}[?ipv6]"
+  ansible.builtin.template:
+    src: "{{ KUBE_NETWORK | default('flannel')}}.yaml.j2"
+    dest: "/etc/kubernetes/apps/{{ KUBE_NETWORK | default('flannel')}}.yaml"
+  when:
+    - KUBE_NETWORK != 'none'
+  tags:
+    - upgrade
+    - update
+
+- name: Apply cni to the cluster
+  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/{{ KUBE_NETWORK | default('flannel')}}.yaml"
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  when:
+    - KUBE_NETWORK != 'none'
+  tags:
+    - upgrade
+    - update
+
+- name: Distribution manifest to the cluster
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/etc/kubernetes/apps/{{ item.dest }}"
+  with_items:
+    - { "src": "metrics.yaml.j2", "dest": "metrics.yaml" }
+    - { "src": "coredns.yaml.j2", "dest": "coredns.yaml" }
+  tags:
+    - upgrade
+    - update
+
+- name: Apply manifest to the cluster
+  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/{{ item }}"
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  with_items:
+    - "metrics.yaml"
+    - "coredns.yaml"
+  tags:
+    - upgrade
+    - update
+
+- name: Distribution nvidia-device-plugin manifest to the cluster
+  ansible.builtin.template:
+    src: "nvidia-device-plugin.yaml.j2"
+    dest: "/etc/kubernetes/apps/nvidia-device-plugin.yaml"
+  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
+  tags:
+    - upgrade
+    - update
+
+- name: Apply nvidia-device-plugin manifest to the cluster
+  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/nvidia-device-plugin.yaml"
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
+  tags:
+    - upgrade
+    - update

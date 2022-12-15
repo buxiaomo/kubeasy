@@ -1,0 +1,1 @@
+download_url: https://download.docker.com/linux/static/stable/{{ ansible_architecture }}/docker-{{ DOCKER_VERSION }}.tgz

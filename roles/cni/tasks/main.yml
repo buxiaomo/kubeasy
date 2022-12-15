@@ -1,0 +1,52 @@
+---
+# tasks file for cni
+- name: Create binary directory
+  ansible.builtin.file:
+    name: /opt/cni/bin
+    state: directory
+    mode: 0644
+
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "cni-plugins{% if CNI_VERSION is version('0.8.0','>=') %}-{{ ansible_system | lower }}{% endif %}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}-v{{ CNI_VERSION }}.tgz"
+    dest: "/usr/local/src/cni-plugins{% if CNI_VERSION is version('0.8.0','>=') %}-{{ ansible_system | lower }}{% endif %}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}-v{{ CNI_VERSION }}.tgz"
+    owner: root
+    group: root
+  register: local
+  ignore_errors: True
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    dest: "/usr/local/src/cni-plugins{% if CNI_VERSION is version('0.8.0','>=') %}-{{ ansible_system | lower }}{% endif %}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}-v{{ CNI_VERSION }}.tgz"
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: cni_pkg
+  until: cni_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Extract package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/cni-plugins{% if CNI_VERSION is version('0.8.0','>=') %}-{{ ansible_system | lower }}{% endif %}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}-v{{ CNI_VERSION }}.tgz"
+    dest: /opt/cni/bin
+    remote_src: yes
+    owner: root
+    group: root
+  tags:
+    - upgrade

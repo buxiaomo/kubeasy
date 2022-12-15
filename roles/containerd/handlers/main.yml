@@ -1,0 +1,11 @@
+---
+# handlers file for containerd
+- name: restart containerd
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"

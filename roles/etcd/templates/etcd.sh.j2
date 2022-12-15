@@ -1,0 +1,12 @@
+{%- set etcdnode=[] %}
+{%- if groups['etcd'] is not defined %}
+    {%- for host in groups['master'] %}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- else%}
+    {%- for host in groups['etcd'] %}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- endif %}
+
+alias etcdctl="ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}{{ host | ip_format }}:2379{% if not loop.last %},{% endif %}{% endfor %} --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt --key /etc/kubernetes/pki/etcd/healthcheck-client.key"

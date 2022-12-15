@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test01
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx
+  namespace: test01
+data:
+  default.conf: |-
+    server {
+        listen       80;
+        listen  [::]:80 ipv6only=on;
+        server_name  localhost;
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx01
+  namespace: test01
+  labels:
+    app: nginx01
+
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx01
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx01
+  namespace: test01
+  labels:
+    app: nginx01
+spec:
+  selector:
+    matchLabels:
+      app: nginx01
+  template:
+    metadata:
+      labels:
+        app: nginx01
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      volumes:
+        - name: nginx
+          configMap:
+            defaultMode: 0755
+            name: nginx
+      containers:
+        - name: nginx01
+          image: nginx:1.17.9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+
+--- 
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test02
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx02
+  namespace: test02
+  labels:
+    app: nginx02
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx02
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx02
+  namespace: test02
+  labels:
+    app: nginx02
+spec:
+  selector:
+    matchLabels:
+      app: nginx02
+  template:
+    metadata:
+      labels:
+        app: nginx02
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: nginx02
+          image: nginx:1.17.9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

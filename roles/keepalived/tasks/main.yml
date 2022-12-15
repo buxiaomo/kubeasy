@@ -1,0 +1,41 @@
+---
+# tasks file for keepalived
+- block:
+    - name: Install applications
+      ansible.builtin.package:
+        name: "keepalived"
+        state: present
+      register: keepalived_pkg
+
+    - name: Create applications configure files
+      vars:
+        ipv6_query: "[*].{device: device, ipv4: ipv4, ipv6: ipv6[? address == '{{ inventory_hostname }}']}[?ipv6]"
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { 
+            src: "keepalived.conf.j2", 
+            dest: "/etc/keepalived/keepalived.conf",
+          }
+        - {
+            src: "check_haproxy.sh.j2",
+            dest: "/etc/keepalived/check_haproxy.sh",
+          }
+      register: keepalived_cfg
+      notify: restarted keepalived
+      tags:
+        - update
+
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+
+    - name: Start the service
+      ansible.builtin.systemd:
+        name: keepalived
+        enabled: yes
+        state: restarted
+      when: keepalived_pkg.changed or 
+            keepalived_cfg.changed or
+            ansible_facts.services['keepalived.service']['state'] != 'running'
+  when: ha is defined and ha.type == "slb"

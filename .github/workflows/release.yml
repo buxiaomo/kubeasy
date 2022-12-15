@@ -1,0 +1,168 @@
+name: Auto Release Pachage
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup environment
+        run: |
+          git fetch
+          export GIT_TAG=${{ github.ref_name }}
+          git checkout ${GIT_TAG::5}
+
+          ## src code
+          tar -zcf /tmp/kubeasy.tar.gz ../kubeasy
+
+          ## kubeasy binary file
+          pip3 install requests
+          make download
+
+          pushd ./scripts/src
+          tar -zcf /tmp/kubeasy-binary-${GIT_TAG}.tar.gz ./${GIT_TAG:1}
+          popd
+
+          ## kubeasy registry file
+          sudo ./scripts/make-registry.sh
+          pushd ./scripts/src
+          wget https://github.com/distribution/distribution/releases/download/v2.8.1/registry_2.8.1_linux_amd64.tar.gz
+          tar -zcf /tmp/kubeasy-registry-${GIT_TAG}.tar.gz ./registry_2.8.1_linux_amd64.tar.gz ./registry
+          popd
+
+          ## kubeasy offline file
+          mkdir -p /tmp/kubeasy-offline-${GIT_TAG}
+          wget https://github.com/distribution/distribution/releases/download/v2.8.1/registry_2.8.1_linux_amd64.tar.gz -O /tmp/kubeasy-offline-${GIT_TAG}/registry_2.8.1_linux_amd64.tar.gz
+          cp ./scripts/offline-install.sh /tmp/kubeasy-offline-${GIT_TAG}/main.sh
+          cp ./scripts/push-to-private-registry.sh /tmp/kubeasy-offline-${GIT_TAG}/push-to-private-registry.sh
+          wget https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz -O /tmp/kubeasy-offline-${GIT_TAG}/docker-20.10.9.tgz
+          cp roles/docker/templates/docker.service.j2 /tmp/kubeasy-offline-${GIT_TAG}/docker.service
+          chmod +x /tmp/kubeasy-offline-${GIT_TAG}/main.sh /tmp/kubeasy-offline-${GIT_TAG}/push-to-private-registry.sh
+
+          echo ${{ secrets.PASSWORD }} | docker login ghcr.io --username ${{ secrets.USERNAME }} --password-stdin ${host} >/dev/null
+          mkdir -p roles/kube-apiserver/files/${GIT_TAG:1} roles/kube-controller-manager/files/${GIT_TAG:1} roles/kube-scheduler/files/${GIT_TAG:1} roles/kubectl/files/${GIT_TAG:1} roles/kube-proxy/files/${GIT_TAG:1} roles/kubelet/files/${GIT_TAG:1}
+          find scripts/src/${GIT_TAG:1} -name containerd-*-linux-amd64.tar.gz -exec cp "{}" ./roles/containerd/files \;
+          find scripts/src/${GIT_TAG:1} -name runc.amd64 -exec cp "{}" ./roles/containerd/files \;
+          find scripts/src/${GIT_TAG:1} -name crictl-*-linux-amd64.tar.gz -exec cp "{}" ./roles/containerd/files \;
+          find scripts/src/${GIT_TAG:1} -name docker-*.tgz -exec cp "{}" ./roles/docker/files \;
+          find scripts/src/${GIT_TAG:1} -name cni-plugins-*.tgz -exec cp "{}" ./roles/cni/files \;
+          find scripts/src/${GIT_TAG:1} -name etcd-*-linux-amd64.tar.gz -exec cp "{}" ./roles/etcd/files \;
+          find scripts/src/${GIT_TAG:1} -name kube-apiserver -exec cp "{}" ./roles/kube-apiserver/files/${GIT_TAG:1} \;
+          find scripts/src/${GIT_TAG:1} -name kube-controller-manager -exec cp "{}" ./roles/kube-controller-manager/files/${GIT_TAG:1} \;
+          find scripts/src/${GIT_TAG:1} -name kube-scheduler -exec cp "{}" ./roles/kube-scheduler/files/${GIT_TAG:1} \;
+          find scripts/src/${GIT_TAG:1} -name kubectl -exec cp "{}" ./roles/kubectl/files/${GIT_TAG:1} \;
+          find scripts/src/${GIT_TAG:1} -name kube-proxy -exec cp "{}" ./roles/kube-proxy/files/${GIT_TAG:1} \;
+          find scripts/src/${GIT_TAG:1} -name kubelet -exec cp "{}" ./roles/kubelet/files/${GIT_TAG:1} \;
+          docker build -t ghcr.io/buxiaomo/kubeasy:${GIT_TAG} .
+          docker tag ghcr.io/buxiaomo/kubeasy:${GIT_TAG} 127.0.0.1:5000/buxiaomo/kubeasy:${GIT_TAG}
+          docker push -q 127.0.0.1:5000/buxiaomo/kubeasy:${GIT_TAG}
+          docker push -q ghcr.io/buxiaomo/kubeasy:${GIT_TAG}
+          cp -r ./scripts/src/registry /tmp/kubeasy-offline-${GIT_TAG}
+
+          pushd /tmp
+          tar -zcf kubeasy-offline-${GIT_TAG}.tar.gz kubeasy-offline-${GIT_TAG}
+
+          sha256sum kubeasy.tar.gz > kubeasy.tar.gz.sha256
+          sha256sum kubeasy-registry-${GIT_TAG}.tar.gz > kubeasy-registry-${GIT_TAG}.tar.gz.sha256
+          sha256sum kubeasy-binary-${GIT_TAG}.tar.gz > kubeasy-binary-${GIT_TAG}.tar.gz.sha256
+          sha256sum kubeasy-offline-${GIT_TAG}.tar.gz > kubeasy-offline-${GIT_TAG}.tar.gz.sha256
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset(kubeasy)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy.tar.gz
+          asset_name: kubeasy.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Asset(kubeasy sha256)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy.tar.gz.sha256
+          asset_name: kubeasy.tar.gz.sha256
+          asset_content_type: application/gzip
+
+
+      - name: Upload Release Asset(kubeasy registry)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy-registry-${{ github.ref_name }}.tar.gz
+          asset_name: kubeasy-registry-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Asset(kubeasy registry sha256)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy-registry-${{ github.ref_name }}.tar.gz.sha256
+          asset_name: kubeasy-registry-${{ github.ref_name }}.tar.gz.sha256
+          asset_content_type: application/gzip
+
+
+      - name: Upload Release Asset(kubeasy binary)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy-binary-${{ github.ref_name }}.tar.gz
+          asset_name: kubeasy-binary-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Asset(kubeasy binary sha256)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy-binary-${{ github.ref_name }}.tar.gz.sha256
+          asset_name: kubeasy-binary-${{ github.ref_name }}.tar.gz.sha256
+          asset_content_type: application/gzip
+
+
+      - name: Upload Release Asset(kubeasy offline)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy-offline-${{ github.ref_name }}.tar.gz
+          asset_name: kubeasy-offline-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Asset(kubeasy offline sha256)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/kubeasy-offline-${{ github.ref_name }}.tar.gz.sha256
+          asset_name: kubeasy-offline-${{ github.ref_name }}.tar.gz.sha256
+          asset_content_type: application/gzip

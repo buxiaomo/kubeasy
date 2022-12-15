@@ -1,0 +1,43 @@
+# OSX files
+.DS_Store
+.idea
+__pycache__
+
+scripts/src/*
+test.md
+scripts/binaries
+roles/cni/files/*
+roles/containerd/files/*
+roles/crio/files/*
+roles/docker/files/*
+roles/etcd/files/*
+roles/kube-apiserver/files/*
+roles/kube-controller-manager/files/*
+roles/kube-proxy/files/*
+roles/kube-scheduler/files/*
+roles/kubectl/files/*
+roles/kubelet/files/*
+
+inventory/*.ini
+group_vars/all.yml
+group_vars/kubernetes.yml
+
+# temp file
+.etcd
+.docker
+.kubernetes
+.containerd
+.crictl
+.runc
+
+
+
+# terraform
+tests/terraform/*/.terraform
+tests/terraform/*/*.tfstate
+tests/terraform/*/*.backup
+
+
+# vagrant
+.vagrant
+.ssh

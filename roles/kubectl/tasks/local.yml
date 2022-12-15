@@ -1,0 +1,22 @@
+- name: Distribution certificate
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.crt",
+        dest: "/etc/kubernetes/pki/ca.crt",
+        mode: 644,
+      }
+    - {
+        src: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.key",
+        dest: "/etc/kubernetes/pki/ca.key",
+        mode: 600,
+      }
+  notify: Clean ca key
+  tags:
+    - renew
+    - update

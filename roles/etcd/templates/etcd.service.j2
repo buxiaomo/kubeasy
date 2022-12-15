@@ -1,0 +1,60 @@
+{%- set etcdnode=[] -%}
+{%- if groups['etcd'] is not defined %}
+    {%- for host in groups['master'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- else%}
+    {%- for host in groups['etcd'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- endif %}
+[Unit]
+Description=etcd
+Documentation=https://github.com/coreos/etcd
+After=network-online.target firewalld.service
+Wants=network-online.target
+
+[Service]
+User=etcd
+Type=notify
+Restart=always
+RestartSec=5s
+LimitNOFILE=40000
+TimeoutStartSec=0
+ExecStart=/usr/local/bin/etcd \
+  --name=etcd-{{ ansible_play_hosts.index(inventory_hostname) }} \
+  --data-dir={{ etcd.datadir | default('/var/lib/etcd') }} \
+  --listen-client-urls=https://127.0.0.1:2379,https://{{ inventory_hostname | ip_format }}:2379 \
+  --advertise-client-urls=https://{{ inventory_hostname | ip_format }}:2379 \
+  --listen-peer-urls=https://{{ inventory_hostname | ip_format }}:2380 \
+  --initial-advertise-peer-urls=https://{{ inventory_hostname | ip_format }}:2380 \
+  --initial-cluster={% for host in etcdnode %}etcd-{{ ansible_play_hosts.index(host) }}=https://{{ host | ip_format }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
+  --initial-cluster-token=kubernetes-etcd-cluster \
+{% if scale | default(false) %}
+  --initial-cluster-state=existing \
+{% else %}
+  --initial-cluster-state=new \
+{% endif %}
+  --client-cert-auth=true \
+  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert-file=/etc/kubernetes/pki/etcd/server.crt \
+  --key-file=/etc/kubernetes/pki/etcd/server.key \
+  --peer-client-cert-auth=true \
+  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt \
+  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt \
+  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key \
+{% if ETCD_VERSION is version("3.2.26",">") %}
+  --listen-metrics-urls=http://0.0.0.0:2381 \
+{% endif %}
+{% if etcd.extraArgs is defined %}
+{% for extraArg in etcd.extraArgs %}
+{% if not loop.last %}
+  {{ extraArg }} \
+{% else %}
+  {{ extraArg }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

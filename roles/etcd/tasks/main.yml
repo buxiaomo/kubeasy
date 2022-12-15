@@ -1,0 +1,386 @@
+---
+# tasks file for etcd
+- name: Add the group 'etcd'
+  ansible.builtin.group:
+    name: etcd
+    state: present
+    system: True
+
+- name: Add the user 'etcd'
+  ansible.builtin.user:
+    name: etcd
+    home: "{{ etcd.datadir | default('/var/lib/etcd') }}"
+    comment: etcd service account
+    create_home: False
+    shell: /sbin/nologin
+    system: True
+    group: etcd
+
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: "/usr/local/src/etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    owner: root
+    group: root
+  register: local
+  ignore_errors: True
+  notify: restarted etcd
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    dest: "/usr/local/src/etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: etcd_pkg
+  until: etcd_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restarted etcd
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Extract package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: /usr/local/bin
+    remote_src: yes
+    exclude:
+      - Documentation
+      - "README*"
+    extra_opts:
+      - --strip-components=1
+    owner: root
+    group: root
+    mode: 0755
+  notify: restarted etcd
+  tags:
+    - upgrade
+
+- name: Create data directory
+  ansible.builtin.file:
+    name: "{{ etcd.datadir | default('/var/lib/etcd') }}"
+    state: directory
+    mode: 0700
+    owner: etcd
+    group: etcd
+  tags:
+    - update
+
+- name: Create a etcd primary partition
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ etcd.device }}"
+    state: present
+  when: etcd.device is defined
+
+- name: Mount etcd root dir
+  ansible.posix.mount:
+    src: "{{ etcd.device }}"
+    path: "{{ etcd.datadir | default('/var/lib/etcd') }}"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+  when: etcd.device is defined
+
+- name: change ownership
+  ansible.builtin.file:
+    name: "{{ etcd.datadir | default('/var/lib/etcd') }}"
+    state: directory
+    owner: etcd
+    group: etcd
+    mode: 0700
+  tags:
+    - update
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: "/etc/kubernetes/pki/etcd"
+    state: directory
+    owner: etcd
+    group: etcd
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+- name: Generate etcd server private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/etcd/server.key
+    size: 2048
+    mode: 0600
+    owner: etcd
+    group: root
+  register: etcd_tls_server_key
+  tags:
+    - renew
+    - update
+
+# server
+- name: Generate etcd server csr
+  community.crypto.openssl_csr:
+    owner: etcd
+    group: root
+    path: /etc/kubernetes/pki/etcd/server.csr
+    privatekey_path: /etc/kubernetes/pki/etcd/server.key
+    common_name: "{{ ansible_hostname | lower }}"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    subject_alt_name: "{{ item.value | unique }}"
+  with_dict:
+    subject_alt_name:
+      - "DNS:localhost"
+      - "DNS:{{ ansible_hostname | lower }}"
+      - "IP:127.0.0.1"
+      - "IP:0:0:0:0:0:0:0:1"
+      - "IP:::1"
+      - "IP:{{ inventory_hostname }}"
+      - "{% if ha is defined %}IP:{{ ha.vip }}{% else %}DNS:localhost{% endif %}"
+      - "{% if ansible_default_ipv6.address is defined %}IP:{{ ansible_default_ipv6.address }}{% else %}IP:::1{% endif %}"
+      - "{% if ipv6 is defined %}IP:{{ ipv6 }}{% else %}IP:::1{% endif %}"
+  notify: Clean etcd server csr
+  tags:
+    - renew
+    - update
+
+- name: Generate etcd server certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/etcd/server.crt
+    csr_path: /etc/kubernetes/pki/etcd/server.csr
+    ownca_path: /etc/kubernetes/pki/etcd/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+    owner: etcd
+    group: root
+  register: etcd_tls_server_crt
+  notify: restarted etcd
+  tags:
+    - renew
+    - update
+
+# peer
+- name: Generate etcd peer private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/etcd/peer.key
+    size: 2048
+    mode: 0600
+    owner: etcd
+    group: root
+  register: etcd_tls_peer_key
+  tags:
+    - renew
+    - update
+
+- name: Generate etcd peer csr
+  community.crypto.openssl_csr:
+    owner: etcd
+    group: root
+    path: /etc/kubernetes/pki/etcd/peer.csr
+    privatekey_path: /etc/kubernetes/pki/etcd/peer.key
+    common_name: "{{ ansible_hostname | lower }}"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    subject_alt_name: 
+      - "DNS:localhost"
+      - "DNS:{{ ansible_hostname | lower }}"
+      - "IP:127.0.0.1"
+      - "IP:0:0:0:0:0:0:0:1"
+      - "IP:::1"
+      - "IP:{{ inventory_hostname }}"
+      - "{% if ansible_default_ipv6.address is defined %}IP:{{ ansible_default_ipv6.address }}{% else %}IP:::1{% endif %}"
+      - "{% if ipv6 is defined %}IP:{{ ipv6 }}{% else %}IP:::1{% endif %}"
+  notify: Clean etcd peer csr
+  tags:
+    - renew
+    - update
+
+- name: Generate etcd peers certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/etcd/peer.crt
+    csr_path: /etc/kubernetes/pki/etcd/peer.csr
+    ownca_path: /etc/kubernetes/pki/etcd/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+    owner: etcd
+    group: root
+  register: etcd_tls_peer_crt
+  notify: restarted etcd
+  tags:
+    - renew
+    - update
+
+# healthcheck
+- name: Generate etcd healthcheck private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/etcd/healthcheck-client.key
+    size: 2048
+    mode: 0600
+    owner: etcd
+    group: root
+  tags:
+    - renew
+    - update
+
+- name: Generate etcd healthcheck csr
+  community.crypto.openssl_csr:
+    owner: etcd
+    group: root
+    path: /etc/kubernetes/pki/etcd/healthcheck-client.csr
+    privatekey_path: /etc/kubernetes/pki/etcd/healthcheck-client.key
+    common_name: "kube-etcd-healthcheck-client"
+    organization_name: "system:masters"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  notify: Clean etcd healthcheck csr
+  tags:
+    - renew
+    - update
+
+- name: Generate etcd healthcheck certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/etcd/healthcheck-client.crt
+    csr_path: /etc/kubernetes/pki/etcd/healthcheck-client.csr
+    ownca_path: /etc/kubernetes/pki/etcd/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+    owner: etcd
+    group: root
+  register: etcd_tls_client_cert
+  notify: restarted etcd
+  tags:
+    - renew
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+  register: etcd_cfg
+  notify: restarted etcd
+  tags:
+    - upgrade
+    - update
+
+- name: Backup data
+  ansible.builtin.shell: |
+    NAME=$(date +%Y-%m-%d)
+    mkdir -p {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}
+    timeout 1s /usr/local/bin/etcdctl --endpoints {{ inventory_hostname | ip_format }}:2379 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key snapshot save {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}/kubernetes-etcd.${NAME}.backup.db
+  environment:
+    ETCDCTL_API: 3
+  ignore_errors: True
+  tags:
+    - upgrade
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: etcd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  register: etcd_systemd
+  when: etcd_pkg.changed or 
+        etcd_tls_server_key.changed or 
+        etcd_tls_server_crt.changed or 
+        etcd_tls_peer_key.changed or 
+        etcd_tls_peer_crt.changed or 
+        etcd_cfg.changed or
+        ansible_facts.services['etcd.service']['state'] != 'running'
+
+# - name: Wait for etcd
+#   wait_for:
+#     port: 2379
+#     delay: 3
+#     state: started
+#     connect_timeout: 1
+#     active_connection_states: ['ESTABLISHED', 'FIN_WAIT1', 'FIN_WAIT2', 'SYN_RECV', 'SYN_SENT', 'TIME_WAIT']
+#     host: "{{ inventory_hostname }}"
+#   connection: local
+#   when: etcd_systemd.changed
+
+- name: Health check
+  ansible.builtin.shell: |
+    ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {{ inventory_hostname | ip_format }}:2379 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key endpoint health
+  register: etcd_pkg
+  until: etcd_pkg is succeeded
+  retries: 10
+  when: etcd_systemd.changed
+
+- name: Install health check command
+  ansible.builtin.template:
+    src: etcd-check.sh.j2
+    dest: /usr/local/bin/etcd-check.sh
+    mode: 0755
+  tags:
+    - update
+
+- name: Install Backup command
+  ansible.builtin.template:
+    src: etcd-backup.sh.j2
+    dest: /usr/local/bin/etcd-backup.sh
+    mode: 0755
+  tags:
+    - update
+
+- name: Install Etcdctl command alias
+  ansible.builtin.template:
+    src: etcd.sh.j2
+    dest: /etc/profile.d/etcd.sh
+    mode: 0755
+  tags:
+    - update
+
+- name: Create backup kubernetes etcd data in cron
+  ansible.builtin.cron:
+    name: "backup kubernetes etcd data by kubeasy"
+    minute: "0"
+    hour: "2"
+    job: "/usr/local/bin/etcd-backup.sh"
+  ignore_errors: True

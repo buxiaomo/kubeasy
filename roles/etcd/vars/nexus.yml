@@ -1,0 +1,1 @@
+download_url: '{{ NEXUS_DOMAIN_NAME }}/repository/{{ NEXUS_REPOSITORY }}/coreos/etcd/releases/download/v{{ ETCD_VERSION }}/etcd-v{{ ETCD_VERSION }}-linux-amd64.tar.gz'

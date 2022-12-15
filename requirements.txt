@@ -1,0 +1,7 @@
+ansible==4.10.0
+ansible-runner==2.2.1
+IPy
+jmespath
+packaging
+requests
+netaddr

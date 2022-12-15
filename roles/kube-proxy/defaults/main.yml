@@ -1,0 +1,7 @@
+---
+# defaults file for kube-proxy
+proxy:
+  extraArgs:
+    - "--proxy-mode=ipvs"
+  log:
+    level: 1

@@ -1,0 +1,71 @@
+---
+- name: Base environment configuration
+  hosts: all
+  become: true
+  any_errors_fatal: true
+  roles:
+    - prepare
+    - chrony
+
+- name: Certificate of the cluster
+  hosts: all
+  become: true
+  any_errors_fatal: true
+  roles:
+    - ca
+
+- name: Deployment etcd cluster
+  hosts: "{% if groups['etcd'] is not defined %}master{% else %}etcd{% endif %}"
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  vars:
+    scale: false
+  roles:
+    - etcd
+
+- name: Initialization kubernetes dependence
+  hosts: kubernetes
+  become: true
+  any_errors_fatal: true
+  roles:
+    - cni
+    - ipvsadm
+
+- name: Deployment kubernetes master
+  hosts: master
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - haproxy
+    - keepalived
+    - "{{ KUBE_RUNTIME }}"
+    - kubectl
+    - kube-apiserver
+    - kube-scheduler
+    - kube-controller-manager
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Deployment kubernetes worker
+  hosts: worker
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - "{{ KUBE_RUNTIME }}"
+    - kubectl
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Deployment kubernetes add-on
+  hosts: master
+  become: true
+  any_errors_fatal: true
+  roles:
+    - add-on

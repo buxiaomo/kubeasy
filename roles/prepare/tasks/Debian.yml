@@ -1,0 +1,6 @@
+- name: Install some applications
+  apt:
+    name: "{{ package }}"
+    state: latest
+    update_cache: yes
+    autoremove: yes

@@ -1,0 +1,5 @@
+- name: Install some applications
+  community.general.zypper:
+    name: "{{ package }}"
+    state: latest
+    update_cache: yes

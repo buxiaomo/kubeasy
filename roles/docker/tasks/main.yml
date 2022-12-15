@@ -1,0 +1,164 @@
+---
+# tasks file for docker
+- name: Add the group 'docker'
+  ansible.builtin.group:
+    name: docker
+    state: present
+    system: True
+
+- name: Add the user 'docker'
+  ansible.builtin.user:
+    name: docker
+    comment: docker service account
+    shell: /sbin/nologin
+    system: True
+    group: docker
+
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "docker-{{ DOCKER_VERSION }}.tgz"
+    dest: "/usr/local/src/docker-{{ DOCKER_VERSION }}.tgz"
+    owner: root
+    group: root
+  register: local
+  ignore_errors: True
+  notify: restart docker
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    dest: "/usr/local/src/docker-{{ DOCKER_VERSION }}.tgz"
+    force: true
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: docker_pkg
+  until: docker_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restart docker
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Extract package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/docker-{{ DOCKER_VERSION }}.tgz"
+    dest: /usr/local/bin
+    remote_src: yes
+    extra_opts:
+      - --strip-components=1
+    owner: root
+    group: root
+  notify: restart docker
+  tags:
+    - upgrade
+
+- name: Create data directory
+  ansible.builtin.file:
+    name: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - /etc/docker
+    - "{{ docker.datadir | default('/var/lib/docker') }}"
+  tags:
+    - upgrade
+    - update
+
+- name: Install nvidia-container-runtime
+  include_tasks: "{{ ansible_distribution_file_variety }}.yml"
+  when: gpu | default(false)
+
+- name: Configuration daemon
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+  register: docker_cfg
+  when: docker.daemon is defined
+  notify: restart docker
+  tags:
+    - upgrade
+    - update
+
+- name: Create a docker primary partition
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ docker.device }}"
+    state: present
+  when: docker.device is defined
+
+- name: Mount docker root dir
+  ansible.posix.mount:
+    src: "{{ docker.device }}"
+    path: "{{ docker.datadir | default('/var/lib/docker') }}"
+    fstype: xfs
+    opts: defaults,pquota
+    state: mounted
+  when: docker.device is defined
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: docker.service.j2
+    dest: /etc/systemd/system/docker.service
+  register: docker_systemd
+  notify: restart docker
+  tags:
+    - upgrade
+    - update
+
+- name: Create systemd service.d
+  ansible.builtin.file:
+    name: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: "0755"
+  when: proxy_env is defined
+  notify: restart docker
+  tags:
+    - update
+
+- name: Install systemd file proxy.conf
+  ansible.builtin.template:
+    src: proxy.conf.j2
+    dest: /etc/systemd/system/docker.service.d/proxy.conf
+  register: docker_systemd_d
+  when: proxy_env is defined
+  notify: restart docker
+  tags:
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+    masked: yes
+  when: docker_pkg.changed or 
+        docker_cfg.changed or 
+        docker_systemd.changed or 
+        docker_systemd_d.changed or
+        ansible_facts.services['docker.service']['state'] != 'running'
+
+- name: Install docker completion
+  get_url:
+    url: https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker
+    dest: /etc/bash_completion.d/docker
+    mode: 0755
+    timeout: 1
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  ignore_errors: True

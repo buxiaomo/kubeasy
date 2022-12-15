@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dnsutils
+  labels:
+    app: dnsutils
+spec:
+  selector:
+    matchLabels:
+      app: dnsutils
+  template:
+    metadata:
+      labels:
+        app: dnsutils
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: dnsutils
+          image: buxiaomo/dnsutils:1.3
+          imagePullPolicy: IfNotPresent
+          command:
+            - sleep
+            - "3600"

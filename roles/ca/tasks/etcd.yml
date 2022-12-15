@@ -1,0 +1,50 @@
+
+- name: Create etcd certificate directory
+  ansible.builtin.file:
+    name: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd"
+    state: directory
+    mode: 0755
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Generate an etcd ca private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd/ca.key"
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Generate an etcd ca csr
+  community.crypto.openssl_csr:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd/ca.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd/ca.key"
+    common_name: etcd-ca
+    basic_constraints: "CA:TRUE"
+    basic_constraints_critical: true
+    key_usage_critical: true
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+      - keyCertSign
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Sign etcd ca certificate
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd/ca.crt"
+    csr_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd/ca.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/etcd/ca.key"
+    mode: 0644
+    provider: selfsigned
+    force: "{{ expired | default(false) }}"
+  run_once: true
+  delegate_to: localhost
+  tags:
+    - renew

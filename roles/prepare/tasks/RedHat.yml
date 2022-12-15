@@ -1,0 +1,10 @@
+# - name: Install epel-release applications
+#   yum:
+#     name: epel-release
+#     state: present
+#   when: ansible_distribution == "CentOS" or ansible_distribution == "Rocky"
+
+- name: Install some applications
+  yum:
+    name: "{{ package }}"
+    state: latest

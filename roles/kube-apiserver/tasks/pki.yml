@@ -1,0 +1,62 @@
+- name: Distribution CA certificate
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    checksum: "{{ item.checksum }}"
+    owner: root
+    group: root
+    timeout: 3
+  retries: 3
+  with_items:
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/etcd.crt",
+        dest: "/etc/kubernetes/pki/etcd/ca.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/etcd.crt.sha256sum",
+        mode: 644
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/etcd.key",
+        dest: "/etc/kubernetes/pki/etcd/ca.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/etcd.key.sha256sum",
+        mode: 600
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.crt",
+        dest: "/etc/kubernetes/pki/ca.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.crt.sha256sum",
+        mode: 644,
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.key",
+        dest: "/etc/kubernetes/pki/ca.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.key.sha256sum",
+        mode: 600,
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/front-proxy-ca.crt",
+        dest: "/etc/kubernetes/pki/front-proxy-ca.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/front-proxy-ca.crt.sha256sum",
+        mode: 644,
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/front-proxy-ca.key",
+        dest: "/etc/kubernetes/pki/front-proxy-ca.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/front-proxy-ca.key.sha256sum",
+        mode: 600,
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/sa.key",
+        dest: "/etc/kubernetes/pki/sa.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/sa.key.sha256sum",
+        mode: 644,
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/sa.pub",
+        dest: "/etc/kubernetes/pki/sa.pub",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/sa.pub.sha256sum",
+        mode: 600,
+      }
+  tags:
+    - renew
+    - update

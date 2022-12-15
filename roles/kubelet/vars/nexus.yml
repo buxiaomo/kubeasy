@@ -1,0 +1,1 @@
+download_url: '{{ NEXUS_DOMAIN_NAME }}/repository/{{ NEXUS_REPOSITORY }}/kubernetes-release/release/v{{ KUBE_VERSION }}/bin/linux/amd64/kubelet'

@@ -1,0 +1,22 @@
+---
+# handlers file for kubelet
+- name: restarted kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"
+
+- name: Clean kubelet csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/kubelet.csr
+    state: absent
+
+- name: Undrain Node
+  ansible.builtin.shell: |
+    kubectl uncordon {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].ansible_hostname | lower }}{% endif %}
+  run_once: true
+  delegate_to: "{{ groups['master'][0] }}"

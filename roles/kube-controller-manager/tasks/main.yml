@@ -1,0 +1,157 @@
+---
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "{{ KUBE_VERSION }}/kube-controller-manager"
+    dest: "/usr/local/bin/kube-controller-manager"
+    owner: root
+    group: root
+    mode: 0755
+  register: local
+  ignore_errors: True
+  notify: restarted kube-controller-manager
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    # checksum: "sha256:{{ download_url }}.sha256"
+    dest: /usr/local/bin/kube-controller-manager
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: controller_pkg
+  until: controller_pkg is succeeded
+  retries: 15
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restarted kube-controller-manager
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: /etc/kubernetes/pki
+    state: directory
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-controller-manager private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/kube-controller-manager.key
+    size: 2048
+    mode: 0600
+  register: controller_tls_key
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-controller-manager csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/kube-controller-manager.csr
+    privatekey_path: /etc/kubernetes/pki/kube-controller-manager.key
+    common_name: "system:kube-controller-manager"
+    organization_name: "system:kube-controller-manager"
+    use_common_name_for_san: no
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean kube-controller-manager csr
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-controller-manager certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/kube-controller-manager.crt
+    csr_path: /etc/kubernetes/pki/kube-controller-manager.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: controller_tls_crt
+  notify: restarted kube-controller-manager
+  tags:
+    - renew
+    - update
+
+- name: Create kubeconfig
+  ansible.builtin.template:
+    src: kube-controller-manager.kubeconfig.j2
+    dest: /etc/kubernetes/kube-controller-manager.kubeconfig
+    mode: 0644
+  register: controller_kubeconfig_cfg
+  tags:
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: kube-controller-manager.service.j2
+    dest: /etc/systemd/system/kube-controller-manager.service
+  register: controller_systemd_cfg
+  notify: restarted kube-controller-manager
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: kube-controller-manager
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  register: controller_systemd
+  when: controller_pkg.changed or 
+        controller_tls_key.changed or 
+        controller_tls_crt.changed or 
+        controller_kubeconfig_cfg.changed or 
+        controller_systemd_cfg.changed or
+        ansible_facts.services['kube-controller-manager.service']['state'] != 'running'
+
+# - name: Waiting for the service
+#   wait_for:
+#     host: "{{ inventory_hostname }}"
+#     port: 10257
+#     delay: 3
+#     state: started
+#   when: controller_systemd.changed
+
+- name: Health check
+  uri:
+    url: "https://{{ inventory_hostname | ip_format }}:10257/healthz"
+    validate_certs: no
+    return_content: yes
+    client_cert: "/etc/kubernetes/pki/kube-controller-manager.crt"
+    client_key: "/etc/kubernetes/pki/kube-controller-manager.key"
+  register: this
+  until: 
+    - "'ok' in this.content"
+    - this.status == 200
+  retries: 120
+  delay: 1
+  when: controller_systemd.changed

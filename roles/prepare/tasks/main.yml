@@ -1,0 +1,122 @@
+---
+# tasks file for common
+- name: Set OS dependent variables
+  include_vars: "{{ ansible_distribution }}.yml"
+  tags:
+    - upgrade
+
+- name: Set system time zone
+  community.general.timezone:
+    name: "{{ timezone }}"
+  when: timezone is defined
+
+- name: Install some applications
+  include_tasks: "{{ ansible_distribution_file_variety }}.yml"
+
+# - name: Install python applications
+#   pip:
+#     name: 
+#       - pyyaml
+#       - pyopenssl
+#       - cryptography
+#       - IPy
+#       - kubernetes
+#       - openshift
+#       - jmespath
+#     extra_args: "-i https://pypi.tuna.tsinghua.edu.cn/simple --ignore-installed"
+
+- name: Set the Hostname
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+  when: hostname is defined
+
+- name: Close firewalld
+  ansible.builtin.systemd:
+    name: "{{ svc_name }}"
+    enabled: no
+    state: stopped
+  ignore_errors: True
+  when: svc_name is defined
+
+- name: Close SeLinux
+  ansible.builtin.lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+  when: ansible_distribution == "CentOS" or ansible_distribution == "Rocky" or ansible_distribution == "RedHat"
+
+- name: Load kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ modprobe.params }}"
+  when: modprobe.params is defined
+
+- name: Write kernel modules to file
+  ansible.builtin.lineinfile:
+    path: "{{ modprobe.filename }}"
+    line: "{{ item }}"
+    create: yes
+  with_items: "{{ modprobe.params }}"
+  when: modprobe.params is defined
+
+- name: Manage entries in sysctl.conf
+  ansible.posix.sysctl:
+    name: "{{ item.0 }}"
+    value: "{{ item.1 }}"
+    sysctl_file: "{{ sysctl.filename }}"
+    sysctl_set: yes
+    reload: yes
+    ignoreerrors: yes
+  loop: "{{ sysctl.params | dictsort }}"
+  when: sysctl.params is defined
+
+- name: Remove swapfile from /etc/fstab
+  ansible.builtin.lineinfile:
+    dest: /etc/fstab
+    regexp: "(^\\s*[^#].+swap)"
+    line: '#\1'
+    backrefs: yes
+
+- name: Disable swap
+  ansible.builtin.command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Close swap for Fedora
+  ansible.builtin.systemd:
+    name: dev-zram0.swap
+    enabled: no
+    state: stopped
+  when: ansible_distribution == "Fedora"
+
+- name: Settings limits
+  community.general.pam_limits:
+    domain: "{{ item.domain }}"
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+    dest: /etc/security/limits.d/99-kubernetes.conf
+  with_items: "{{ limits }}"
+
+- name: Create data directory
+  ansible.builtin.file:
+    name: "{{ DataDir | default('/data') }}"
+    state: directory
+    mode: 0755
+  when: DataDir is defined
+
+- name: Create data primary partition
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ DataDevice }}"
+    state: present
+  when: DataDevice is defined
+
+- name: Mount data root dir
+  ansible.posix.mount:
+    src: "{{ DataDevice }}"
+    path: "{{ DataDir | default('/data') }}"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+  when: DataDevice is defined

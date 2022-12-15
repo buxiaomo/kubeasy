@@ -1,0 +1,11 @@
+---
+# handlers file for keepalived
+- name: restarted keepalived
+  ansible.builtin.systemd:
+    name: keepalived
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"

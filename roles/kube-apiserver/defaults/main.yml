@@ -1,0 +1,18 @@
+---
+# defaults file for kube-apiserver
+apiServer:
+  encryption: Tsg7sO4Ki/W3s9bfwGfTi8ECcp+/3uDedQMq6rLQTIY= # head -c 32 /dev/urandom | base64
+  certSANs:
+    - "DNS:*.kubernetes.local"
+  extraArgs:
+    - "--event-ttl=4h"
+    - "--anonymous-auth=false"
+    - "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname"
+    - "--service-node-port-range=30000-32767"
+    - "--runtime-config=api/all=true"
+    - "--authorization-mode=Node,RBAC"
+    - "--profiling=false"
+    - "--enable-admission-plugins=ServiceAccount,NamespaceLifecycle,NodeRestriction,LimitRanger,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority"
+    - "--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256"
+  log:
+    level: 1

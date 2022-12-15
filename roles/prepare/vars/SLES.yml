@@ -1,0 +1,8 @@
+package:
+  - conntrack-tools
+  - python-cryptography
+  - python[2|3]-cryptography
+  - tar
+  - unzip
+  - iptables
+  - ipset

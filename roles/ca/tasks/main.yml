@@ -1,0 +1,23 @@
+---
+# tasks file for ca
+- name: Create kubernetes certificate directory
+  ansible.builtin.file:
+    name: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}"
+    state: directory
+    mode: 0755
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Kubernetes ca
+  include_tasks: kubernetes.yml
+  when: not PKI_URL is defined
+  tags:
+    - renew
+
+- name: Etcd ca
+  include_tasks: etcd.yml
+  when: not PKI_URL is defined
+  tags:
+    - renew

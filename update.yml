@@ -1,0 +1,40 @@
+---
+- name: Update etcd cluster
+  hosts: "{% if groups['etcd'] is not defined %}master{% else %}etcd{% endif %}"
+  become: yes
+  roles:
+    - etcd
+
+- name: Update kubernetes master
+  hosts: master
+  become: yes
+  roles:
+    - haproxy
+    - keepalived
+    - "{{ KUBE_RUNTIME }}"
+    - kubectl
+    - kube-apiserver
+    - kube-scheduler
+    - kube-controller-manager
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Update kubernetes worker
+  hosts: worker
+  become: yes
+  roles:
+    - kubectl
+    - kubelet
+    - "{{ KUBE_RUNTIME }}"
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Upgrade kubernetes add-on
+  hosts: master
+  become: true
+  any_errors_fatal: true
+  roles:
+    - add-on

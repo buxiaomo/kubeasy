@@ -1,0 +1,44 @@
+---
+- name: Renew ca
+  hosts: all
+  become: true
+  any_errors_fatal: true
+  roles:
+    - ca
+
+- name: Rotate the etcd CA certificates
+  hosts: "{% if groups['etcd'] is not defined %}master{% else %}etcd{% endif %}"
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  vars:
+    scale: false
+  roles:
+    - etcd
+
+- name: Rotate the master CA certificates
+  hosts: master
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - kubectl
+    - kube-apiserver
+    - kube-scheduler
+    - kube-controller-manager
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Rotate the worker CA certificates
+  hosts: worker
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - kubectl
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup

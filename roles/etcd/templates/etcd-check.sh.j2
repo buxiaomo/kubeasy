@@ -1,0 +1,48 @@
+#!/bin/bash
+{%- set etcdnode=[] %}
+{%- if groups['etcd'] is not defined %}
+    {%- for host in groups['master'] %}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- else%}
+    {%- for host in groups['etcd'] %}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- endif %}
+
+ENDPOINTS={% for host in etcdnode %}https://{{ host | ip_format }}:2379{% if not loop.last %},{% endif %}{% endfor %}
+
+echo -e "\033[32m=> member list <=\033[0m"
+ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints ${ENDPOINTS} \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/healthcheck-client.crt \
+--key /etc/kubernetes/pki/etcd/healthcheck-client.key \
+member list --write-out=table
+
+echo -e "\033[32m=> endpoint health <=\033[0m"
+ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints ${ENDPOINTS} \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/healthcheck-client.crt \
+--key /etc/kubernetes/pki/etcd/healthcheck-client.key \
+endpoint health --write-out=table
+
+echo -e "\033[32m=> endpoint status <=\033[0m"
+ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints ${ENDPOINTS} \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/healthcheck-client.crt \
+--key /etc/kubernetes/pki/etcd/healthcheck-client.key \
+endpoint status --write-out=table
+
+echo -e "\033[32m=> endpoint hashkv <=\033[0m"
+ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints ${ENDPOINTS} \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/healthcheck-client.crt \
+--key /etc/kubernetes/pki/etcd/healthcheck-client.key \
+endpoint hashkv --write-out=table
+
+# echo -e "\033[32m=> defrag <=\033[0m"
+# ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints ${ENDPOINTS} \
+# --cacert /etc/kubernetes/pki/etcd/ca.crt \
+# --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt \
+# --key /etc/kubernetes/pki/etcd/healthcheck-client.key \
+# defrag

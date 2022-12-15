@@ -1,0 +1,215 @@
+---
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "{{ KUBE_VERSION }}/kubelet"
+    dest: "/usr/local/bin/kubelet"
+    owner: root
+    group: root
+    mode: 0755
+  register: local
+  ignore_errors: True
+  notify: restarted kubelet
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Drain Node
+  ansible.builtin.shell: |
+    kubectl drain {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].ansible_hostname | lower }}{% endif %} --ignore-daemonsets --delete-local-data --force
+  delegate_to: "{{ groups['master'][0] }}"
+  when: 
+    - KUBE_ACTION | default('deploy')  == "upgrade"
+    - inventory_hostname in groups['worker']
+  notify: Undrain Node
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    # checksum: "sha256:{{ download_url }}.sha256"
+    dest: /usr/local/bin/kubelet
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: kubelet_pkg
+  until: kubelet_pkg is succeeded
+  retries: 15
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restarted kubelet
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: /etc/kubernetes/pki
+    state: directory
+
+- name: Create data directory
+  ansible.builtin.file:
+    name: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - /etc/kubernetes/manifests
+    - /var/lib/kubelet
+    - /var/lib/kubelet/pki
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+- name: Generate kubelet private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/kubelet.key
+    size: 2048
+    mode: 0600
+  register: kubelet_tls_key
+  tags:
+    - renew
+    - update
+
+- name: Generate kubelet csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/kubelet.csr
+    privatekey_path: /etc/kubernetes/pki/kubelet.key
+    organization_name: "system:nodes"
+    common_name: "system:node:{{ ansible_hostname | lower }}"
+    use_common_name_for_san: no
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean kubelet csr
+  tags:
+    - renew
+    - update
+
+- name: Generate kubelet certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/kubelet.crt
+    csr_path: /etc/kubernetes/pki/kubelet.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: kubelet_tls_crt
+  notify: restarted kubelet
+  tags:
+    - renew
+    - update
+
+- name: Install config file
+  ansible.builtin.template:
+    src: kubelet.yaml.j2
+    dest: /var/lib/kubelet/config.yaml
+  register: kubelet_service_cfg
+  notify: restarted kubelet
+  tags:
+    - upgrade
+    - update
+
+- name: Create kubeconfig
+  ansible.builtin.template:
+    src: kubelet.kubeconfig.j2
+    dest: /etc/kubernetes/kubelet.kubeconfig
+    mode: 0644
+  register: kubelet_kubeconfig_cfg
+  notify: restarted kubelet
+  tags:
+    - upgrade
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
+  register: kubelet_systemd_cfg
+  notify: restarted kubelet
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  register: kubelet_systemd
+  when: kubelet_pkg.changed or 
+        kubelet_tls_key.changed or 
+        kubelet_tls_crt.changed or 
+        kubelet_service_cfg.changed or 
+        kubelet_kubeconfig_cfg.changed or 
+        kubelet_systemd_cfg.changed or
+        ansible_facts.services['kubelet.service']['state'] != 'running'
+
+# - name: Waiting for the service
+#   wait_for:
+#     host: "{{ inventory_hostname }}"
+#     port: 10248
+#     delay: 5
+#     state: started
+#   when: kubelet_systemd.changed
+
+- name: Health check
+  uri:
+    url: "http://{{ inventory_hostname | ip_format }}:10248/healthz"
+    validate_certs: no
+    return_content: yes
+  register: this
+  until: 
+    - "'ok' in this.content"
+    - this.status == 200
+  retries: 120
+  delay: 1
+  when: kubelet_systemd.changed
+
+- name: Waiting node on-line
+  ansible.builtin.shell: /usr/local/bin/kubectl get node {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].ansible_hostname | lower }}{% endif %}
+  register: waiting_for_node
+  until: waiting_for_node.rc == 0 and (waiting_for_node.stdout.find("NotReady") != -1 or waiting_for_node.stdout.find("Ready") != -1)
+  retries: 15
+  delay: 5
+  changed_when: false
+
+- name: Install Check command
+  ansible.builtin.template:
+    src: check-node.sh.j2
+    dest: /usr/local/bin/check-node.sh
+    mode: 755
+  tags:
+    - update
+
+- name: Create check kubernetes node status in cron
+  ansible.builtin.cron:
+    name: "check kubernetes node status by kubeasy"
+    minute: "*/30"
+    hour: "*"
+    job: "/usr/local/bin/check-node.sh"
+  ignore_errors: True
+  tags:
+    - update

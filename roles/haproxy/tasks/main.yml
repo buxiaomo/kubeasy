@@ -1,0 +1,41 @@
+---
+# tasks file for haproxy
+- block:
+    - name: Install applications
+      ansible.builtin.package:
+        name: "haproxy"
+        state: present
+      register: haproxy_pkg
+
+    - name: Create applications configure files
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: "haproxy.cfg.j2", dest: "/etc/haproxy/haproxy.cfg" }
+      register: haproxy_cfg
+      notify: restarted haproxy
+      tags:
+        - update
+
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+
+    - name: Start the service
+      ansible.builtin.systemd:
+        name: haproxy
+        enabled: yes
+        state: restarted
+      when: haproxy_pkg.changed or 
+            haproxy_cfg.changed or
+            ansible_facts.services['haproxy.service']['state'] != 'running'
+
+    - name: Wait for haproxy
+      wait_for:
+        port: "{% if ha is defined and ha.type == 'slb' %}8443{% else %}8081{% endif %}"
+        delay: 3
+        state: started
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+      connection: local
+      when: haproxy_pkg.changed or haproxy_cfg.changed
+  when: (ha is defined and ha.type == "slb") or (loadBalancing.http is defined or loadBalancing.https is defined)

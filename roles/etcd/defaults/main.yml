@@ -1,0 +1,14 @@
+---
+# defaults file for etcd
+etcd:
+  datadir: /var/lib/etcd
+  # auto create etcd primary partition
+  # device: /dev/sdc
+  backupDir: /etc/kubernetes/tmp
+  extraArgs:
+    - "--auto-compaction-retention=1"
+    - "--max-request-bytes=33554432"
+    - "--quota-backend-bytes=8589934592"
+    - "--enable-v2=false"
+    - "--snapshot-count=10000"
+    - "--cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384"

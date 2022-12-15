@@ -1,0 +1,98 @@
+global
+  maxconn  2000
+  ulimit-n  16384
+  log  127.0.0.1 local0 err
+  stats timeout 30s
+  user        haproxy
+  group       haproxy
+  stats socket /var/lib/haproxy/stats
+
+defaults
+  log global
+  timeout connect 5000
+  timeout client  50000
+  timeout server  50000
+  timeout http-request 15s
+  timeout http-keep-alive 15s
+
+frontend monitor-in
+  bind 0.0.0.0:8081
+  bind :::8081
+  mode http
+  option httplog
+  monitor-uri /monitor
+
+listen stats
+  bind    0.0.0.0:8082
+  bind    :::8082
+  mode    http
+  stats   enable
+  stats   hide-version
+  stats   uri       /
+  stats   refresh   30s
+  stats   realm     Haproxy\ Statistics
+  stats   auth      admin:admin
+
+{% if ha is defined %}
+{% if ha.type == "slb" %}
+frontend k8s-apiserver
+  bind 0.0.0.0:8443
+  bind :::8443
+  mode tcp
+  tcp-request inspect-delay 5s
+  default_backend k8s-apiserver
+
+backend k8s-apiserver
+  mode tcp
+  option ssl-hello-chk
+  option tcp-check
+  balance roundrobin
+  default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+{% for host in groups['master'] %}
+{% if hostvars[host].ansible_hostname is defined %}
+  server {{ hostvars[host].ansible_hostname }} {{ host }}:6443 check check-ssl verify none
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% if loadBalancing.http is defined %}
+frontend k8s-ingress-http
+  bind 0.0.0.0:{{ loadBalancing.http.src }}
+  bind :::{{ loadBalancing.http.src }}
+  mode tcp
+  tcp-request inspect-delay 5s
+  default_backend k8s-ingress-http
+
+backend k8s-ingress-http
+  mode tcp
+  option tcp-check
+  balance roundrobin
+  default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+{% for host in groups['all'] %}
+{% if hostvars[host].ansible_hostname is defined %}
+  server {{ hostvars[host].ansible_hostname }} {{ host }}:{{ loadBalancing.http.dest }} check
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if loadBalancing.https is defined %}
+frontend k8s-ingress-https
+  bind 0.0.0.0:{{ loadBalancing.https.src }}
+  bind :::{{ loadBalancing.https.src }}
+  mode tcp
+  tcp-request inspect-delay 5s
+  default_backend k8s-ingress-https
+
+backend k8s-ingress-https
+  mode tcp
+  option ssl-hello-chk
+  option tcp-check
+  balance roundrobin
+  default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+{% for host in groups['all'] %}
+{% if hostvars[host].ansible_hostname is defined %}
+  server {{ hostvars[host].ansible_hostname }} {{ host }}:{{ loadBalancing.https.dest }} check check-ssl verify none
+{% endif %}
+{% endfor %}
+{% endif %}

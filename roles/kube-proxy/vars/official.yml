@@ -1,0 +1,1 @@
+download_url: https://storage.googleapis.com/kubernetes-release/release/v{{ KUBE_VERSION }}/bin/{{ ansible_system | lower }}/{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}/kube-proxy

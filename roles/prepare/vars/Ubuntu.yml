@@ -1,0 +1,10 @@
+svc_name: ufw
+
+package:
+  - conntrack
+  - python[2|3]-cryptography
+  - python[2|3]-openssl
+  - tar
+  - unzip
+  - iptables
+  - ipset

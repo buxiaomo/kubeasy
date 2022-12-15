@@ -1,0 +1,10 @@
+---
+# defaults file for containerd
+containerd:
+  datadir: /var/lib/containerd
+  # auto create containerd primary partition
+  # device: /dev/sdb
+  daemon:
+    endpoint:
+      - "https://registry-1.docker.io"
+      - "https://i3jtbyvy.mirror.aliyuncs.com"

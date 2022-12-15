@@ -1,0 +1,30 @@
+#!/bin/bash
+{%- set etcdnode=[] -%}
+{%- if groups['etcd'] is not defined %}
+    {%- for host in groups['master'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- else%}
+    {%- for host in groups['etcd'] -%}
+        {{ etcdnode.append(host) }}
+    {%- endfor%}
+{%- endif %}
+
+mkdir -p {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}
+
+command -v jq > /dev/null 2>&1 || exit 1
+
+export FILENAME=$(date +%Y-%m-%d)
+export ETCDCTL_API=3
+export LEADER=$(/usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}https://{{ host | ip_format }}:2379{% if not loop.last %},{% endif %}{% endfor %} --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt --key /etc/kubernetes/pki/etcd/healthcheck-client.key endpoint status --write-out=json | jq .[0].Status.leader)
+export ENDPOINT=$(/usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}https://{{ host | ip_format }}:2379{% if not loop.last %},{% endif %}{% endfor %} --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt --key /etc/kubernetes/pki/etcd/healthcheck-client.key endpoint status --write-out=json | jq -r ".[] | select(.Status.header.member_id == ${LEADER}) | .Endpoint")
+
+/usr/local/bin/etcdctl \
+--command-timeout=3s \
+--endpoints ${ENDPOINT} \
+--cacert /etc/kubernetes/pki/etcd/ca.crt \
+--cert /etc/kubernetes/pki/etcd/server.crt \
+--key /etc/kubernetes/pki/etcd/server.key \
+snapshot save {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}/etcd.${FILENAME}.snapshot.db
+
+find {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}/etcd.${FILENAME}.snapshot.db -mtime +30 -exec rm -r {} \;

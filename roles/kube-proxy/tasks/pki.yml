@@ -1,0 +1,26 @@
+- name: Distribution certificate
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    checksum: "{{ item.checksum }}"
+    owner: root
+    group: root
+    timeout: 3
+  retries: 3
+  with_items:
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.crt",
+        dest: "/etc/kubernetes/pki/ca.crt",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.crt.sha256sum",
+        mode: 644,
+      }
+    - {
+        url: "{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.key",
+        dest: "/etc/kubernetes/pki/ca.key",
+        checksum: "sha256:{{ PKI_URL }}/{{ PROJECT_NAME }}/{{ PROJECT_ENV }}/ca.key.sha256sum",
+        mode: 600,
+      }
+  tags:
+    - renew
+    - update

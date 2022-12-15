@@ -1,0 +1,17 @@
+chrony:
+  config: /etc/chrony.conf
+  svc_name: chronyd
+  pkg_name: chrony
+  optional: 
+    logdir: /var/log/chrony
+    driftfile: /var/lib/chrony/drift
+    makestep: 1.0 3
+    maxupdateskew: 100.0
+  ntp_servers: 
+    - 'ntp1.aliyun.com'
+    - 'ntp2.aliyun.com'
+    - 'ntp3.aliyun.com'
+    - 'ntp4.aliyun.com'
+    - 'ntp5.aliyun.com'
+    - 'ntp6.aliyun.com'
+    - 'ntp7.aliyun.com'

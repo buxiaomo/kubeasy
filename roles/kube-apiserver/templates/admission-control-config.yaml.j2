@@ -1,0 +1,13 @@
+apiVersion: apiserver.config.k8s.io/v1
+kind: AdmissionConfiguration
+plugins:
+{% for plugin in apiServer.admissionControlConfigFile %}
+- name: {{ plugin.name }}
+  path: {{ plugin.path }}
+{% endfor %}
+
+{% if apiServer.admissionControlConfigFile is defined %}
+{% if KUBE_VERSION is version("1.15",">=") %}
+  --admission-control-config-file=/etc/kubernetes/admission-control-config.yaml \
+{% endif %}
+{% endif %}

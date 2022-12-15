@@ -1,0 +1,11 @@
+---
+# handlers file for haproxy
+- name: restarted haproxy
+  ansible.builtin.systemd:
+    name: haproxy
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"

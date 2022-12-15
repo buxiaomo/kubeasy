@@ -1,0 +1,159 @@
+---
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "{{ KUBE_VERSION }}/kube-scheduler"
+    dest: "/usr/local/bin/kube-scheduler"
+    owner: root
+    group: root
+    mode: 0755
+  register: local
+  ignore_errors: True
+  notify: restarted kube-scheduler
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    # checksum: "sha256:{{ download_url }}.sha256"
+    dest: /usr/local/bin/kube-scheduler
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: scheduler_pkg
+  until: scheduler_pkg is succeeded
+  retries: 15
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restarted kube-scheduler
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: /etc/kubernetes/pki
+    state: directory
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-scheduler private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/kube-scheduler.key
+    size: 2048
+    mode: 0600
+  register: scheduler_tls_key
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-scheduler csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/kube-scheduler.csr
+    privatekey_path: /etc/kubernetes/pki/kube-scheduler.key
+    common_name: "system:kube-scheduler"
+    organization_name: "system:kube-scheduler"
+    use_common_name_for_san: no
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean kube-scheduler csr
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-scheduler certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/kube-scheduler.crt
+    csr_path: /etc/kubernetes/pki/kube-scheduler.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: scheduler_tls_crt
+  notify: restarted kube-scheduler
+  tags:
+    - renew
+    - update
+
+- name: Create kubeconfig
+  ansible.builtin.template:
+    src: kube-scheduler.kubeconfig.j2
+    dest: /etc/kubernetes/kube-scheduler.kubeconfig
+    mode: 0644
+  register: scheduler_kubeconfig_cfg
+  notify: restarted kube-scheduler
+  tags:
+    - upgrade
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
+  register: scheduler_systemd_cfg
+  notify: restarted kube-scheduler
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: kube-scheduler
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  register: scheduler_systemd
+  when: scheduler_pkg.changed or 
+        scheduler_tls_key.changed or 
+        scheduler_tls_crt.changed or 
+        scheduler_kubeconfig_cfg.changed or 
+        scheduler_systemd_cfg.changed or
+        ansible_facts.services['kube-scheduler.service']['state'] != 'running'
+
+# - name: Waiting for the service
+#   wait_for:
+#     host: "{{ inventory_hostname }}"
+#     port: 10259
+#     delay: 5
+#     state: started
+#   when: scheduler_systemd.changed
+
+- name: Health check
+  uri:
+    url: "https://{{ inventory_hostname | ip_format }}:10259/healthz"
+    validate_certs: no
+    return_content: yes
+    client_cert: "/etc/kubernetes/pki/kube-scheduler.crt"
+    client_key: "/etc/kubernetes/pki/kube-scheduler.key"
+  register: this
+  until: 
+    - "'ok' in this.content"
+    - this.status == 200
+  retries: 120
+  delay: 1
+  when: scheduler_systemd.changed

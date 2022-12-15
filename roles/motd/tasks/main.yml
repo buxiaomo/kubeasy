@@ -1,0 +1,65 @@
+---
+# tasks file for motd
+- name: Get information on kubernetes certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/kubernetes/pki/ca.crt
+  register: k8s_ca_result
+  when:
+    - inventory_hostname in groups['master']
+  tags:
+    - upgrade
+    - update
+    - renew
+
+- name: Get information on etcd certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/kubernetes/pki/etcd/ca.crt
+  register: etcd_ca_result
+  when:
+    - inventory_hostname in groups['master']
+  tags:
+    - upgrade
+    - update
+    - renew
+
+- name: Get information on apiserver certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/kubernetes/pki/apiserver.crt
+  register: apiserver_tls_result
+  when:
+    - inventory_hostname in groups['master']
+  tags:
+    - upgrade
+    - update
+    - renew
+
+- name: Get information on etcd server certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/kubernetes/pki/etcd/server.crt
+  register: etcd_server_tls_result
+  when:
+    - inventory_hostname in groups['master']
+  tags:
+    - upgrade
+    - update
+    - renew
+
+- name: Get information on etcd peer certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/kubernetes/pki/etcd/peer.crt
+  register: etcd_peer_tls_result
+  when:
+    - inventory_hostname in groups['master']
+  tags:
+    - upgrade
+    - update
+    - renew
+
+- name: Install motd file
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+  tags:
+    - upgrade
+    - update
+    - renew

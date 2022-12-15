@@ -1,0 +1,16 @@
+---
+# handlers file for kube-scheduler
+- name: restarted kube-scheduler
+  ansible.builtin.systemd:
+    name: kube-scheduler
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"
+
+- name: Clean kube-scheduler csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/kube-scheduler.csr
+    state: absent

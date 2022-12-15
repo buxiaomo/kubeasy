@@ -1,0 +1,1 @@
+source <(crictl completion bash)

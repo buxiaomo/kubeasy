@@ -1,0 +1,12 @@
+- name: Python3
+  hosts: all
+  vars:
+    ansible_python_interpreter: "/usr/bin/python2"
+  tasks:
+    - name: Install Python3
+      ansible.builtin.package:
+        name: python3
+        state: latest
+
+    - name: Upgrade pip
+      shell: curl -s https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3

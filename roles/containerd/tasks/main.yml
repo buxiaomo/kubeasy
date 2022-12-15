@@ -1,0 +1,209 @@
+---
+# tasks file for containerd
+- name: Distribution RunC package
+  ansible.builtin.copy:
+    src: "runc.amd64"
+    dest: "/usr/local/bin/runc"
+    owner: root
+    group: root
+    mode: 0755
+  register: runc_local
+  ignore_errors: True
+  notify: restart containerd
+  tags:
+    - upgrade
+
+- name: Distribution Containerd package
+  ansible.builtin.copy:
+    src: "containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: "/usr/local/src/containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    owner: root
+    group: root
+    mode: 0644
+  register: containerd_local
+  ignore_errors: True
+  tags:
+    - upgrade
+
+- name: Distribution Crictl package
+  ansible.builtin.copy:
+    src: "crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: "/usr/local/src/crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    owner: root
+    group: root
+    mode: 0644
+  register: crictl_local
+  ignore_errors: True
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: runc_local.failed or containerd_local.failed or crictl_local.failed
+  tags:
+    - upgrade
+
+- name: Download RunC package
+  get_url:
+    url: "{{ runc_download_url }}"
+    dest: /usr/local/bin/runc
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: runc_pkg
+  until: runc_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restart containerd
+  when: runc_local.failed
+  tags:
+    - upgrade
+
+- name: Download Containerd package
+  get_url:
+    url: "{{ containerd_download_url }}"
+    dest: "/usr/local/src/containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: containerd_pkg
+  until: containerd_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restart containerd
+  when: containerd_local.failed
+  tags:
+    - upgrade
+
+- name: Extract Containerd package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: yes
+    extra_opts:
+      - --strip-components=1
+  notify: restart containerd
+  tags:
+    - upgrade
+
+- name: Download Crictl package
+  get_url:
+    url: "{{ crictl_download_url }}"
+    dest: "/usr/local/src/crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: crictl_pkg
+  until: crictl_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restart containerd
+  when: crictl_local.failed
+  tags:
+    - upgrade
+
+- name: Extract Crictl package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: /usr/local/bin
+    mode: 0755
+    owner: root
+    group: root
+    remote_src: yes
+  tags:
+    - upgrade
+
+- name: Configuration Crictl
+  ansible.builtin.template:
+    src: crictl.yaml.j2
+    dest: /etc/crictl.yaml
+  tags:
+    - upgrade
+    - update
+
+- name: Create Configuration directory
+  ansible.builtin.file:
+    name: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - /etc/containerd
+    - "{{ containerd.datadir | default('/var/lib/containerd') }}"
+  notify: restart containerd
+  tags:
+    - upgrade
+    - update
+
+- name: Create a containerd primary partition
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ containerd.device }}"
+    state: present
+  when: containerd.device is defined
+
+- name: Mount containerd root dir
+  ansible.posix.mount:
+    src: "{{ containerd.device }}"
+    path: /var/lib/containerd
+    fstype: xfs
+    opts: defaults,pquota
+    state: mounted
+  when: containerd.device is defined
+
+- name: Configuration Containerd
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+  register: containerd_cfg
+  notify: restart containerd
+  tags:
+    - upgrade
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: containerd.service.j2
+    dest: /etc/systemd/system/containerd.service
+  register: containerd_systemd
+  notify: restart containerd
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+    masked: yes
+  when: runc_pkg.changed or 
+        containerd_pkg.changed or 
+        crictl_pkg.changed or 
+        containerd_cfg.changed or
+        containerd_systemd.changed or
+        ansible_facts.services['containerd.service']['state'] != 'running'
+
+- name: Install crictl completion
+  ansible.builtin.copy:
+    src: crictl.sh
+    dest: /etc/bash_completion.d/crictl
+    owner: root
+    group: root
+  ignore_errors: True

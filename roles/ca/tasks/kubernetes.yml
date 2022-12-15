@@ -1,0 +1,98 @@
+# Kubernetes CA
+- name: Generate an kubernetes ca private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.key"
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Generate an kubernetes ca csr
+  community.crypto.openssl_csr:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.key"
+    common_name: kubernetes-ca
+    basic_constraints: "CA:TRUE"
+    basic_constraints_critical: true
+    key_usage_critical: true
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+      - keyCertSign
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Sign kubernetes ca certificate
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.crt"
+    csr_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.key"
+    mode: 0644
+    force: "{{ expired | default(false) }}"
+    provider: selfsigned
+  run_once: true
+  delegate_to: localhost
+  tags:
+    - renew
+
+# Front Proxy CA
+- name: Generate an front proxy private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.key"
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Generate an front proxy csr
+  community.crypto.openssl_csr:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.key"
+    common_name: front-proxy-ca
+    basic_constraints: "CA:TRUE"
+    basic_constraints_critical: true
+    key_usage_critical: true
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+      - keyCertSign
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - renew
+
+- name: Sign front proxy certificate
+  community.crypto.x509_certificate:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.crt"
+    csr_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.csr"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.key"
+    mode: 0644
+    force: "{{ expired | default(false) }}"
+    provider: selfsigned
+  run_once: true
+  delegate_to: localhost
+  tags:
+    - renew
+
+# SA
+- name: Generate an sa private key
+  community.crypto.openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/sa.key"
+    # curve: secp521r1
+    size: 2048
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+
+- name: Generate an sa public key
+  community.crypto.openssl_publickey:
+    path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/sa.pub"
+    privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/sa.key"
+  delegate_to: localhost
+  run_once: true

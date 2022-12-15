@@ -1,0 +1,1 @@
+download_url: '{{ NEXUS_DOMAIN_NAME }}/repository/{{ NEXUS_REPOSITORY }}/linux/static/stable/x86_64/docker-{{ DOCKER_VERSION }}.tgz'

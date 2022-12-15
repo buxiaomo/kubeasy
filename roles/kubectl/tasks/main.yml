@@ -1,0 +1,172 @@
+---
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "{{ KUBE_VERSION }}/kubectl"
+    dest: "/usr/local/bin/kubectl"
+    owner: root
+    group: root
+    mode: 0755
+  register: local
+  ignore_errors: True
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    # checksum: "sha256:{{ download_url }}.sha256"
+    dest: /usr/local/bin/kubectl
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: kubectl_pkg
+  until: kubectl_pkg is succeeded
+  retries: 15
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: /etc/kubernetes/pki
+    state: directory
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+- name: Generate kubectl private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/admin.key
+    size: 2048
+    mode: 0600
+  notify: Clean admin key
+  tags:
+    - renew
+    - update
+
+- name: Generate kubectl csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/admin.csr
+    privatekey_path: /etc/kubernetes/pki/admin.key
+    common_name: "kubernetes-admin"
+    organization_name: "system:masters"
+    use_common_name_for_san: no
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+  changed_when: True
+  notify: Clean admin csr
+  tags:
+    - renew
+    - update
+
+- name: Generate kubectl certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/admin.crt
+    csr_path: /etc/kubernetes/pki/admin.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  notify: Clean admin crt
+  tags:
+    - renew
+    - update
+
+- name: Create admin kubeconfig
+  ansible.builtin.template:
+    src: admin.kubeconfig.j2
+    dest: /etc/kubernetes/admin.kubeconfig
+    mode: 0600
+  notify: Clean admin kubeconfig
+  tags:
+    - update
+
+- name: Delete user kube directory
+  ansible.builtin.file:
+    name: ~/.kube
+    state: absent
+  tags:
+    - update
+
+- name: Create user kube directory
+  ansible.builtin.file:
+    name: ~/.kube
+    state: directory
+    mode: 0755
+  notify: Clean .kube
+  tags:
+    - update
+
+- name: Create User kubeconfig
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.kubeconfig
+    dest: ~/.kube/config
+    mode: "0644"
+    remote_src: yes
+  tags:
+    - update
+
+- name: Create User kubeconfig(Contain the certificate)
+  ansible.builtin.shell: |
+    {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = inventory_hostname | ip_format, 6443 %}
+    {% if ha is defined %}
+      {% if ha.type | default("none") == "slb" %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ip_format, 8443 %}
+      {% else %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ip_format, 6443 %}
+      {% endif %}
+    {% endif %}
+    kubectl config set-cluster kubernetes \
+    --certificate-authority=/etc/kubernetes/pki/ca.crt \
+    --embed-certs=true \
+    --server=https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }} \
+    --kubeconfig=/etc/kubernetes/remote-access.kubeconfig
+    kubectl config set-credentials admin \
+    --client-certificate=/etc/kubernetes/pki/admin.crt \
+    --client-key=/etc/kubernetes/pki/admin.key \
+    --embed-certs=true \
+    --kubeconfig=/etc/kubernetes/remote-access.kubeconfig
+    kubectl config set-context default \
+    --cluster=kubernetes \
+    --user=admin \
+    --kubeconfig=/etc/kubernetes/remote-access.kubeconfig
+    kubectl config use-context default --kubeconfig=/etc/kubernetes/remote-access.kubeconfig
+  when:
+    - inventory_hostname in groups['master']
+  tags:
+    - renew
+    - update
+
+- name: Install kubectl completion
+  ansible.builtin.copy:
+    src: kubectl.sh
+    dest: /etc/bash_completion.d/kubectl
+    owner: root
+    group: root
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  ignore_errors: True
+  when:
+    - inventory_hostname in groups['master']

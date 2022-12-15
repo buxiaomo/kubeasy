@@ -1,0 +1,30 @@
+{%- set hostname_override = ansible_hostname -%}
+
+{%- if nodename is not defined %}
+    {%- set hostname_override = ansible_hostname -%}
+{%- else%}
+    {%- set hostname_override = nodename -%}
+{%- endif %}
+
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/kubernetes/kubernetes
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/kube-proxy \
+  --hostname-override={{ hostname_override }} \
+  --config=/etc/kubernetes/kube-proxy.yaml \
+{% if proxy.extraArgs is defined %}
+{% for extraArg in proxy.extraArgs %}
+  {{ extraArg }} \
+{% endfor %}
+{% endif %}
+  --v={{ proxy.log.level | default(1) }}
+
+Restart=always
+RestartSec=10s
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

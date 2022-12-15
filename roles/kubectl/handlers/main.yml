@@ -1,0 +1,40 @@
+---
+# handlers file for kubectl
+- name: Clean admin key
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/admin.key
+    state: absent
+  when: inventory_hostname not in groups['master']
+
+- name: Clean admin csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/admin.csr
+    state: absent
+
+- name: Clean admin crt
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/admin.crt
+    state: absent
+  when: inventory_hostname not in groups['master']
+
+- name: Clean admin kubeconfig
+  ansible.builtin.file:
+    path: /etc/kubernetes/admin.kubeconfig
+    state: absent
+  when: inventory_hostname not in groups['master']
+
+- name: Clean .kube
+  ansible.builtin.file:
+    path: ~/.kube
+    state: absent
+  when: inventory_hostname not in groups['master']
+
+- name: Clean ca key
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/etc/kubernetes/pki/ca.key"
+    - "/etc/kubernetes/pki/ca.srl"
+    - "/etc/kubernetes/pki/etcd"
+  when: inventory_hostname not in groups['master']

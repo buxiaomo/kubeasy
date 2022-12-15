@@ -1,0 +1,1 @@
+download_url: "{{ NEXUS_DOMAIN_NAME }}/repository/{{ NEXUS_REPOSITORY }}/containernetworking/plugins/releases/download/v{{ CNI_VERSION }}/cni-plugins{% if CNI_VERSION is version('0.8.0','>=') %}-{{ ansible_system | lower }}{% endif %}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}-v{{ CNI_VERSION }}.tgz"

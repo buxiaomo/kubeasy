@@ -1,0 +1,30 @@
+[master]
+240e:369:7a65:d00:250:56ff:fe82:1a77
+240e:369:7a65:d00:250:56ff:fe82:c3aa
+240e:369:7a65:d00:250:56ff:fe82:9865
+
+[worker]
+240e:369:7a65:d00:250:56ff:fe82:ddd7
+
+[kubernetes:children]
+master
+worker
+
+[kubernetes:vars]
+; kubernetes network config
+networking={"dnsDomain": "cluster.local", "serviceSubnet": "2402:db8:42:d600::/112", "podSubnet": "2402:db8:42:d700::/64"}
+
+; ha config
+; slb is software load balancing, will install harpoxy and keepalived on master node
+; clb is cloud load balancing, will use cloud load balancing
+; ha={"type": "slb", "vip": "240e:369:7a65:d00:250:56ff:fe82:1111", "mask": 64 }
+
+; loadBalancing is 4 layer forwarding to ingress by haproxy, only used in slb
+; loadBalancing={"http": {"src": 80, "dest": 30001}, "https": {"src": 443, "dest": 30002}}
+
+[all:vars]
+ansible_ssh_port=22
+ansible_ssh_user=root
+; ansible_ssh_pass=root
+; ansible_sudo_user=root
+; ansible_sudo_pass=root

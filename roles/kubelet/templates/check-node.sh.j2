@@ -1,0 +1,50 @@
+#!/bin/bash
+{% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = inventory_hostname | ip_format, 6443 %}
+{% if inventory_hostname in groups['master'] %}
+  {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = inventory_hostname | ip_format, 6443 %}
+{% else %}
+  {% if ha is defined %}
+    {% if ha.type | default("none") == "none" %}
+      {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = groups['master'][0] | ip_format, 6443 %}
+    {% else %}
+      {% if ha.type | default("none") == "slb" %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ip_format, 8443 %}
+      {% else %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ip_format, 6443 %}
+      {% endif %}
+    {% endif %}
+  {% else %}
+    {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = groups['master'][0] | ip_format, 6443 %}
+  {% endif %}
+{% endif %}
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq command not found, please install jq."
+  exit 1
+fi
+
+if ! command -v chronyc >/dev/null 2>&1; then
+  echo "chronyc command not found, please install chronyc"
+  exit 1
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl command not found, please install curl"
+  exit 1
+fi
+
+/usr/bin/chronyc -n makestep >/dev/null 2>&1
+creationTimestamp=$(curl -s --cacert /etc/kubernetes/pki/ca.crt --cert /etc/kubernetes/pki/kubelet.crt --key /etc/kubernetes/pki/kubelet.key https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }}/api/v1/nodes/{{ ansible_hostname | lower }} | jq -r '.metadata.creationTimestamp')
+difference=$(($(date +%s) - $(date -d "${creationTimestamp}" +%s)))
+if [ $((difference / 60)) -gt 15 ];then
+  retry=0
+  for ((i = 1; i <= 5; i++)); do
+    nodeStats=$(curl -s --cacert /etc/kubernetes/pki/ca.crt --cert /etc/kubernetes/pki/kubelet.crt --key /etc/kubernetes/pki/kubelet.key https://{{ KUBE_APISERVER_ADDR }}:{{ KUBE_APISERVER_PORT }}/api/v1/nodes/{{ ansible_hostname | lower }} | jq -r '.status.conditions[] | select(.type=="Ready")| .status')
+    if [ "${nodeStats}" == "True" ] || [ "${nodeStats}" == "" ]; then
+      break
+    fi
+    echo "Check node status is not 'True', restart kubelet services, retry: ${i}."
+    systemctl restart kubelet.service
+    sleep 30
+  done
+fi

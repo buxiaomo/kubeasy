@@ -1,0 +1,163 @@
+---
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "{{ KUBE_VERSION }}/kube-proxy"
+    dest: "/usr/local/bin/kube-proxy"
+    owner: root
+    group: root
+    mode: 0755
+  register: local
+  ignore_errors: True
+  notify: restarted kube-proxy
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    # checksum: "sha256:{{ download_url }}.sha256"
+    dest: /usr/local/bin/kube-proxy
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: proxy_pkg
+  until: proxy_pkg is succeeded
+  retries: 15
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restarted kube-proxy
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: /etc/kubernetes/pki
+    state: directory
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-proxy private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/kube-proxy.key
+    size: 2048
+    mode: 0600
+  register: proxy_tls_key
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-proxy csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/kube-proxy.csr
+    privatekey_path: /etc/kubernetes/pki/kube-proxy.key
+    common_name: "system:kube-proxy"
+    organization_name: "system:node-proxier"
+    use_common_name_for_san: no
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean kube-proxy csr
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-proxy certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/kube-proxy.crt
+    csr_path: /etc/kubernetes/pki/kube-proxy.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: proxy_tls_crt
+  notify: restarted kube-proxy
+  tags:
+    - renew
+    - update
+
+- name: Create kubeconfig
+  ansible.builtin.template:
+    src: kube-proxy.kubeconfig.j2
+    dest: /etc/kubernetes/kube-proxy.kubeconfig
+    mode: 0644
+  register: proxy_kubeconfig_cfg
+  tags:
+    - renew
+    - update
+
+- name: Install config file
+  ansible.builtin.template:
+    src: kube-proxy.yaml.j2
+    dest: /etc/kubernetes/kube-proxy.yaml
+  register: proxy_service_cfg
+  notify: restarted kube-proxy
+  tags:
+    - upgrade
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: kube-proxy.service.j2
+    dest: /etc/systemd/system/kube-proxy.service
+  register: proxy_systemd_cfg
+  notify: restarted kube-proxy
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: kube-proxy
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  register: proxy_systemd
+  when: proxy_pkg.changed or 
+        proxy_tls_key.changed or 
+        proxy_tls_crt.changed or 
+        proxy_service_cfg.changed or 
+        proxy_systemd_cfg.changed or
+        ansible_facts.services['kube-proxy.service']['state'] != 'running'
+
+# - name: Waiting for the service
+#   wait_for:
+#     host: "{{ inventory_hostname }}"
+#     port: 10256
+#     delay: 3
+#     state: drained
+#   when: proxy_systemd.changed
+
+- name: Health check
+  uri:
+    url: 'http://127.0.0.1:10256/healthz'
+    validate_certs: no
+  register: this
+  until: this.status == 200
+  retries: 120
+  delay: 1
+  when: proxy_systemd.changed

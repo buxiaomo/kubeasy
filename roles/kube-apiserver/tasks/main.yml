@@ -1,0 +1,397 @@
+---
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "{{ KUBE_VERSION }}/kube-apiserver"
+    dest: "/usr/local/bin/kube-apiserver"
+    owner: root
+    group: root
+    mode: 0755
+  register: local
+  ignore_errors: True
+  notify: restarted kube-apiserver
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    # checksum: "sha256:{{ download_url }}.sha256"
+    dest: /usr/local/bin/kube-apiserver
+    force: true
+    mode: 0755
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: apiserver_pkg
+  until: apiserver_pkg is succeeded
+  retries: 15
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restarted kube-apiserver
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Create certificate directory
+  ansible.builtin.file:
+    name: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - /etc/kubernetes/pki
+    - /etc/kubernetes/pki/etcd
+
+- name: Distribution certificate
+  include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
+  tags:
+    - renew
+    - update
+
+# apiserver
+- name: Generate kube-apiserver private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/apiserver.key
+    size: 2048
+    mode: 0600
+  register: apiserver_tls_apiserver_key
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-apiserver csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/apiserver.csr
+    privatekey_path: /etc/kubernetes/pki/apiserver.key
+    common_name: "kube-apiserver"
+    organization_name: "Kubernetes"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+    subject_alt_name: "{{ item.value | union(apiServer.certSANs | default(['DNS:*.kubernetes.local'])) | unique }}"
+  with_dict:
+    subject_alt_name:
+      - "DNS:localhost"
+      - "DNS:kubernetes"
+      - "DNS:kubernetes.default"
+      - "DNS:kubernetes.default.svc"
+      - "DNS:kubernetes.default.svc.{{ networking.dnsDomain | default('cluster.local') | split('.') | first }}"
+      - "DNS:kubernetes.default.svc.{{ networking.dnsDomain | default('cluster.local') }}"
+      - "DNS:{{ ansible_hostname | lower }}"
+      - "DNS:{{ ansible_hostname }}"
+      - "{% if ha is defined %}IP:{{ ha.vip }}{% else %}DNS:localhost{% endif %}"
+      - "IP:127.0.0.1"
+      - "IP:0:0:0:0:0:0:0:1"
+      - "IP:::1"
+      - "IP:{{ networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(1) }}"
+      - "IP:{{ networking.serviceSubnet.split(',')[1] | default('fd74:ca9b:0172:0019::/110') | ansible.netcommon.next_nth_usable(1) }}"
+      - "IP:{{ inventory_hostname }}"
+      - "{% if ansible_default_ipv6.address is defined %}IP:{{ ansible_default_ipv6.address }}{% else %}IP:::1{% endif %}"
+      - "{% if ipv6 is defined %}IP:{{ ipv6 }}{% else %}IP:::1{% endif %}"
+  changed_when: True
+  notify: Clean kube-apiserver csr
+  tags:
+    - renew
+    - update
+
+- name: Generate kube-apiserver certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/apiserver.crt
+    csr_path: /etc/kubernetes/pki/apiserver.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: apiserver_tls_apiserver_crt
+  notify: restarted kube-apiserver
+  tags:
+    - renew
+    - update
+
+# front-proxy-client
+- name: Generate front-proxy-client private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/front-proxy-client.key
+    size: 2048
+    mode: 0600
+  register: apiserver_tls_frontproxyclient_key
+  tags:
+    - renew
+    - update
+
+- name: Generate front-proxy-client csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/front-proxy-client.csr
+    privatekey_path: /etc/kubernetes/pki/front-proxy-client.key
+    common_name: front-proxy-client
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean front-proxy-client csr
+  tags:
+    - renew
+    - update
+
+- name: Generate front-proxy-client crt
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/front-proxy-client.crt
+    csr_path: /etc/kubernetes/pki/front-proxy-client.csr
+    ownca_path: /etc/kubernetes/pki/front-proxy-ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/front-proxy-ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: apiserver_tls_frontproxyclient_crt
+  notify: restarted kube-apiserver
+  tags:
+    - renew
+    - update
+
+# apiserver kubelet client
+- name: Generate apiserver-kubelet-client private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/apiserver-kubelet-client.key
+    size: 2048
+    mode: 0600
+  register: apiserver_tls_apiserverkubeletclient_key
+  tags:
+    - renew
+    - update
+
+- name: Generate apiserver-kubelet-client csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/apiserver-kubelet-client.csr
+    privatekey_path: /etc/kubernetes/pki/apiserver-kubelet-client.key
+    common_name: "kube-apiserver-kubelet-client"
+    organization_name: "system:masters"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean apiserver-kubelet-client csr
+  tags:
+    - renew
+    - update
+
+- name: Generate apiserver-kubelet-client certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+    csr_path: /etc/kubernetes/pki/apiserver-kubelet-client.csr
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: apiserver_tls_apiserverkubeletclient_crt
+  notify: restarted kube-apiserver
+  tags:
+    - renew
+    - update
+
+- name: Generate apiserver-etcd-client private key
+  community.crypto.openssl_privatekey:
+    path: /etc/kubernetes/pki/apiserver-etcd-client.key
+    size: 2048
+    mode: 0600
+  register: apiserver_tls_apiserveretcdclient_key
+  tags:
+    - renew
+    - update
+
+- name: Generate apiserver-etcd-client csr
+  community.crypto.openssl_csr:
+    path: /etc/kubernetes/pki/apiserver-etcd-client.csr
+    privatekey_path: /etc/kubernetes/pki/apiserver-etcd-client.key
+    common_name: "apiserver-etcd-client"
+    organization_name: "system:masters"
+    basic_constraints_critical: yes
+    basic_constraints:
+      - "CA:FALSE"
+    key_usage_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+  changed_when: True
+  notify: Clean apiserver-etcd-client csr
+  tags:
+    - renew
+    - update
+
+- name: Generate apiserver-etcd-client certificate
+  community.crypto.x509_certificate:
+    path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+    csr_path: /etc/kubernetes/pki/apiserver-etcd-client.csr
+    ownca_path: /etc/kubernetes/pki/etcd/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
+    force: "{{ expired | default(false) }}"
+    provider: ownca
+    mode: 0644
+  register: apiserver_tls_apiserveretcdclient_crt
+  notify: restarted kube-apiserver
+  tags:
+    - renew
+    - update
+
+- name: Install encryption config
+  ansible.builtin.template:
+    src: encryption-config.yaml.j2
+    dest: /etc/kubernetes/encryption-config.yaml
+    mode: "0644"
+  register: apiserver_encryption_config_cfg
+  notify: restarted kube-apiserver
+  tags:
+    - upgrade
+    - update
+
+- name: Install audit policy
+  ansible.builtin.template:
+    src: audit-policy-minimal.yaml.j2
+    dest: /etc/kubernetes/audit-policy-minimal.yaml
+    mode: "0644"
+  register: apiserver_audit_policy_cfg
+  notify: restarted kube-apiserver
+  tags:
+    - upgrade
+    - update
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+  register: apiserver_systemd_cfg
+  notify: restarted kube-apiserver
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: kube-apiserver
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  register: apiserver_systemd
+  when: apiserver_pkg.changed or 
+        apiserver_tls_apiserver_key.changed or 
+        apiserver_tls_apiserver_crt.changed or 
+        apiserver_tls_frontproxyclient_key.changed or 
+        apiserver_tls_frontproxyclient_crt.changed or 
+        apiserver_tls_apiserverkubeletclient_key.changed or 
+        apiserver_tls_apiserverkubeletclient_crt.changed or 
+        apiserver_tls_apiserveretcdclient_key.changed or 
+        apiserver_tls_apiserveretcdclient_crt.changed or 
+        apiserver_encryption_config_cfg.changed or 
+        apiserver_audit_policy_cfg.changed or 
+        apiserver_systemd_cfg.changed or
+        ansible_facts.services['kube-apiserver.service']['state'] != 'running'
+
+# - name: Waiting for the service
+#   wait_for:
+#     host: "{{ inventory_hostname }}"
+#     port: 6443
+#     delay: 3
+#     state: started
+#   when: apiserver_systemd.changed
+
+- name: Health check
+  uri:
+    url: "https://{{ inventory_hostname | ip_format }}:6443/healthz"
+    client_cert: "/etc/kubernetes/pki/admin.crt"
+    client_key: "/etc/kubernetes/pki/admin.key"
+    validate_certs: no
+    return_content: yes
+  register: this
+  until:
+    - "'ok' in this.content"
+    - this.status == 200
+  retries: 60
+  delay: 1
+  when: apiserver_systemd.changed
+
+# - name: Approve node-autoapprove-certificate-rotation rbac
+#   kubernetes.core.k8s:
+#     state: present
+#     definition: 
+#       apiVersion: rbac.authorization.k8s.io/v1
+#       kind: ClusterRoleBinding
+#       metadata:
+#         name: kubeadm:node-autoapprove-certificate-rotation
+#       subjects:
+#       - kind: Group
+#         name: system:nodes
+#         apiGroup: rbac.authorization.k8s.io
+#       roleRef:
+#         kind: ClusterRole
+#         name: system:certificates.k8s.io:certificatesigningrequests:selfnodeclient
+#         apiGroup: rbac.authorization.k8s.io
+#   run_once: true
+#   ignore_errors: True
+
+# - name: Approve node-autoapprove-bootstrap rbac
+#   kubernetes.core.k8s:
+#     state: present
+#     definition: 
+#       apiVersion: rbac.authorization.k8s.io/v1
+#       kind: ClusterRoleBinding
+#       metadata:
+#         name: kubeadm:node-autoapprove-bootstrap
+#       subjects:
+#       - kind: Group
+#         name: system:bootstrappers
+#         apiGroup: rbac.authorization.k8s.io
+#       roleRef:
+#         kind: ClusterRole
+#         name: system:certificates.k8s.io:certificatesigningrequests:nodeclient
+#         apiGroup: rbac.authorization.k8s.io
+#   run_once: true
+#   ignore_errors: True
+
+# - name: Approve kubelet-bootstrap rbac
+#   kubernetes.core.k8s:
+#     state: present
+#     definition: 
+#       apiVersion: rbac.authorization.k8s.io/v1
+#       kind: ClusterRoleBinding
+#       metadata:
+#         name: kubeadm:kubelet-bootstrap
+#       subjects:
+#       - kind: Group
+#         name: system:bootstrappers
+#         apiGroup: rbac.authorization.k8s.io
+#       roleRef:
+#         kind: ClusterRole
+#         name: system:node-bootstrapper
+#         apiGroup: rbac.authorization.k8s.io
+#   run_once: true
+#   ignore_errors: True

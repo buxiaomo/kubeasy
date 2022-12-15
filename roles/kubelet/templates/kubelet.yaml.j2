@@ -1,0 +1,122 @@
+address: "{{ (inventory_hostname | ip == 4) | ternary('0.0.0.0', '::') }}"
+healthzBindAddress: 0.0.0.0
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    cacheTTL: 2m0s
+    enabled: true
+  x509:
+    clientCAFile: /etc/kubernetes/pki/ca.crt
+authorization:
+  mode: AlwaysAllow
+  webhook:
+    cacheAuthorizedTTL: 5m0s
+    cacheUnauthorizedTTL: 30s
+cgroupDriver: systemd
+cgroupsPerQOS: true
+clusterDNS:
+{% if networking.serviceSubnet.split(',') | length == 2 %}
+- {{ networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(2) }}
+- {{ networking.serviceSubnet.split(',')[1] | default('fd74:ca9b:0172:0019::/110') | ansible.netcommon.next_nth_usable(2) }}
+{% else %}
+- {{ networking.serviceSubnet | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(2) }}
+{% endif %}
+clusterDomain: {{ networking.dnsDomain | default('cluster.local') }}
+configMapAndSecretChangeDetectionStrategy: Watch
+containerLogMaxFiles: 5
+containerLogMaxSize: 10Mi
+contentType: application/vnd.kubernetes.protobuf
+cpuCFSQuota: true
+cpuCFSQuotaPeriod: 100ms
+cpuManagerPolicy: none
+cpuManagerReconcilePeriod: 10s
+enableControllerAttachDetach: true
+enableDebuggingHandlers: true
+enableSystemLogHandler: true
+enforceNodeAllocatable:
+- pods
+eventBurst: 100
+eventRecordQPS: 50
+evictionHard:
+  imagefs.available: 10%
+  memory.available: 500Mi
+  nodefs.available: 10%
+  nodefs.inodesFree: 5%
+evictionMaxPodGracePeriod: 30
+evictionPressureTransitionPeriod: 5m
+evictionSoft:
+  imagefs.available: 15%
+  memory.available: 512Mi
+  nodefs.available: 15%
+  nodefs.inodesFree: 10%
+evictionSoftGracePeriod:
+  imagefs.available: 3m
+  memory.available: 1m
+  nodefs.available: 3m
+  nodefs.inodesFree: 1m
+kubeReserved:
+{% if inventory_hostname in groups['master'] %}
+  cpu: 400m
+  memory: 1Gi
+{% else %}
+  cpu: 100m
+  memory: 256Mi
+{% endif %}
+  ephemeral-storage: 500Mi
+systemReserved:
+  cpu: 100m
+  memory: 200Mi
+  ephemeral-storage: 1Gi
+kubeReservedCgroup: /podruntime.slice
+systemReservedCgroup: /system.slice
+failSwapOn: true
+fileCheckFrequency: 10s
+hairpinMode: promiscuous-bridge
+healthzPort: 10248
+httpCheckFrequency: 0s
+imageGCHighThresholdPercent: 85
+imageGCLowThresholdPercent: 80
+imageMinimumGCAge: 2m0s
+iptablesDropBit: 15
+iptablesMasqueradeBit: 14
+kind: KubeletConfiguration
+kubeAPIBurst: 10
+kubeAPIQPS: 50
+makeIPTablesUtilChains: true
+maxOpenFiles: 1000000
+maxPods: 110
+nodeLeaseDurationSeconds: 40
+nodeStatusReportFrequency: 1m0s
+nodeStatusUpdateFrequency: 10s
+oomScoreAdj: -999
+podPidsLimit: -1
+port: 10250
+readOnlyPort: 0
+registryBurst: 20
+registryPullQPS: 10
+{% if ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 16 %}
+resolvConf: /run/systemd/resolve/resolv.conf
+{% else %}
+resolvConf: /etc/resolv.conf
+{% endif %}
+rotateCertificates: true
+runtimeRequestTimeout: 2m0s
+serializeImagePulls: true
+staticPodPath: /etc/kubernetes/manifests
+streamingConnectionIdleTimeout: 20m0s
+syncFrequency: 1m0s
+volumeStatsAggPeriod: 1m0s
+tlsCertFile: /etc/kubernetes/pki/kubelet.crt
+tlsPrivateKeyFile: /etc/kubernetes/pki/kubelet.key
+volumePluginDir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+tlsCipherSuites:
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_RSA_WITH_AES_128_GCM_SHA256

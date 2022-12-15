@@ -1,0 +1,42 @@
+---
+# tasks file for done
+- name: Master not scheduling
+  ansible.builtin.shell: |
+    {% if nodename is defined %}
+      /usr/local/bin/kubectl taint node {{ nodename | lower }} node-role.kubernetes.io/master="":NoSchedule --overwrite
+    {% else %}
+      /usr/local/bin/kubectl taint node {{ hostvars[inventory_hostname].ansible_hostname | lower }} node-role.kubernetes.io/master="":NoSchedule --overwrite
+    {% endif %}
+  when:
+    - inventory_hostname in groups['master']
+    - groups['master'] | unique | length >= 3
+
+- name: Update node roles
+  ansible.builtin.shell: |
+    {% if nodename is defined %}
+      /usr/local/bin/kubectl label node {{ nodename | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+    {% else %}
+      /usr/local/bin/kubectl label node {{ hostvars[inventory_hostname].ansible_hostname | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+    {% endif %}
+    {% if inventory_hostname in groups['master'] %}
+      {% if nodename is defined %}
+        /usr/local/bin/kubectl label node {{ nodename | lower }} node-role.kubernetes.io/control-plane="" --overwrite
+      {% else %}
+        /usr/local/bin/kubectl label node {{ hostvars[inventory_hostname].ansible_hostname | lower }} node-role.kubernetes.io/control-plane="" --overwrite
+      {% endif %}
+    {% endif %}
+
+- name: Upload kubeconfig to cluster manager
+  uri:
+    url: '{{ WEBHOOK_URL }}?name={{ PROJECT_NAME }}'
+    src: /etc/kubernetes/remote-access.kubeconfig
+    user: '{{ WEBHOOK_USER }}'
+    password: '{{ WEBHOOK_PASS }}'
+    force_basic_auth: yes
+    method: POST
+    body_format: raw
+  ignore_errors: True
+  run_once: true
+  when:
+    - inventory_hostname in groups['master']
+    - WEBHOOK_URL is defined

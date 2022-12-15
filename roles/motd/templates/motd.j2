@@ -1,0 +1,47 @@
+------------------------------------------------------------------------------
+Welcome to Kubeasy ENVIRONMENT~~
+
+{% if ansible_machine_id is defined %} 
+Machine ID:    {{ ansible_machine_id }}
+{% endif %}
+HOSTNAME:      {{ ansible_hostname }}
+IP:            {{ inventory_hostname }}
+
+OS:            {{ ansible_distribution }}-{{ ansible_distribution_version }}
+Kernel:        {{ ansible_kernel }}
+CPU:           {{ ansible_processor_vcpus }} x {{ ansible_processor[-1] }}
+Memory:        {{ ansible_memtotal_mb }} MB
+
+Kubernetes version:         {{ KUBE_VERSION }}
+Kubernetes network:         {{ KUBE_NETWORK }}
+Etcd version:               {{ ETCD_VERSION }}
+{% if KUBE_RUNTIME == 'docker' %}
+Docker version:             {{ DOCKER_VERSION }}
+{% else %}
+Containerd version:         {{ CONTAINERD_VERSION }}
+Crictl version:             {{ CRICTL_VERSION }}
+Runc version:               {{ RUNC_VERSION }}
+{% endif %}
+CNI version:                {{ CNI_VERSION }}
+
+{% if inventory_hostname in groups['master'] %}
+CA Expiration time:
+Etcd:                       {{ etcd_ca_result.not_after | timeFormat }}
+Kubernetes:                 {{ k8s_ca_result.not_after | timeFormat }}
+{% endif %}
+
+{% if inventory_hostname in groups['master'] %}
+Component Certificate Expiration time:
+etcd peer:                  {{ etcd_peer_tls_result.not_after | timeFormat }}
+etcd server:                {{ etcd_server_tls_result.not_after | timeFormat }}
+kube-apiserver:             {{ apiserver_tls_result.not_after | timeFormat }}
+{% endif %}
+
+The Roles of this node are:
+{% if inventory_hostname in groups['master'] %}
+  - kube-master
+{% else %}
+  - kube-worker
+{% endif %}
+
+------------------------------------------------------------------------------

@@ -1,0 +1,16 @@
+---
+# handlers file for kube-controller-manager
+- name: restarted kube-controller-manager
+  ansible.builtin.systemd:
+    name: kube-controller-manager
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"
+
+- name: Clean kube-controller-manager csr
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki/kube-controller-manager.csr
+    state: absent

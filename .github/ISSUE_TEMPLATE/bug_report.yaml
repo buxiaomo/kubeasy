@@ -1,0 +1,59 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug"]
+assignees:
+  - octocat
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Your Environment
+      description: System distribution.
+      placeholder: for example CentOS 7
+      value: |
+        Operating System: 
+        Kubernetes version: 
+        Kubernetes Container runtime: 
+        Kubernetes Container networks:
+    validations:
+      required: true
+
+  - type: textarea
+    id: content_all
+    attributes:
+      label: group_vars/all.yml file content?
+      description: kubeasy group_vars config, run command `cat ./group_vars/all.yml` .
+      placeholder: Tell us what you see!
+      render: YAML
+    validations:
+      required: true
+
+  - type: textarea
+    id: content_kubernetes
+    attributes:
+      label: group_vars/kubernetes.yml file ?
+      description: kubeasy group_vars config, run command `cat ./group_vars/kubernetes.yml` .
+      placeholder: Tell us what you see!
+      render: YAML
+    validations:
+      required: true
+
+  - type: textarea
+    id: Context
+    attributes:
+      label: Context
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: Shell
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log Information
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: Shell

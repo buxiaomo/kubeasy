@@ -1,0 +1,54 @@
+---
+- name: Base environment configuration
+  hosts: all
+  become: true
+  any_errors_fatal: true
+  roles:
+    - prepare
+
+- name: Upgrade etcd cluster
+  serial: 1
+  hosts: "{% if groups['etcd'] is not defined %}master{% else %}etcd{% endif %}"
+  become: yes
+  roles:
+    - etcd
+
+- name: Upgrade kubernetes dependence
+  hosts: kubernetes
+  become: yes
+  roles:
+    - cni
+
+- name: Upgrade kubernetes master
+  serial: 1
+  hosts: master
+  become: yes
+  roles:
+    - "{{ KUBE_RUNTIME }}"
+    - kubectl
+    - kube-apiserver
+    - kube-scheduler
+    - kube-controller-manager
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Upgrade kubernetes worker
+  serial: 1
+  hosts: worker
+  become: yes
+  roles:
+    - kubectl
+    - kubelet
+    - "{{ KUBE_RUNTIME }}"
+    - kube-proxy
+    - motd
+    - cleanup
+
+- name: Upgrade kubernetes add-on
+  hosts: master
+  become: true
+  any_errors_fatal: true
+  roles:
+    - add-on

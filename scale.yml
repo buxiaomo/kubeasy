@@ -1,0 +1,28 @@
+---
+- name: Base environment configuration
+  hosts: worker
+  become: yes
+  roles:
+    - prepare
+    - chrony
+
+- name: Initialization kubernetes dependence
+  hosts: kubernetes
+  become: true
+  any_errors_fatal: true
+  roles:
+    - cni
+    - ipvsadm
+
+- name: Deployment kubernetes worker
+  hosts: worker
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - "{{ KUBE_RUNTIME }}"
+    - kubectl
+    - kubelet
+    - kube-proxy
+    - motd
+    - cleanup

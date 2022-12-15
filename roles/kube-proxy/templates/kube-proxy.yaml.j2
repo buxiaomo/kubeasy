@@ -1,0 +1,37 @@
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+bindAddress: "{{ (inventory_hostname | ip == 4) | ternary('0.0.0.0', '::') }}"
+metricsBindAddress: "0.0.0.0:10249"
+clientConnection:
+  acceptContentTypes: ""
+  burst: 10
+  contentType: application/vnd.kubernetes.protobuf
+  kubeconfig: /etc/kubernetes/kube-proxy.kubeconfig
+  qps: 5
+clusterCIDR: "{{ networking.serviceSubnet | default('10.96.0.0/12') }}"
+configSyncPeriod: 15m0s
+conntrack:
+  max: null
+  maxPerCore: 32768
+  min: 131072
+  tcpCloseWaitTimeout: 1h0m0s
+  tcpEstablishedTimeout: 24h0m0s
+enableProfiling: false
+healthzBindAddress: 127.0.0.1:10256
+# hostnameOverride: {{ hostvars[inventory_hostname].ansible_hostname | lower }}
+iptables:
+  masqueradeAll: true
+  masqueradeBit: 14
+  minSyncPeriod: 0s
+  syncPeriod: 30s
+ipvs:
+  excludeCIDRs: null
+  minSyncPeriod: 5s
+  scheduler: "wrr"
+  syncPeriod: 30s
+mode: "ipvs"
+nodePortAddresses: null
+oomScoreAdj: -999
+portRange: ""
+resourceContainer: /kube-proxy
+udpIdleTimeout: 250ms

@@ -1,0 +1,13 @@
+- name: test my new module
+  hosts: localhost
+  vars: 
+    KUBE_VERSION: "1.23.5"
+    WEBHOOK_URL: "http://127.0.0.1:8080/v1/platform/cluster"
+    WEBHOOK_USER: "admin"
+    WEBHOOK_PASS: "admin"
+  tasks:
+    - name: test
+      ansible.builtin.debug:
+        msg: "{{ KUBE_VERSION.split('.')[0] }}"
+
+

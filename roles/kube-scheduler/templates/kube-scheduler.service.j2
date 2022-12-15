@@ -1,0 +1,36 @@
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/kubernetes/kubernetes
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/kube-scheduler \
+  --bind-address={{ (inventory_hostname | ip == 4) | ternary('0.0.0.0', '::') }} \
+  --authentication-kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
+  --authorization-kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
+  --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
+  --leader-elect=true \
+  --secure-port=10259 \
+  --client-ca-file=/etc/kubernetes/pki/ca.crt \
+  --tls-cert-file=/etc/kubernetes/pki/kube-scheduler.crt \
+  --tls-private-key-file=/etc/kubernetes/pki/kube-scheduler.key \
+  --requestheader-allowed-names="aggregator" \
+  --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt \
+  --requestheader-extra-headers-prefix="X-Remote-Extra-" \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-username-headers=X-Remote-User \
+{% if scheduler.extraArgs is defined %}
+{% for extraArg in scheduler.extraArgs %}
+  {{ extraArg }} \
+{% endfor %}
+{% endif %}
+{% if KUBE_VERSION is version("1.19",">") %}
+  --logging-format=json \
+{% endif %}
+  --v={{ scheduler.log.level | default(1) }}
+
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
