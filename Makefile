@@ -18,8 +18,8 @@ KUBE_RUNTIME:=docker
 DOCKER_VERSION:=20.10.17
 
 CONTAINERD_VERSION:=1.6.15
-CRICTL_VERSION:=1.20.0
-RUNC_VERSION:=1.1.2
+CRICTL_VERSION:=1.24.1
+RUNC_VERSION:=1.1.4
 
 # kubernetes network plugin
 # flannel, calico, canal, cilium, none
