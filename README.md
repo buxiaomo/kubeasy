@@ -48,11 +48,10 @@ all node please install python.
 | [1.19.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.19.md) | v3.4.13  | v19.03.9  | v1.5.13 | v0.8.6 | v1.7.0 | v0.5.2 | 3.2    |
 | [1.20.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md) | v3.4.13  | v19.03.9  | v1.5.13 | v0.8.7 | v1.7.0 | v0.6.1 | 3.2    |
 | [1.21.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.21.md) | v3.4.13  | v20.10.17 | v1.5.13 | v1.1.1 | v1.8.0 | v0.6.1 | 3.4.1  |
-| [1.22.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.22.md) | v3.5.0   | v20.10.17 | v1.5.13 | v1.1.1 | v1.8.4 | v0.6.1 | 3.5    |
-| [1.23.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.23.md) | v3.5.1   | v20.10.17 | v1.8.6  | v1.1.1 | v1.8.6 | v0.6.1 | 3.6    |
-| [1.24.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md) | v3.5.3   | N/A       | v1.8.6  | v1.1.1 | v1.8.6 | v0.6.1 | 3.6    |
-| [1.25.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.25.md) | v3.5.4   | N/A       | v1.8.6  | v1.1.1 | v1.9.3 | v0.6.1 | 3.8    |
-| [1.26.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.26.md) | v3.5.6   | N/A       | v1.8.12 | v1.1.1 | v1.9.3 | v0.6.2 | 3.9    |
+| [1.22.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.22.md) | v3.5.0   | v20.10.17 | v1.6.15 | v1.1.1 | v1.8.4 | v0.6.1 | 3.5    |
+| [1.23.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.23.md) | v3.5.1   | v20.10.17 | v1.6.15  | v1.1.1 | v1.8.6 | v0.6.1 | 3.6    |
+| [1.24.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md) | v3.5.3   | N/A       | v1.6.15  | v1.1.1 | v1.8.6 | v0.6.1 | 3.6    |
+| [1.25.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.25.md) | v3.5.4   | N/A       | v1.6.15  | v1.1.1 | v1.9.3 | v0.6.1 | 3.8    |
 
 ## How to use
 
