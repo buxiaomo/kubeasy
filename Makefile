@@ -47,7 +47,7 @@ NEXUS_PASSWORD:=
 PKI_URL:=
 
 # e2e test software version
-SONOBUOY_VERSION:=0.56.9
+SONOBUOY_VERSION:=0.56.14
 
 # Install ansible on depoy server
 runtime:
