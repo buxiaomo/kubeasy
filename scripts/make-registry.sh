@@ -95,3 +95,9 @@ docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.12.3
 docker pull nvcr.io/nvidia/k8s-device-plugin:v0.12.3
 docker tag nvcr.io/nvidia/k8s-device-plugin:v0.12.3 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.12.3
 docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.12.3
+
+
+# kube-state-metrics
+docker pull quay.io/coreos/kube-state-metrics:v1.9.8
+docker tag quay.io/coreos/kube-state-metrics:v1.9.8 ${REGISTRY_URL}/coreos/kube-state-metrics:v1.9.8
+docker push ${REGISTRY_URL}/coreos/kube-state-metrics:v1.9.8
