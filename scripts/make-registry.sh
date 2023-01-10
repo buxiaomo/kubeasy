@@ -59,7 +59,7 @@ docker push ${REGISTRY_URL}/rancher/mirrored-flannelcni-flannel:v0.20.2
 
 # metrics-server
 docker pull k8s.gcr.io/metrics-server/metrics-server:v0.6.2
-docker tag k8s.gcr.io/metrics-server/metrics-server:v0.6.1 ${REGISTRY_URL}/metrics-server/metrics-server:v0.6.2
+docker tag k8s.gcr.io/metrics-server/metrics-server:v0.6.2 ${REGISTRY_URL}/metrics-server/metrics-server:v0.6.2
 docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.6.2
 
 
