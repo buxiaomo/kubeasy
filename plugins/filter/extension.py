@@ -22,7 +22,7 @@ def component_version(value):
             },
             "plugin": {
                 "coredns": "1.9.3",
-                "metrics": "0.6.1",
+                "metrics": "0.6.2",
                 "pause": "3.8",
                 "nvidia": "0.12.3"
             }
