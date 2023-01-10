@@ -194,8 +194,14 @@ spec:
         app.kubernetes.io/version: 2.6.0
     spec:
       automountServiceAccountToken: true
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       nodeSelector:
         kubernetes.io/os: linux
+        node-role.kubernetes.io/master: ""
+        node-role.kubernetes.io/control-plane: ""
       serviceAccountName: kube-state-metrics
       containers:
         - name: kube-state-metrics
