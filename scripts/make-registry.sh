@@ -97,6 +97,6 @@ docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.12.3
 
 
 # kube-state-metrics
-docker pull k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.2.4
-docker tag k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.2.4 ${REGISTRY_URL}/kube-state-metrics/kube-state-metrics:v2.2.4
-docker push ${REGISTRY_URL}/kube-state-metrics/kube-state-metrics:v2.2.4
+docker pull k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.4.2
+docker tag k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.4.2 ${REGISTRY_URL}/kube-state-metrics/kube-state-metrics:v2.4.2
+docker push ${REGISTRY_URL}/kube-state-metrics/kube-state-metrics:v2.4.2
