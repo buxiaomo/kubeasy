@@ -183,9 +183,15 @@ spec:
         app.kubernetes.io/version: 2.4.2
     spec:
       automountServiceAccountToken: true
+      serviceAccountName: kube-state-metrics
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       nodeSelector:
         kubernetes.io/os: linux
-      serviceAccountName: kube-state-metrics
+        node-role.kubernetes.io/master: ""
+        node-role.kubernetes.io/control-plane: ""
       containers:
         - name: kube-state-metrics
           image: "{{ REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('path') }}{% endif %}/kube-state-metrics/kube-state-metrics:v2.4.2"
