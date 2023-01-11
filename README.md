@@ -52,6 +52,7 @@ all node please install python.
 | [1.23.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.23.md) | v3.5.1   | v20.10.17 | v1.6.15 | v1.1.1 | v1.8.6 | v0.6.1 | 3.6    |
 | [1.24.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md) | v3.5.3   | N/A       | v1.6.15 | v1.1.1 | v1.8.6 | v0.6.1 | 3.6    |
 | [1.25.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.25.md) | v3.5.4   | N/A       | v1.6.15 | v1.1.1 | v1.9.3 | v0.6.1 | 3.8    |
+| [1.26.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.26.md) | v3.5.6   | N/A       | v1.6.15 | v1.1.1 | v1.9.3 | v0.6.2 | 3.9    |
 
 ## How to use
 

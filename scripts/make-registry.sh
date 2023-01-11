@@ -90,6 +90,7 @@ docker pull quay.io/cilium/hubble-relay:v1.12.5
 docker tag quay.io/cilium/hubble-relay:v1.12.5 ${REGISTRY_URL}/cilium/hubble-relay:v1.12.5
 docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.12.5
 
+
 # nvidia-device-plugin
 docker pull nvcr.io/nvidia/k8s-device-plugin:v0.12.3
 docker tag nvcr.io/nvidia/k8s-device-plugin:v0.12.3 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.12.3
