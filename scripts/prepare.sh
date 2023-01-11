@@ -35,7 +35,7 @@ else
     curl -s -L --fail --remote-name-all https://github.com/buxiaomo/kubeasy/releases/download/v${KUBE_VERSION}/kubeasy-registry-v${KUBE_VERSION}.tar.gz.sha256
     sha256sum --check ./kubeasy-registry-v${KUBE_VERSION}.tar.gz.sha256 >/dev/null 2>&1
     if [ $? != 0 ]; then
-      echo -e "\033[32m-> Download kubeasy-registry-v${KUBE_VERSION}.tar.gz save to './scripts/src/'.\033[0m"
+      echo -e "\033[32m-> Redownload kubeasy-registry-v${KUBE_VERSION}.tar.gz save to './scripts/src/'.\033[0m"
       popd >/dev/null 2>&1
       rm -rf ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz
       wget -c --prefer-family=IPv4 --no-check-certificate -T 120 -t3 https://github.com/buxiaomo/kubeasy/releases/download/v${KUBE_VERSION}/kubeasy-registry-v${KUBE_VERSION}.tar.gz -O ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz
@@ -46,7 +46,7 @@ else
     curl -s -L --fail --remote-name-all https://github.com/buxiaomo/kubeasy/releases/download/v${KUBE_VERSION}/kubeasy-binary-v${KUBE_VERSION}.tar.gz.sha256
     sha256sum --check ./kubeasy-binary-v${KUBE_VERSION}.tar.gz.sha256 >/dev/null 2>&1
     if [ $? != 0 ]; then
-      echo -e "\033[32m-> Download kubeasy-binary-v${KUBE_VERSION}.tar.gz save to './scripts/src/'.\033[0m"
+      echo -e "\033[32m-> Redownload kubeasy-binary-v${KUBE_VERSION}.tar.gz save to './scripts/src/'.\033[0m"
       popd >/dev/null 2>&1
       rm -rf ./scripts/src/kubeasy-binary-v${KUBE_VERSION}.tar.gz
       wget -c --prefer-family=IPv4 --no-check-certificate -T 120 -t3 https://github.com/buxiaomo/kubeasy/releases/download/v${KUBE_VERSION}/kubeasy-binary-v${KUBE_VERSION}.tar.gz -O ./scripts/src/kubeasy-binary-v${KUBE_VERSION}.tar.gz
