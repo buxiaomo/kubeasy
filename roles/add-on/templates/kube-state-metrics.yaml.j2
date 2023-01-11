@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.6.0
+    app.kubernetes.io/version: 2.7.0
   name: kube-state-metrics
   namespace: kube-system
 
@@ -16,7 +16,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.6.0
+    app.kubernetes.io/version: 2.7.0
   name: kube-state-metrics
 rules:
   - apiGroups:
@@ -109,6 +109,7 @@ rules:
       - networking.k8s.io
     resources:
       - networkpolicies
+      - ingressclasses
       - ingresses
     verbs:
       - list
@@ -156,7 +157,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.6.0
+    app.kubernetes.io/version: 2.7.0
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -178,7 +179,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.6.0
+    app.kubernetes.io/version: 2.7.0
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -191,7 +192,7 @@ spec:
       labels:
         app.kubernetes.io/component: exporter
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/version: 2.6.0
+        app.kubernetes.io/version: 2.7.0
     spec:
       automountServiceAccountToken: true
       tolerations:
@@ -205,7 +206,7 @@ spec:
       serviceAccountName: kube-state-metrics
       containers:
         - name: kube-state-metrics
-          image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/kube-state-metrics/kube-state-metrics:v2.6.0"
+          image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/kube-state-metrics/kube-state-metrics:v2.7.0"
           livenessProbe:
             httpGet:
               path: /healthz

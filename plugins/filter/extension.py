@@ -21,9 +21,9 @@ def component_version(value):
                 "crictl": "1.24.1"
             },
             "plugin": {
-                "coredns": "1.8.6",
+                "coredns": "1.9.3",
                 "metrics": "0.6.2",
-                "pause": "3.6",
+                "pause": "3.8",
                 "nvidia": "0.12.3"
             }
         }
