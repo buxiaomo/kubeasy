@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.4.2
+    app.kubernetes.io/version: 2.6.0
   name: kube-state-metrics
   namespace: kube-system
 
@@ -16,7 +16,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.4.2
+    app.kubernetes.io/version: 2.6.0
   name: kube-state-metrics
 rules:
   - apiGroups:
@@ -27,6 +27,7 @@ rules:
       - nodes
       - pods
       - services
+      - serviceaccounts
       - resourcequotas
       - replicationcontrollers
       - limitranges
@@ -119,6 +120,16 @@ rules:
     verbs:
       - list
       - watch
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - clusterrolebindings
+      - clusterroles
+      - rolebindings
+      - roles
+    verbs:
+      - list
+      - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -127,7 +138,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.4.2
+    app.kubernetes.io/version: 2.6.0
   name: kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -145,7 +156,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.4.2
+    app.kubernetes.io/version: 2.6.0
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -167,7 +178,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.4.2
+    app.kubernetes.io/version: 2.6.0
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -180,10 +191,9 @@ spec:
       labels:
         app.kubernetes.io/component: exporter
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/version: 2.4.2
+        app.kubernetes.io/version: 2.6.0
     spec:
       automountServiceAccountToken: true
-      serviceAccountName: kube-state-metrics
       tolerations:
         - key: node-role.kubernetes.io/master
           operator: Exists
@@ -192,9 +202,10 @@ spec:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: ""
         node-role.kubernetes.io/control-plane: ""
+      serviceAccountName: kube-state-metrics
       containers:
         - name: kube-state-metrics
-          image: "{{ REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://k8s.gcr.io') | urlsplit('path') }}{% endif %}/kube-state-metrics/kube-state-metrics:v2.4.2"
+          image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/kube-state-metrics/kube-state-metrics:v2.6.0"
           livenessProbe:
             httpGet:
               path: /healthz
