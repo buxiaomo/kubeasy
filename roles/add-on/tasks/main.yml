@@ -9,20 +9,6 @@
     - upgrade
     - update
 
-- name: Distribution cilium profile
-  ansible.builtin.copy:
-    src: "cilium.sh"
-    dest: "/etc/profile.d/cilium.sh"
-    owner: root
-    group: root
-    mode: 0644
-  when: 
-    - inventory_hostname in groups['master']
-    - KUBE_NETWORK == 'cilium'
-  tags:
-    - upgrade
-    - update
-
 - name: Distribution cilium certificate
   include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
   when:
