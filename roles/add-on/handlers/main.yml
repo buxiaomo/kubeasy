@@ -1,2 +1,10 @@
 ---
 # handlers file for apps
+- name: cilium profile
+  ansible.builtin.copy:
+    src: "cilium.sh"
+    dest: "/etc/profile.d/cilium.sh"
+    owner: root
+    group: root
+    mode: 0644
+  when: KUBE_NETWORK == 'cilium'
