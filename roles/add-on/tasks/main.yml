@@ -71,6 +71,17 @@
     - renew
     - update
 
+- name: Distribution cilium profile
+  ansible.builtin.copy:
+    src: "cilium.sh"
+    dest: "/etc/profile.d/cilium.sh"
+    owner: root
+    group: root
+    mode: 0644
+  when: 
+    - inventory_hostname in groups['master']
+    - KUBE_NETWORK == 'cilium'
+
 - name: Distribution cni to the cluster
   vars:
     ipv6_query: "[*].{device: device, ipv4: ipv4, ipv6: ipv6[? address == '{{ inventory_hostname }}']}[?ipv6]"
