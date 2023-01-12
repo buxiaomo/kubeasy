@@ -1,0 +1,1 @@
+alias cilium='kubectl exec  -it -n kube-system $(kubectl get po -n kube-system -l k8s-app=cilium -o wide | awk "/${HOSTNAME}/{print \$1}") -- cilium '
