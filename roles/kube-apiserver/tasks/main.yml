@@ -47,6 +47,7 @@
   with_items:
     - /etc/kubernetes/pki
     - /etc/kubernetes/pki/etcd
+    - /var/log/kubernetes
 
 - name: Distribution certificate
   include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
