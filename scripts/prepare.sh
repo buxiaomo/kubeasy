@@ -28,8 +28,7 @@ if [ ! -f ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz ] || [ ! -f ./s
 else
   curl --connect-timeout 3 https://github.com >/dev/null 2>&1
   if [ $? != 0 ]; then
-    echo -e "\033[31mFailed to access github, please download manually.\033[0m"
-    exit 1
+    echo -e "\033[31mFailed to access github, please manually check file integrity.\033[0m"
   else
     pushd ./scripts/src >/dev/null 2>&1
     curl -s -L --fail --remote-name-all https://github.com/buxiaomo/kubeasy/releases/download/v${KUBE_VERSION}/kubeasy-registry-v${KUBE_VERSION}.tar.gz.sha256
