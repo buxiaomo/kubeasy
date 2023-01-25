@@ -1,4 +1,4 @@
-ansible==4.10.0
+ansible==7.0.0
 ansible-runner==2.2.1
 IPy
 jmespath
