@@ -193,12 +193,8 @@ help:
 local: clean
 	@mkdir -p .ssh
 	@ssh-keygen -t RSA -N '' -f .ssh/id_rsa
-	@cd group_vars && make
-	@[ -f ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.inv ] || cp ./inventory/template/single-master.template ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.inv
+	@[ -f ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.ini ] || cp ./inventory/template/single-master.template ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.ini
 	@vagrant up
-	@vagrant ssh master -c 'cd /vagrant/ && sudo make runtime'
-	@vagrant ssh master -c 'cd /vagrant/ && sudo make deploy KUBE_RUNTIME=docker KUBE_NETWORK=canal'
-	# @vagrant ssh master
 
 clean:
 	@rm -rf .ssh
