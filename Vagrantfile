@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 # https://app.vagrantup.com/ubuntu/boxes/focal64
 
-# ssh -i .ssh/id_rsa vagrant@192.168.56.11
+# ssh -i .ssh/id_rsa root@192.168.56.11
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -25,6 +25,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
       cfg.vm.provision "shell", inline: <<-SHELL
         set -x
+
+        sudo cloud-init status --wait
+
         sudo mkdir -p ${HOME}/.ssh
         sudo cp /vagrant/.ssh/id_rsa ${HOME}/.ssh/id_rsa
         sudo cp /vagrant/.ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
@@ -37,18 +40,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         sudo cp /vagrant/.ssh/id_rsa.pub /root/.ssh/authorized_keys
         sudo chown -R root:root /root/.ssh
 
+        sudo sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+        sudo sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+
         if [ $(hostname) == 'master01' ];then
+          sudo apt-get clean
           sudo apt-get update
           sudo apt-get install make -y
           sudo git config --global --add safe.directory /vagrant
-          pushd /vagrant
+          pushd /vagrant >/dev/null 2>&1
             sudo make runtime
             sudo pip3 install pyOpenSSL --upgrade
             sudo make prepare
             sudo make deploy REGISTRY_URL=http://192.168.56.11:5000 KUBE_NETWORK=calico
             # kubectl get no -o wide
             # kubectl get po -o wide -A
-		      popd
+		      popd >/dev/null 2>&1
         fi
       SHELL
     end
