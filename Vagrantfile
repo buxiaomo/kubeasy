@@ -25,6 +25,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
       cfg.vm.provision "shell", inline: <<-SHELL
         set -x
+
+        sudo cloud-init status --wait
+
         sudo mkdir -p ${HOME}/.ssh
         sudo cp /vagrant/.ssh/id_rsa ${HOME}/.ssh/id_rsa
         sudo cp /vagrant/.ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
