@@ -193,7 +193,7 @@ help:
 local: clean
 	@mkdir -p .ssh
 	@ssh-keygen -t RSA -N '' -f .ssh/id_rsa
-	@[ -f ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.ini ] || cp ./inventory/template/single-master.template ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.ini
+	@[ -f ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.ini ] || cp ./inventory/template/vagrant.template ./inventory/${PROJECT_NAME}-${PROJECT_ENV}.ini
 	@vagrant up
 
 clean:
