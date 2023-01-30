@@ -731,7 +731,7 @@ spec:
     spec:
       containers:
         - name: cilium-agent
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.12.5"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.12.6"
           imagePullPolicy: IfNotPresent
           command:
             - cilium-agent
@@ -814,11 +814,8 @@ spec:
                   - /cni-uninstall.sh
           securityContext:
             seLinuxOptions:
-              level: "s0"
-              # Running with spc_t since we have removed the privileged mode.
-              # Users can change it to a different type as long as they have the
-              # type available on the system.
-              type: "spc_t"
+              level: s0
+              type: spc_t
             capabilities:
               add:
                 # Use to set socket permission
@@ -893,7 +890,7 @@ spec:
         # from a privileged container because the mount propagation bidirectional
         # only works from privileged containers.
         - name: mount-bpf-fs
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.12.5"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.12.6"
           imagePullPolicy: IfNotPresent
           args:
             - 'mount | grep "/sys/fs/bpf type bpf" || mount -t bpf bpf /sys/fs/bpf'
@@ -909,7 +906,7 @@ spec:
               mountPath: /sys/fs/bpf
               mountPropagation: Bidirectional
         - name: clean-cilium-state
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.12.5"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.12.6"
           imagePullPolicy: IfNotPresent
           command:
             - /init-container.sh
@@ -929,11 +926,8 @@ spec:
           terminationMessagePolicy: FallbackToLogsOnError
           securityContext:
             seLinuxOptions:
-              level: "s0"
-              # Running with spc_t since we have removed the privileged mode.
-              # Users can change it to a different type as long as they have the
-              # type available on the system.
-              type: "spc_t"
+              level: s0
+              type: spc_t
             capabilities:
               # Most of the capabilities here are the same ones used in the
               # cilium-agent's container because this container can be used to
@@ -1088,7 +1082,7 @@ spec:
     spec:
       containers:
         - name: cilium-operator
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.12.5"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.12.6"
           imagePullPolicy: IfNotPresent
           command:
             - cilium-operator-generic
@@ -1175,7 +1169,7 @@ spec:
     spec:
       containers:
         - name: hubble-relay
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.12.5"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.12.6"
           imagePullPolicy: IfNotPresent
           command:
             - hubble-relay
