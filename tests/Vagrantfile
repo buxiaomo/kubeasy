@@ -10,15 +10,17 @@ cluster = {
   # "worker02" => { :ip => "192.168.56.13", :cpus => 2, :mem => 2048, :os => "centos/8"},
   "worker03" => { :ip => "192.168.56.14", :cpus => 2, :mem => 2048, :os => "ubuntu/xenial64"},              # 16.04
   "worker04" => { :ip => "192.168.56.15", :cpus => 2, :mem => 2048, :os => "ubuntu/bionic64"},              # 18.04
-  "worker05" => { :ip => "192.168.56.16", :cpus => 2, :mem => 2048, :os => "ubuntu/focal64"},               # 20.04
-  "worker06" => { :ip => "192.168.56.17", :cpus => 2, :mem => 2048, :os => "ubuntu/jammy64"},               # 22.04
-  "worker07" => { :ip => "192.168.56.18", :cpus => 2, :mem => 2048, :os => "debian/buster64"},              # 10
-  "worker08" => { :ip => "192.168.56.19", :cpus => 2, :mem => 2048, :os => "debian/bullseye64"},            # 11
-  "worker09" => { :ip => "192.168.56.20", :cpus => 2, :mem => 2048, :os => "opensuse/Leap-15.4.x86_64"},
-  "worker10" => { :ip => "192.168.56.21", :cpus => 2, :mem => 2048, :os => "almalinux/9"},
-  # "worker11" => { :ip => "192.168.56.22", :cpus => 2, :mem => 2048, :os => "rockylinux/8"},
-  "worker12" => { :ip => "192.168.56.23", :cpus => 2, :mem => 2048, :os => "rockylinux/9"},
-  # "worker13" => { :ip => "192.168.56.24", :cpus => 2, :mem => 2048, :os => "fedora/37-cloud-base"},
+  "worker05" => { :ip => "192.168.56.16", :cpus => 2, :mem => 2048, :os => "ubuntu/bionic64"},              # 18.04
+  "worker06" => { :ip => "192.168.56.17", :cpus => 2, :mem => 2048, :os => "ubuntu/focal64"},               # 20.04
+  "worker07" => { :ip => "192.168.56.18", :cpus => 2, :mem => 2048, :os => "ubuntu/jammy64"},               # 22.04
+  "worker08" => { :ip => "192.168.56.19", :cpus => 2, :mem => 2048, :os => "debian/buster64"},              # 10
+  "worker09" => { :ip => "192.168.56.20", :cpus => 2, :mem => 2048, :os => "debian/bullseye64"},            # 11
+  "worker10" => { :ip => "192.168.56.21", :cpus => 2, :mem => 2048, :os => "opensuse/Leap-15.4.x86_64"},
+  "worker11" => { :ip => "192.168.56.22", :cpus => 2, :mem => 2048, :os => "almalinux/9"},
+  # "worker12" => { :ip => "192.168.56.23", :cpus => 2, :mem => 2048, :os => "rockylinux/8"},
+  "worker13" => { :ip => "192.168.56.24", :cpus => 2, :mem => 2048, :os => "rockylinux/9"},
+  # "worker14" => { :ip => "192.168.56.25", :cpus => 2, :mem => 2048, :os => "fedora/37-cloud-base"},
+  "worker15" => { :ip => "192.168.56.26", :cpus => 2, :mem => 2048, :os => "archlinux/archlinux"},
   "master01" => { :ip => "192.168.56.11", :cpus => 4, :mem => 4096, :os => "ubuntu/focal64"},
 }
 
@@ -96,6 +98,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/$releasever/repo/non-oss/' tuna-non-oss
           sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/oss/' tuna-update
           sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/non-oss/' tuna-update-non-oss
+          ;;
+        arch)
+          echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' >  /etc/pacman.d/mirrorlist
+          pacman -Scc
+          pacman -S python3
           ;;
         esac
 
