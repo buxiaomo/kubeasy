@@ -89,6 +89,14 @@
     state: stopped
   when: ansible_distribution == "Fedora"
 
+- name: Create limits.d directory
+  ansible.builtin.file:
+    name: "/etc/security/limits.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Settings limits
   community.general.pam_limits:
     domain: "{{ item.domain }}"

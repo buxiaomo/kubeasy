@@ -1,0 +1,6 @@
+- name: Install some applications
+  community.general.pacman:
+    name: "{{ package }}"
+    state: latest
+    update_cache: true
+
