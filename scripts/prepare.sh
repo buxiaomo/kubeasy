@@ -10,7 +10,7 @@ if ! command -v wget >/dev/null 2>&1; then
 fi
 
 if [ ! -f ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz ] || [ ! -f ./scripts/src/kubeasy-binary-v${KUBE_VERSION}.tar.gz ]; then
-  curl --connect-timeout 3 https://github.com >/dev/null 2>&1
+  curl https://github.com >/dev/null 2>&1
   if [ $? != 0 ]; then
     echo -e "\033[31mFailed to access github, please download manually.\033[0m"
     exit 1
@@ -26,7 +26,7 @@ if [ ! -f ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz ] || [ ! -f ./s
     fi
   fi
 else
-  curl --connect-timeout 3 https://github.com >/dev/null 2>&1
+  curl https://github.com >/dev/null 2>&1
   if [ $? != 0 ]; then
     echo -e "\033[31mFailed to access github, please manually check file integrity.\033[0m"
   else
