@@ -1,7 +1,7 @@
 - name: Add specified repository into sources list
   community.general.zypper_repository:
     name: nvidia-container-runtime
-    repo: 'https://nvidia.github.io/libnvidia-container/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/libnvidia-container.repo'
+    repo: 'https://nvidia.github.io/libnvidia-container/opensuse-leap{{ ansible_distribution_version }}/libnvidia-container.repo'
     state: present
 
 - name: Install nvidia-container-runtime
