@@ -103,7 +103,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' >  /etc/pacman.d/mirrorlist
           pacman -Scc --noconfirm
           pacman -Syy --noconfirm
-          pacman -Syu --noconfirm python3
+          pacman -S --noconfirm python3
           ;;
         esac
 
