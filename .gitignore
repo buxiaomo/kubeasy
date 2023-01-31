@@ -41,3 +41,4 @@ tests/terraform/*/*.backup
 # vagrant
 .vagrant
 .ssh
+tests/.env
