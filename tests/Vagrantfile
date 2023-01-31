@@ -15,7 +15,7 @@ cluster = {
   "worker07" => { :ip => "192.168.56.18", :cpus => 2, :mem => 2048, :os => "ubuntu/jammy64"},               # 22.04
   "worker08" => { :ip => "192.168.56.19", :cpus => 2, :mem => 2048, :os => "debian/buster64"},              # 10
   "worker09" => { :ip => "192.168.56.20", :cpus => 2, :mem => 2048, :os => "debian/bullseye64"},            # 11
-  "worker10" => { :ip => "192.168.56.21", :cpus => 2, :mem => 2048, :os => "opensuse/Leap-15.4.x86_64"},
+  "worker10" => { :ip => "192.168.56.21", :cpus => 2, :mem => 2048, :os => "opensuse/Leap-15.3.x86_64"},
   "worker11" => { :ip => "192.168.56.22", :cpus => 2, :mem => 2048, :os => "almalinux/9"},
   # "worker12" => { :ip => "192.168.56.23", :cpus => 2, :mem => 2048, :os => "rockylinux/8"},
   "worker13" => { :ip => "192.168.56.24", :cpus => 2, :mem => 2048, :os => "rockylinux/9"},
