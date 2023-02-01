@@ -70,6 +70,7 @@ required_plugins = []
 
     [plugins."io.containerd.grpc.v1.cri".containerd]
 {% if gpu | default(false) %}
+      # GPU
       default_runtime_name = "nvidia"
 {% else %}
       default_runtime_name = "runc"
@@ -92,6 +93,7 @@ required_plugins = []
 
       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
 {% if gpu | default(false) %}
+        # GPU
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
           privileged_without_host_devices = false
           runtime_engine = ""
