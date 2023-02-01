@@ -79,6 +79,6 @@ if [ $(${cmd}) == 'master01' ]; then
   sudo pip3 install pyOpenSSL --upgrade
   [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/vagrant-compatibility.template ./inventory/kubeasy-dev.ini
   sudo make prepare
-  sudo make deploy REGISTRY_URL=http://192.168.56.11:5000 KUBE_NETWORK=${KUBE_NETWORK}
+  sudo make deploy REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
   popd >/dev/null 2>&1
 fi
