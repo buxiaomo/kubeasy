@@ -7,7 +7,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 cluster = {
   "worker01" => { :ip => "192.168.56.12", :cpus => 2, :mem => 2048, :os => "centos/7"},
-  # "worker02" => { :ip => "192.168.56.13", :cpus => 2, :mem => 2048, :os => "centos/8"},
+  "worker02" => { :ip => "192.168.56.13", :cpus => 2, :mem => 2048, :os => "centos/8"},
   "worker03" => { :ip => "192.168.56.14", :cpus => 2, :mem => 2048, :os => "ubuntu/xenial64"},              # 16.04
   "worker04" => { :ip => "192.168.56.15", :cpus => 2, :mem => 2048, :os => "ubuntu/bionic64"},              # 18.04
   "worker05" => { :ip => "192.168.56.16", :cpus => 2, :mem => 2048, :os => "ubuntu/bionic64"},              # 18.04
@@ -33,11 +33,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.network :private_network, ip: "#{info[:ip]}"
         override.vm.hostname = hostname
         vb.name = hostname
-        vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
+        vb.cpus = info[:cpus]
+        vb.memory = info[:mem]
       end
       cfg.vm.provision "shell" do |s|
         s.path = "prepare.sh"
-        s.args = [ENV['KUBE_VERSION'], ENV['KUBE_NETWORK']]
+        s.args = [ ENV['KUBE_VERSION'], ENV['KUBE_NETWORK'] ]
       end
     end
   end
