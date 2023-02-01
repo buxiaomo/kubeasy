@@ -10,7 +10,8 @@ mkdir -p .ssh
 ssh-keygen -t RSA -N '' -f .ssh/id_rsa
 
 # Set the version and install the necessary plug-ins
-echo KUBE_VERSION=v1.23 > .env
+echo 'KUBE_VERSION=v1.23
+KUBE_NETWORK=calico' > .env
 vagrant plugin install vagrant-env
 
 # Starting VM
