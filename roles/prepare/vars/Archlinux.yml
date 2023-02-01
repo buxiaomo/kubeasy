@@ -5,3 +5,4 @@ package:
   - tar
   - iptables
   - ipset
+  - cronie
