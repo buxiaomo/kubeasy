@@ -1,5 +1,9 @@
 ---
 # tasks file for containerd
+- name: Install nvidia-container-runtime
+  include_tasks: "{{ ansible_distribution_file_variety }}.yml"
+  when: gpu | default(false)
+
 - name: Distribution RunC package
   ansible.builtin.copy:
     src: "runc.amd64"
