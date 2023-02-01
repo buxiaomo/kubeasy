@@ -62,23 +62,18 @@ arch)
   ;;
 esac
 
-if command -v hostname >/dev/null 2>&1; then
-  export cmd='hostname'
-elif command -v hostnamectl >/dev/null 2>&1; then
-  export cmd='hostnamectl hostname'
-fi
-
-if [ $(${cmd}) == 'master01' ]; then
+if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
+  set -e
   sudo apt-get clean
   sudo apt-get update
-  sudo apt-get install make -y
+  sudo apt-get install make python3 python3-pip -y
   sudo git clone -b ${KUBE_VERSION} https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
   pushd /usr/local/src/kubeasy >/dev/null 2>&1
-  set -e
-  sudo make runtime
-  sudo pip3 install pyOpenSSL --upgrade
-  [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/vagrant-compatibility.template ./inventory/kubeasy-dev.ini
-  sudo make prepare
-  sudo make deploy REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
+    sudo pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+    sudo make runtime
+    sudo pip3 install pyOpenSSL --upgrade
+    [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/vagrant-compatibility.template ./inventory/kubeasy-dev.ini
+    sudo make prepare
+    sudo make deploy REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
   popd >/dev/null 2>&1
 fi
