@@ -1,0 +1,15 @@
+- name: Import a key from a file
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://nvidia.github.io/libnvidia-container/gpgkey
+
+- name: Add specified repository into sources
+  community.general.zypper_repository:
+    name: libnvidia-container
+    repo: 'https://nvidia.github.io/libnvidia-container/stable/opensuse-leap{{ ansible_distribution_version }}/$basearch'
+
+- name: Install nvidia-container-runtime
+  community.general.zypper:
+    name: nvidia-container-runtime
+    state: latest
+    update_cache: yes
