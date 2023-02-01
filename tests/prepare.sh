@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 export KUBE_VERSION=$1
+export KUBE_NETWORK=$2
 
 command -v cloud-init >/dev/null 2>&1 && sudo cloud-init status --wait
 
@@ -23,16 +24,10 @@ case ${ID} in
 centos)
   case ${VERSION_ID} in
   7)
-    sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e 's|^#baseurl=http://mirror.centos.org|baseurl=http://mirrors.tuna.tsinghua.edu.cn|g' \
-    -i.bak \
-    /etc/yum.repos.d/CentOS-*.repo
+    sudo sed -e 's|^mirrorlist=|#mirrorlist=|g' -e 's|^#baseurl=http://mirror.centos.org|baseurl=http://mirrors.tuna.tsinghua.edu.cn|g' -i.bak /etc/yum.repos.d/CentOS-*.repo
     ;;
   8)
-    sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e 's|^#baseurl=http://mirror.centos.org/$contentdir|baseurl=http://mirrors.tuna.tsinghua.edu.cn/centos|g' \
-    -i.bak \
-    /etc/yum.repos.d/CentOS-*.repo
+    sed -e 's|^mirrorlist=|#mirrorlist=|g' -e 's|^#baseurl=http://mirror.centos.org/$contentdir|baseurl=http://mirrors.tuna.tsinghua.edu.cn/centos|g' -i.bak /etc/yum.repos.d/CentOS-*.repo
     ;;
   esac
   ;;
@@ -45,20 +40,13 @@ debian)
   sudo sed -i "s@https://.*security.debian.org@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
   ;;
 almalinux)
-  sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-  -e 's|^# baseurl=https://repo.almalinux.org|baseurl=http://mirrors.aliyun.com|g' \
-  -i.bak \
-  /etc/yum.repos.d/almalinux*.repo
+  sudo sed -e 's|^mirrorlist=|#mirrorlist=|g' -e 's|^# baseurl=https://repo.almalinux.org|baseurl=http://mirrors.aliyun.com|g' -i.bak /etc/yum.repos.d/almalinux*.repo
   ;;
 rocky)
-  sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-  -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=http://mirrors.ustc.edu.cn/rocky|g' \
-  -i.bak \
-  /etc/yum.repos.d/rocky-extras.repo \
-  /etc/yum.repos.d/rocky.repo
+  sudo sed -e 's|^mirrorlist=|#mirrorlist=|g' -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=http://mirrors.ustc.edu.cn/rocky|g' -i.bak /etc/yum.repos.d/rocky-extras.repo /etc/yum.repos.d/rocky.repo
   ;;
 opensuse-leap)
-  zypper mr -da
+  sudo zypper mr -da
   sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/$releasever/repo/oss/' tuna-oss
   sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/$releasever/repo/non-oss/' tuna-non-oss
   sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/oss/' tuna-update
@@ -89,6 +77,6 @@ if [ $(${cmd}) == 'master01' ]; then
   sudo pip3 install pyOpenSSL --upgrade
   [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/vagrant-compatibility.template ./inventory/kubeasy-dev.ini
   sudo make prepare
-  sudo make deploy REGISTRY_URL=http://192.168.56.11:5000 KUBE_NETWORK=calico
+  sudo make deploy REGISTRY_URL=http://192.168.56.11:5000 KUBE_NETWORK=${KUBE_NETWORK}
   popd >/dev/null 2>&1
 fi
