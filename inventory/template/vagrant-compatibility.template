@@ -1,22 +1,22 @@
 [master]
-192.168.56.11
+192.168.56.10
 
 [worker]
+192.168.56.11
 192.168.56.12
 192.168.56.13
 192.168.56.14
 192.168.56.15
 192.168.56.16
-192.168.56.17
-192.168.56.18
+192.168.56.17 ansible_python_interpreter=/usr/bin/python3
+192.168.56.18 ansible_python_interpreter=/usr/bin/python3
 192.168.56.19 ansible_python_interpreter=/usr/bin/python3
 192.168.56.20
 192.168.56.21 ansible_python_interpreter=/usr/bin/python3
-192.168.56.22
-; 192.168.56.23
-192.168.56.24
-; 192.168.56.25
-192.168.56.26
+; 192.168.56.22
+192.168.56.23
+; 192.168.56.24
+192.168.56.25
 
 [kubernetes:children]
 master
