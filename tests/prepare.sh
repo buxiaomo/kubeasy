@@ -41,14 +41,16 @@ ubuntu)
   sudo sed -i "s@http://.*archive.ubuntu.com@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
   sudo sed -i "s@http://.*security.ubuntu.com@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
-    sudo yum install git make python3-pip python3 -y
+    sudo apt-get update
+    sudo apt-get install git make python3-pip python3 -y
   fi
   ;;
 debian)
   sudo sed -i "s@https://.*deb.debian.org@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
   sudo sed -i "s@https://.*security.debian.org@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
-    sudo yum install git make python3-pip python3 -y
+    sudo apt-get update
+    sudo apt-get install git make python3-pip python3 -y
   fi
   ;;
 almalinux)
@@ -70,7 +72,7 @@ opensuse-leap)
   sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/oss/' tuna-update
   sudo zypper ar -cfg 'http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/non-oss/' tuna-update-non-oss
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
-    sudo zupper in git make python3-pip python3
+    sudo zypper --non-interactive install git make python3-pip python3
   fi
   ;;
 arch)
@@ -99,7 +101,7 @@ if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
   pushd /usr/local/src/kubeasy >/dev/null 2>&1
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
     make runtime
-    pip3 install pyOpenSSL --upgrade
+    # pip3 install pyOpenSSL --upgrade
     [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/${inventory}.template ./inventory/kubeasy-dev.ini
     make prepare
     make deploy REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
