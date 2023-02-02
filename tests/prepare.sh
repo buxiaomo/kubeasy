@@ -85,6 +85,7 @@ arch)
   fi
   ;;
 amzn)
+  sed -i 's|secure_path.=.*|secure_path = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin|g' /etc/sudoers
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
     sudo yum install git make python3-pip python3 -y
   fi
@@ -102,7 +103,6 @@ if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
   pushd /usr/local/src/kubeasy >/dev/null 2>&1
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
     make runtime
-    # pip3 install pyOpenSSL --upgrade
     [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/${inventory}.template ./inventory/kubeasy-dev.ini
     make prepare
     make deploy REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
