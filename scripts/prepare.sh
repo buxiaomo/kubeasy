@@ -75,6 +75,7 @@ fi
 if [ -f ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz ]; then
   tar -zxf ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz -C /usr/local/src
   tar -zxf /usr/local/src/registry_2.8.1_linux_amd64.tar.gz -C /usr/local/bin registry
+  mkdir -p /usr/local/etc
   cat >/usr/local/etc/registry.yml <<EOF
 version: 0.1
 log:
