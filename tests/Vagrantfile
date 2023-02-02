@@ -39,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
       cfg.vm.provision "shell" do |s|
         s.path = "prepare.sh"
-        s.args = [ ENV['KUBE_VERSION'], ENV['KUBE_NETWORK'] ]
+        s.args = [ ENV['KUBE_VERSION'], ENV['KUBE_NETWORK'], "vagrant-compatibility" ]
       end
     end
   end
