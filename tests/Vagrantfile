@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# ssh -i .ssh/id_rsa root@192.168.56.11
+# ssh -i .ssh/id_rsa root@192.168.56.10
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -21,6 +21,7 @@ cluster = {
   "worker13" => { :ip => "192.168.56.23", :cpus => 2, :mem => 2048, :os => "rockylinux/9"},
   # "worker14" => { :ip => "192.168.56.24", :cpus => 2, :mem => 2048, :os => "fedora/37-cloud-base"},
   "worker15" => { :ip => "192.168.56.25", :cpus => 2, :mem => 2048, :os => "archlinux/archlinux"},
+  "worker16" => { :ip => "192.168.56.26", :cpus => 2, :mem => 2048, :os => "gbailey/amzn2"},
   "master01" => { :ip => "192.168.56.10", :cpus => 4, :mem => 4096, :os => "ubuntu/focal64"},
 }
 
