@@ -11,7 +11,7 @@ elif command -v apt-get >/dev/null 2>&1; then
     rm -rf /var/lib/apt/lists/*
 elif command -v zypper >/dev/null 2>&1; then
     zypper refresh
-    zypper install -y git python3 sshpass wget curl vim jq tar
+    zypper --non-interactive install git python3 sshpass wget curl vim jq tar
 elif command -v apk >/dev/null 2>&1; then
     apk add --no-cache sshpass wget curl git vim tar
 elif command -v pacman >/dev/null 2>&1; then

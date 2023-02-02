@@ -1,5 +1,6 @@
 ansible==4.10.0
-ansible-runner==2.2.1
+pyOpenSSL==23.0.0
+ansible-runner
 IPy
 jmespath
 packaging
