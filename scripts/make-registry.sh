@@ -48,13 +48,13 @@ docker push ${REGISTRY_URL}/coredns/coredns:1.8.6
 
 
 # flannel
-docker pull rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.0
-docker tag rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.0 ${REGISTRY_URL}/rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.0
-docker push ${REGISTRY_URL}/rancher/mirrored-flannelcni-flannel-cni-plugin:v1.1.0
+docker pull docker.io/flannel/flannel-cni-plugin:v1.1.2
+docker tag docker.io/flannel/flannel-cni-plugin:v1.1.2 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.1.2
+docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.1.2
 
-docker pull rancher/mirrored-flannelcni-flannel:v0.20.2
-docker tag rancher/mirrored-flannelcni-flannel:v0.20.2 ${REGISTRY_URL}/rancher/mirrored-flannelcni-flannel:v0.20.2
-docker push ${REGISTRY_URL}/rancher/mirrored-flannelcni-flannel:v0.20.2
+docker pull docker.io/flannel/flannel:v0.21.0
+docker tag docker.io/flannel/flannel:v0.21.0 ${REGISTRY_URL}/flannel/flannel:v0.21.0
+docker push ${REGISTRY_URL}/flannel/flannel:v0.21.0
 
 
 # metrics-server
