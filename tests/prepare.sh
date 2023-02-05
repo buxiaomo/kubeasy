@@ -105,7 +105,7 @@ if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
     make runtime
     [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/${inventory}.template ./inventory/kubeasy-dev.ini
-    if [ grep -E "^KUBE_VERSION:=${KUBE_VERSION}" Makefile ]; then
+    if grep -E "^KUBE_VERSION:=${KUBE_VERSION}" Makefile ; then
       make prepare
     fi
     make deploy KUBE_VERSION=${KUBE_VERSION} REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
