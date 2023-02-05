@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 export KUBE_VERSION=$1
+export GIT_BRANCH=${KUBE_VERSION::4}
 export KUBE_NETWORK=$2
 export inventory=$3
 
@@ -99,12 +100,14 @@ esac
 
 if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
   set -e
-  sudo git clone -b ${KUBE_VERSION} https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
+  sudo git clone -b v${GIT_BRANCH} https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
   pushd /usr/local/src/kubeasy >/dev/null 2>&1
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
     make runtime
     [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/${inventory}.template ./inventory/kubeasy-dev.ini
-    make prepare
-    make deploy REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
+    if [ grep -E "^KUBE_VERSION:=${KUBE_VERSION}" Makefile ]; then
+      make prepare
+    fi
+    make deploy KUBE_VERSION=${KUBE_VERSION} REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
   popd >/dev/null 2>&1
 fi
