@@ -7,6 +7,7 @@ echo '                 |    |  \|  |  / \_\ \  ___/ / __ \_\___ \ \___  |       
 echo '                 |____|__ \____/|___  /\___  >____  /____  >/ ____|                 '
 echo '                         \/         \/     \/     \/     \/ \/                      '
 echo '-------------------------------------------------------------------------------------'
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin"
 
 ARCH=$(uname -m)
 if [ ${ARCH} != "aarch64" ] && [ ${ARCH} != "x86_64" ]; then
