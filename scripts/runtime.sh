@@ -1,4 +1,6 @@
 #!/bin/bash
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin"
+
 if command -v yum >/dev/null 2>&1; then
     if grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release || grep -Eqi "rockylinux" /etc/issue || grep -Eq "Rocky Linux" /etc/*-release; then
         yum install -y epel-release
