@@ -1,4 +1,6 @@
 #!/bin/bash
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin"
+
 KUBE_VERSION=$1
 if ! command -v curl >/dev/null 2>&1; then
   echo -e "\033[31mNeed curl command!\033[0m"
