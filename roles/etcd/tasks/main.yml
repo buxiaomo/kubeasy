@@ -315,6 +315,7 @@
   ignore_errors: True
   tags:
     - upgrade
+  when: KUBE_ACTION == "scale" or KUBE_ACTION == "upgrade" or KUBE_ACTION == "renew"
 
 - name: Populate service facts
   ansible.builtin.service_facts:
