@@ -82,7 +82,7 @@ arch)
   sudo pacman -Syy --noconfirm
   sudo pacman -S --noconfirm python3
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
-    sudo pacman -S --noconfirm git make python3-pip python3
+    sudo pacman -S --noconfirm git make python-pip python3
   fi
   ;;
 amzn)
