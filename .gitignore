@@ -43,3 +43,4 @@ tests/terraform/*/*.backup
 .ssh
 tests/.env
 .env
+isito.yaml
