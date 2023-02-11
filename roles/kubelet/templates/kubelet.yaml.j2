@@ -96,7 +96,7 @@ port: 10250
 readOnlyPort: 0
 registryBurst: 20
 registryPullQPS: 10
-{% if ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 16 %}
+{% if (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 16) or ansible_distribution == "Archlinux" %}
 resolvConf: /run/systemd/resolve/resolv.conf
 {% else %}
 resolvConf: /etc/resolv.conf
