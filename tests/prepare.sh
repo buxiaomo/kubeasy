@@ -77,9 +77,9 @@ opensuse-leap)
   fi
   ;;
 arch)
-  # echo 'Server = http://mirrors.aliyun.com/archlinux/$repo/os/$arch' >/etc/pacman.d/mirrorlist
+  echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' >/etc/pacman.d/mirrorlist
   sudo pacman -Scc --noconfirm
-  # sudo pacman -Syu --ignore linux
+  sudo pacman -Sy --noconfirm
   sudo pacman -S --noconfirm python3
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
     sudo pacman -S --noconfirm git make python-pip python3
