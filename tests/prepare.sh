@@ -77,7 +77,7 @@ opensuse-leap)
   fi
   ;;
 arch)
-  echo 'Server = http://mirrors.aliyun.com/archlinux/$repo/os/$arch' >/etc/pacman.d/mirrorlist
+  # echo 'Server = http://mirrors.aliyun.com/archlinux/$repo/os/$arch' >/etc/pacman.d/mirrorlist
   sudo pacman -Scc --noconfirm
   # sudo pacman -Syu --ignore linux
   sudo pacman -S --noconfirm python3
