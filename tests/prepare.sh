@@ -92,6 +92,10 @@ amzn)
   fi
   ;;
 fedora)
+  sudo mv /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora.repo.backup
+  sudo mv /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates.repo.backup
+  sudo curl -o /etc/yum.repos.d/fedora.repo http://mirrors.aliyun.com/repo/fedora.repo
+  sudo curl -o /etc/yum.repos.d/fedora-updates.repo http://mirrors.aliyun.com/repo/fedora-updates.repo
   if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
     sudo yum install git make python3-pip python3 -y
   fi
