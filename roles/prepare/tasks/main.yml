@@ -87,7 +87,10 @@
     name: dev-zram0.swap
     enabled: no
     state: stopped
-  when: ansible_distribution == "Fedora"
+  ignore_errors: True
+  when: 
+    - ansible_distribution == "Fedora" 
+    - ansible_swaptotal_mb > 0
 
 - name: Create limits.d directory
   ansible.builtin.file:
