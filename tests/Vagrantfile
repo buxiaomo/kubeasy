@@ -19,7 +19,7 @@ cluster = {
   "worker11" => { :ip => "192.168.56.21", :cpus => 2, :mem => 2048, :os => "almalinux/9"},
   # "worker12" => { :ip => "192.168.56.22", :cpus => 2, :mem => 2048, :os => "rockylinux/8"},
   "worker13" => { :ip => "192.168.56.23", :cpus => 2, :mem => 2048, :os => "rockylinux/9"},
-  # "worker14" => { :ip => "192.168.56.24", :cpus => 2, :mem => 2048, :os => "fedora/37-cloud-base"},
+  "worker14" => { :ip => "192.168.56.24", :cpus => 2, :mem => 2048, :os => "buxiaomo/fedora36"},
   "worker15" => { :ip => "192.168.56.25", :cpus => 2, :mem => 2048, :os => "archlinux/archlinux"},
   "worker16" => { :ip => "192.168.56.26", :cpus => 2, :mem => 2048, :os => "gbailey/amzn2"},
   "master01" => { :ip => "192.168.56.10", :cpus => 4, :mem => 4096, :os => "ubuntu/focal64"},
