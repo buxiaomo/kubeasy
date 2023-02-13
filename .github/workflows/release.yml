@@ -27,7 +27,7 @@ jobs:
           make download
 
           docker run -d --name artifact -p 8082:8081 -v /tmp/artifact:/app/data docker.io/buxiaomo/kubeasy-artifact:1.0
-          ./scripts/nexus.py upload --kubernetes ${GIT_TAG:1} --url http://127.0.0.1:8082 --repository kubeasy
+          make upload NEXUS_DOMAIN_NAME=http://127.0.0.1:8082 NEXUS_REPOSITORY=kubeasy
 
           pushd /tmp/artifact
             tar -zvcf /tmp/kubeasy-artifact-${GIT_TAG}.tar.gz *

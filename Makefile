@@ -221,3 +221,12 @@ download:
 		--containerd $(CONTAINERD_VERSION) \
 		--runc $(RUNC_VERSION) \
 		--crictl $(CRICTL_VERSION) download --quiet
+
+upload:
+	@./scripts/nexus.py --kubernetes $(KUBE_VERSION) \
+		--etcd $(ETCD_VERSION) \
+		--cni $(CNI_VERSION) \
+		--docker $(DOCKER_VERSION) \
+		--containerd $(CONTAINERD_VERSION) \
+		--runc $(RUNC_VERSION) \
+		--crictl $(CRICTL_VERSION) upload --url $(NEXUS_DOMAIN_NAME) --repository $(NEXUS_REPOSITORY)
