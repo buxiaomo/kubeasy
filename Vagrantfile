@@ -3,6 +3,14 @@
 
 # ssh -i .ssh/id_rsa root@192.168.56.10
 
+# Set the .env file and install the necessary plug-ins
+# $ vagrant plugin install vagrant-env
+# $ cat .env
+# BOX=buxiaomo/fedora
+# BOX_VERSION=36.0.20230214
+# KUBE_VERSION=1.24.10
+# KUBE_NETWORK=calico
+
 VAGRANTFILE_API_VERSION = "2"
 
 cluster = {
@@ -17,6 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define hostname do |cfg|
       cfg.vm.provider :virtualbox do |vb, override|
         config.vm.box = ENV['BOX']
+        config.vm.box_version = ENV['BOX_VERSION']
         override.vm.network :private_network, ip: "#{info[:ip]}"
         override.vm.hostname = hostname
         vb.name = hostname
