@@ -10,14 +10,14 @@ command -v cloud-init >/dev/null 2>&1 && sudo cloud-init status --wait
 sudo mkdir -p /home/vagrant/.ssh
 sudo cp /vagrant/.ssh/id_rsa /home/vagrant/.ssh/id_rsa
 sudo cp /vagrant/.ssh/id_rsa.pub /home/vagrant/.ssh/id_rsa.pub
-sudo cp /vagrant/.ssh/id_rsa.pub /home/vagrant/.ssh/authorized_keys
+sudo cat /vagrant/.ssh/id_rsa.pub >>/home/vagrant/.ssh/authorized_keys
 sudo chown -R vagrant:vagrant /home/vagrant/.ssh
 sudo chmod 600 /home/vagrant/.ssh/id_rsa /home/vagrant/.ssh/id_rsa.pub
 
 sudo mkdir -p /root/.ssh
 sudo cp /vagrant/.ssh/id_rsa /root/.ssh/id_rsa
 sudo cp /vagrant/.ssh/id_rsa.pub /root/.ssh/id_rsa.pub
-sudo cp /vagrant/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+sudo cat /vagrant/.ssh/id_rsa.pub >>/root/.ssh/authorized_keys
 sudo chown -R root:root /root/.ssh
 sudo chmod 600 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 
@@ -109,7 +109,7 @@ if [ $(cat /proc/sys/kernel/hostname) == 'master01' ]; then
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
     make runtime
     [ -f ./inventory/kubeasy-dev.ini ] || cp ./inventory/template/${inventory}.template ./inventory/kubeasy-dev.ini
-    if grep -E "^KUBE_VERSION:=${KUBE_VERSION}" Makefile ; then
+    if grep -E "^KUBE_VERSION:=${KUBE_VERSION}" Makefile; then
       make prepare
     fi
     make deploy KUBE_VERSION=${KUBE_VERSION} REGISTRY_URL=http://192.168.56.10:5000 KUBE_NETWORK=${KUBE_NETWORK}
