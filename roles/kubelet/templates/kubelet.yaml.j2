@@ -37,6 +37,8 @@ enableDebuggingHandlers: true
 enableSystemLogHandler: true
 enforceNodeAllocatable:
 - pods
+- kube-reserved
+- system-reserved
 eventBurst: 100
 eventRecordQPS: 50
 evictionHard:
@@ -96,7 +98,7 @@ port: 10250
 readOnlyPort: 0
 registryBurst: 20
 registryPullQPS: 10
-{% if (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 16) or ansible_distribution == "Archlinux"  or ansible_distribution == "Fedora" %}
+{% if resolvConf.stat.exists %}
 resolvConf: /run/systemd/resolve/resolv.conf
 {% else %}
 resolvConf: /etc/resolv.conf

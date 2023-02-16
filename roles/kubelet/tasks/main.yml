@@ -118,6 +118,14 @@
     - renew
     - update
 
+- name: Checking systemd resolve file
+  ansible.builtin.stat:
+    path: /run/systemd/resolve/resolv.conf
+  register: resolvConf
+  tags:
+    - upgrade
+    - update
+
 - name: Install config file
   ansible.builtin.template:
     src: kubelet.yaml.j2
