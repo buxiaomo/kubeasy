@@ -1,7 +1,3 @@
-<<<<<<< HEAD
----
-=======
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -96,11 +92,7 @@ metadata:
     app: flannel
     k8s-app: flannel
     tier: node
-<<<<<<< HEAD
-  name: kube-system-cfg
-=======
   name: kube-flannel-cfg
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
   namespace: kube-system
 ---
 apiVersion: apps/v1
@@ -110,11 +102,7 @@ metadata:
     app: flannel
     k8s-app: flannel
     tier: node
-<<<<<<< HEAD
-  name: kube-system-ds
-=======
   name: kube-flannel-ds
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
   namespace: kube-system
 spec:
   selector:
@@ -154,13 +142,8 @@ spec:
               fieldPath: metadata.namespace
         - name: EVENT_QUEUE_DEPTH
           value: "5000"
-<<<<<<< HEAD
-        image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.21.0"
-        name: kube-system
-=======
         image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.21.2"
         name: kube-flannel
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
         resources:
           requests:
             cpu: 100m
@@ -174,11 +157,7 @@ spec:
         volumeMounts:
         - mountPath: /run/flannel
           name: run
-<<<<<<< HEAD
-        - mountPath: /etc/kube-system/
-=======
         - mountPath: /etc/kube-flannel/
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
           name: flannel-cfg
         - mountPath: /run/xtables.lock
           name: xtables-lock
@@ -197,28 +176,16 @@ spec:
           name: cni-plugin
       - args:
         - -f
-<<<<<<< HEAD
-        - /etc/kube-system/cni-conf.json
-        - /etc/cni/net.d/10-flannel.conflist
-        command:
-        - cp
-        image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.21.0"
-=======
         - /etc/kube-flannel/cni-conf.json
         - /etc/cni/net.d/10-flannel.conflist
         command:
         - cp
         image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.21.2"
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
         name: install-cni
         volumeMounts:
         - mountPath: /etc/cni/net.d
           name: cni
-<<<<<<< HEAD
-        - mountPath: /etc/kube-system/
-=======
         - mountPath: /etc/kube-flannel/
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
           name: flannel-cfg
       priorityClassName: system-node-critical
       serviceAccountName: flannel
@@ -236,11 +203,7 @@ spec:
           path: /etc/cni/net.d
         name: cni
       - configMap:
-<<<<<<< HEAD
-          name: kube-system-cfg
-=======
           name: kube-flannel-cfg
->>>>>>> c73d375 (upgrade flannel to 0.21.2)
         name: flannel-cfg
       - hostPath:
           path: /run/xtables.lock
