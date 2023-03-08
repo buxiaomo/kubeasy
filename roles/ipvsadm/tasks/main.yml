@@ -4,13 +4,16 @@
   ansible.builtin.package:
     name: ipvsadm
     state: present
+  when: networking.mode == "ipvs"
 
 - name: Load kernel modules
   community.general.modprobe:
     name: "{{ item }}"
     state: present
   with_items: "{{ ipvs.params }}"
-  when: ipvs.params is defined
+  when:
+    - ipvs.params is defined
+    - networking.mode == "ipvs"
 
 - name: Write kernel modules to file
   ansible.builtin.lineinfile:
@@ -18,4 +21,6 @@
     line: "{{ item }}"
     create: yes
   with_items: "{{ ipvs.params }}"
-  when: ipvs.params is defined
+  when:
+    - ipvs.params is defined
+    - networking.mode == "ipvs"
