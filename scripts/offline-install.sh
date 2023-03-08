@@ -3,7 +3,7 @@ SHELL_FOLDER=$(dirname $(readlink -f "$0"))
 command -v docker >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo -e "\033[32m-> Install docker.\033[0m"
-    tar -zxf ${SHELL_FOLDER}/docker-20.10.9.tgz --strip-components=1 -C /usr/local/bin/ -f
+    tar -zxf ${SHELL_FOLDER}/docker-20.10.9.tgz --strip-components=1 -C /usr/local/bin
     cp ${SHELL_FOLDER}/docker.service /etc/systemd/system/docker.service
     systemctl daemon-reload
     systemctl enable docker.service
@@ -11,6 +11,8 @@ if [ $? -ne 0 ]; then
 fi
 echo -e "\033[32m-> Install registry.\033[0m"
 tar -zvxf ${SHELL_FOLDER}/registry_2.8.1_linux_amd64.tar.gz -C /usr/local/bin registry >/dev/null 2>&1
+cp -rf registry /usr/local/src/registry
+mkdir -p /usr/local/etc
 cat > /usr/local/etc/registry.yml << EOF
 version: 0.1
 log:
@@ -20,7 +22,7 @@ storage:
   cache:
     blobdescriptor: inmemory
   filesystem:
-    rootdirectory: $(pwd)/registry
+    rootdirectory: /usr/local/src/registry
 http:
   addr: :5000
   headers:
