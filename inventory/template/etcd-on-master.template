@@ -12,7 +12,7 @@ worker
 
 [kubernetes:vars]
 ; kubernetes network config
-networking={"dnsDomain": "cluster.local", "serviceSubnet": "10.96.0.0/12", "podSubnet": "10.244.0.0/16"}
+networking={"dnsDomain": "cluster.local", "serviceSubnet": "10.96.0.0/12", "podSubnet": "10.244.0.0/16", "mode": "ipvs"}
 
 ; ha config
 ; slb is software load balancing, will install harpoxy and keepalived on master node
