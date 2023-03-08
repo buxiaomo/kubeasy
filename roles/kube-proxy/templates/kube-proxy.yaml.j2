@@ -29,7 +29,7 @@ ipvs:
   minSyncPeriod: 5s
   scheduler: "wrr"
   syncPeriod: 30s
-mode: "ipvs"
+mode: "{{ networking.mode | default('iptables') }}"
 nodePortAddresses: null
 oomScoreAdj: -999
 portRange: ""
