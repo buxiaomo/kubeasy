@@ -42,3 +42,5 @@ tests/terraform/*/*.backup
 .vagrant
 .ssh
 tests/.env
+.env
+isito.yaml

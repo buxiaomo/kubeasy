@@ -28,7 +28,7 @@ required_plugins = []
   uid = 0
 
 [metrics]
-  address = ""
+  address = "127.0.0.1:1338"
   grpc_histogram = false
 
 [plugins]
@@ -149,12 +149,24 @@ required_plugins = []
       [plugins."io.containerd.grpc.v1.cri".registry.headers]
 
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+{% if containerd.daemon.endpoint is defined %}
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-          endpoint = [ "https://registry-1.docker.io", "https://i3jtbyvy.mirror.aliyuncs.com" ]
+          endpoint = {{ containerd.daemon.endpoint | list }}
+{% endif %}
+
 {% if REGISTRY_URL is defined %}
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}"]
           endpoint = [ "{{ REGISTRY_URL | urlsplit('scheme') }}://{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
           insecure_skip_verify = true
+{% endif %}
+
+{% if containerd.daemon.registry is defined %}
+{% for r in containerd.daemon.registry %}
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ r | urlsplit('hostname') }}{% if r | urlsplit('port') is not none %}:{{ r | urlsplit('port')}}{% endif %}"]
+          endpoint = [ "{{ r | urlsplit('scheme') }}://{{ r | default('https://docker.io') | urlsplit('hostname') }}{% if r | urlsplit('port') is not none %}:{{ r | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
+          insecure_skip_verify = true
+
+{% endfor %}
 {% endif %}
 
     [plugins."io.containerd.grpc.v1.cri".x509_key_pair_streaming]
