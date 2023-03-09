@@ -9,6 +9,8 @@ docker:
       - "native.cgroupdriver=systemd"
     registry-mirrors:
       - "https://i3jtbyvy.mirror.aliyuncs.com"
+    insecure-registries:
+      - "harbor.example.com"
     storage-driver: "overlay2"
     storage-opts:
       - "overlay2.override_kernel_check=true"
@@ -51,6 +53,8 @@ containerd:
     endpoint:
       - "https://registry-1.docker.io"
       - "https://i3jtbyvy.mirror.aliyuncs.com"
+    registry:
+      - "https://harbor.example.com"
 
 # etcd config
 etcd:
