@@ -7,9 +7,9 @@
     {%- if REGISTRY_URL | urlsplit('port') is not none %}
         {%- set host = [  ] %}
         {%- set _ = host.append("%s:%s" % (REGISTRY_URL | urlsplit('hostname'), REGISTRY_URL | urlsplit('port'))) %}
-        {%- set cfg = cfg | combine({'insecure-registries': host }, recursive=True) %}
+        {%- set cfg = cfg | combine({'insecure-registries': host }, recursive=True, list_merge="append") %}
     {%- else %}
-        {%- set cfg = cfg | combine({'insecure-registries': [ REGISTRY_URL | urlsplit('hostname') ]}, recursive=True) %}
+        {%- set cfg = cfg | combine({'insecure-registries': [ REGISTRY_URL | urlsplit('hostname') ]}, recursive=True, list_merge="append") %}
     {%- endif %}
 {%- endif %}
 {{ cfg | to_nice_json }}
