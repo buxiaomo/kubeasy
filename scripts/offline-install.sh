@@ -62,4 +62,4 @@ systemctl daemon-reload
 systemctl restart registry.service
 systemctl enable registry.service
 echo -e "\033[32mYou can run the following command \033[0m"
-echo -e "\033[32mdocker run -it --rm --name kubeasy --pull always -v inventory:/app/inventory -v ssl:/etc/ssl/kubernetes 127.0.0.1:5000/buxiaomo/kubeasy:v\${KUBEASY_VERSION}\033[0m"
+echo -e "\033[32mdocker run -it --rm --name kubeasy --pull always -v group_vars:/app/group_vars -v inventory:/app/inventory -v ssl:/etc/ssl/kubernetes 127.0.0.1:5000/buxiaomo/kubeasy:v\${KUBEASY_VERSION}\033[0m"
