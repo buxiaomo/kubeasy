@@ -52,9 +52,9 @@ docker pull docker.io/flannel/flannel-cni-plugin:v1.1.2
 docker tag docker.io/flannel/flannel-cni-plugin:v1.1.2 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.1.2
 docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.1.2
 
-docker pull docker.io/flannel/flannel:v0.21.2
-docker tag docker.io/flannel/flannel:v0.21.2 ${REGISTRY_URL}/flannel/flannel:v0.21.2
-docker push ${REGISTRY_URL}/flannel/flannel:v0.21.2
+docker pull docker.io/flannel/flannel:v0.21.3
+docker tag docker.io/flannel/flannel:v0.21.3 ${REGISTRY_URL}/flannel/flannel:v0.21.3
+docker push ${REGISTRY_URL}/flannel/flannel:v0.21.3
 
 
 # metrics-server
@@ -92,6 +92,6 @@ docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.13.0
 
 
 # nvidia-device-plugin
-docker pull nvcr.io/nvidia/k8s-device-plugin:v0.12.3
-docker tag nvcr.io/nvidia/k8s-device-plugin:v0.12.3 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.12.3
-docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.12.3
+docker pull nvcr.io/nvidia/k8s-device-plugin:v0.13.0
+docker tag nvcr.io/nvidia/k8s-device-plugin:v0.13.0 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
+docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
