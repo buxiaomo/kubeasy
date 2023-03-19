@@ -195,12 +195,3 @@ jobs:
           asset_path: /tmp/kubeasy-artifact-${{ github.ref_name }}.tar.gz.sha256
           asset_name: kubeasy-artifact-${{ github.ref_name }}.tar.gz.sha256
           asset_content_type: application/gzip
-
-      - name: Clean untagged version
-        uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'kubeasy'
-          package-type: 'container'
-          token: ${{ secrets.TOKEN }}
-          num-old-versions-to-delete: 100
-          delete-only-untagged-versions: 'true'
