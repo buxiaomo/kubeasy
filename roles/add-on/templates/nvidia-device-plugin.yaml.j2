@@ -38,8 +38,8 @@ spec:
       # See https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
       priorityClassName: "system-node-critical"
       containers:
-      - name: nvidia-device-plugin-ctr
-        image: {{ REGISTRY_URL | default('https://nvcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://nvcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://nvcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://nvcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://nvcr.io') | urlsplit('path') }}{% endif %}/nvidia/k8s-device-plugin:v{{ KUBE_VERSION | component_version | community.general.json_query("plugin.nvidia") }}
+      - image: {{ REGISTRY_URL | default('https://nvcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://nvcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://nvcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://nvcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://nvcr.io') | urlsplit('path') }}{% endif %}/nvidia/k8s-device-plugin:v{{ KUBE_VERSION | component_version | community.general.json_query("plugin.nvidia") }}
+        name: nvidia-device-plugin-ctr
         env:
           - name: FAIL_ON_INIT_ERROR
             value: "false"
@@ -48,9 +48,9 @@ spec:
           capabilities:
             drop: ["ALL"]
         volumeMounts:
-          - name: device-plugin
-            mountPath: /var/lib/kubelet/device-plugins
-      volumes:
         - name: device-plugin
-          hostPath:
-            path: /var/lib/kubelet/device-plugins
+          mountPath: /var/lib/kubelet/device-plugins
+      volumes:
+      - name: device-plugin
+        hostPath:
+          path: /var/lib/kubelet/device-plugins
