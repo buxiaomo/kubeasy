@@ -24,7 +24,7 @@ def component_version(value):
                 "coredns": "1.9.3",
                 "metrics": "0.6.2",
                 "pause": "3.8",
-                "nvidia": "0.12.3"
+                "nvidia": "0.13.0"
             }
         }
     }
