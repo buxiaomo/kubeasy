@@ -100,7 +100,6 @@
   with_items:
     - { "src": "metrics.yaml.j2", "dest": "metrics.yaml" }
     - { "src": "coredns.yaml.j2", "dest": "coredns.yaml" }
-    - { "src": "kube-state-metrics.yaml.j2", "dest": "kube-state-metrics.yaml" }
   tags:
     - upgrade
     - update
@@ -112,7 +111,6 @@
   with_items:
     - "metrics.yaml"
     - "coredns.yaml"
-    - "kube-state-metrics.yaml"
   tags:
     - upgrade
     - update
