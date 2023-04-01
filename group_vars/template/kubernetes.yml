@@ -124,10 +124,6 @@ kubelet:
 # kube-proxy config
 proxy:
   extraArgs:
-    - "--iptables-localhost-nodeports=true"
-    - "--iptables-masquerade-bit=14"
-    - "--iptables-min-sync-period=1s"
-    - "--iptables-sync-period=30s"
     - "--ipvs-scheduler=wrr"
     - "--ipvs-min-sync-period=5s"
     - "--ipvs-sync-period=5s"
