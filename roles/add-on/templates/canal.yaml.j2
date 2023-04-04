@@ -70,8 +70,7 @@ data:
     {
       "Network": "{{ networking.podSubnet | default('10.244.0.0/16') }}",
       "Backend": {
-        "Type": "vxlan",
-        "DirectRouting": true
+        "Type": "vxlan"
       }
     }
 
