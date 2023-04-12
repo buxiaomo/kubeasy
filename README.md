@@ -54,6 +54,7 @@ all node please install python.
 | [1.24.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md) | v3.5.3   | N/A       | v1.6.15 | v1.2.0 | v1.8.6 | v0.6.2 | 3.6    |
 | [1.25.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.25.md) | v3.5.4   | N/A       | v1.6.15 | v1.2.0 | v1.9.3 | v0.6.2 | 3.8    |
 | [1.26.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.26.md) | v3.5.6   | N/A       | v1.6.15 | v1.2.0 | v1.9.3 | v0.6.2 | 3.9    |
+| [1.27.x](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.27.md) | v3.5.7   | N/A       | v1.7.0  | v1.2.0 | v1.10.1 | v0.6.3 | 3.9    |
 
 ## How to use
 
@@ -84,7 +85,7 @@ apt-get install git make -y
 yum install git make vim -y
 
 # Install ansible
-git clone -b v1.26 https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
+git clone -b v1.27 https://github.com/buxiaomo/kubeasy.git /usr/local/src/kubeasy
 cd /usr/local/src/kubeasy
 ```
 #### Install ansible
@@ -186,7 +187,7 @@ For version upgrades, reference [here](https://kubernetes.io/zh-cn/releases/vers
 ```
 cd /usr/local/src/kubeasy
 git pull
-git checkout v1.27
+git checkout v1.28
 make upgrade KUBE_VERSION=<New Version>
 ```
 
@@ -211,7 +212,7 @@ If use the kubeasy-offline-v${KUBEASY_VERSION}.tar.gz, you need a deployment ser
 [![asciicast](https://asciinema.org/a/533648.svg)](https://asciinema.org/a/533648)
 
 ```
-KUBEASY_VERSION=1.26.0
+KUBEASY_VERSION=1.27.0
 wget https://github.com/buxiaomo/kubeasy/releases/download/v${KUBEASY_VERSION}/kubeasy-v${KUBEASY_VERSION}.tar.gz -O /usr/local/src/kubeasy-v${KUBEASY_VERSION}.tar.gz
 tar -zxf /usr/local/src/kubeasy-v${KUBEASY_VERSION}.tar.gz -C /usr/local/src
 wget https://github.com/buxiaomo/kubeasy/releases/download/v${KUBEASY_VERSION}/kubeasy-registry-v${KUBEASY_VERSION}.tar.gz -O /usr/local/src/kubeasy/scripts/src/kubeasy-registry-v${KUBEASY_VERSION}.tar.gz
@@ -230,7 +231,7 @@ make deploy REGISTRY_URL=http://<IP Addr>:5000
 [![asciicast](https://asciinema.org/a/533677.svg)](https://asciinema.org/a/533677)
 
 ```
-KUBEASY_VERSION=1.26.0
+KUBEASY_VERSION=1.27.0
 wget https://github.com/buxiaomo/kubeasy/releases/download/v${KUBEASY_VERSION}/kubeasy-offline-v${KUBEASY_VERSION}.tar.gz -O /usr/local/src/kubeasy-offline-v${KUBEASY_VERSION}.tar.gz
 tar -zxf /usr/local/src/kubeasy-offline-v${KUBEASY_VERSION}.tar.gz -C /usr/local/src
 cd /usr/local/src/kubeasy-offline-v${KUBEASY_VERSION}

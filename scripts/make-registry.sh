@@ -42,9 +42,9 @@ docker push ${REGISTRY_URL}/flannelcni/flannel:v0.16.3
 
 
 # coredns
-docker pull coredns/coredns:1.9.3
-docker tag coredns/coredns:1.9.3 ${REGISTRY_URL}/coredns/coredns:1.9.3
-docker push ${REGISTRY_URL}/coredns/coredns:1.9.3
+docker pull coredns/coredns:1.10.1
+docker tag coredns/coredns:1.10.1 ${REGISTRY_URL}/coredns/coredns:1.10.1
+docker push ${REGISTRY_URL}/coredns/coredns:1.10.1
 
 
 # flannel

@@ -95,7 +95,6 @@ controllerManager:
     - "--terminated-pod-gc-threshold=12500"
     - "--node-monitor-period=5s"
     - "--node-monitor-grace-period=40s"
-    - "--pod-eviction-timeout=5m0s"
     - "--profiling=false"
     - "--kube-api-qps=100"
     - "--kube-api-burst=100"
