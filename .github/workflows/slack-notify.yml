@@ -25,7 +25,7 @@ jobs:
           fi
 
       - name: notify to slack
-        uses: buxiaomo/slack-notify@v6
+        uses: buxiaomo/slack-notify@v1
         if: env.KUBE_VERSION
         with:
           channel: "#kubeasy"
