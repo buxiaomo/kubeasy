@@ -19,14 +19,20 @@ jobs:
       - name: check version
         run: |
           set -x
-          KUBE_VERSION=$(curl -s 'https://api.github.com/repos/kubernetes/kubernetes/tags?page=1&per_page=100' | jq -r '.[]  | select(.name | test("^v[0-9]+.[0-9]+.[0-9]+$")) | .name' | sort -r -V | head -n 1)
-          if ! git tag -l "v1.*" | grep "${KUBE_VERSION}"; then
-            echo "KUBE_VERSION=${KUBE_VERSION}" >> $GITHUB_ENV
+          KUBE_VERSION=$(curl -s 'https://api.github.com/repos/kubernetes/kubernetes/tags?page=1&per_page=100' | jq -r '.[]  | select(.name | test("^v[0-9]+.[0-9]+.[0-9]+$")) | .name' | sort -rV | awk -F. 'a[$1$2]++ == 0 {print}' | awk '{print $1}')
+          for version in ${KUBE_VERSION[@]}
+          do
+            if ! git tag -l "v1.*" | grep "${version}" >/dev/null 2>&1; then
+              NEW_VERSION[${#NEW_VERSION[*]}]=${version}
+            fi
+          done
+          if [ ${#NEW_VERSION[*]} != 0 ];then
+            echo "NEW_VERSION=${NEW_VERSION[*]}" >> $GITHUB_ENV
           fi
 
       - name: notify to slack
-        uses: buxiaomo/slack-notify@v1
-        if: env.KUBE_VERSION
+        uses: buxiaomo/slack-notify@v6
+        if: env.NEW_VERSION
         with:
           channel: "#kubeasy"
           username: "webhookbot"
