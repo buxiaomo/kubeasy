@@ -40,4 +40,3 @@ jobs:
           title: "A new version of kubernetes has been released"
           text: "${{ env.NEW_VERSION }}"
           webhook_url: "${{ secrets.SLACK_WEBHOOK }}"
-
