@@ -1,0 +1,9 @@
+svc_name: firewalld
+
+package:
+  - conntrack-tools
+  - tar
+  - unzip
+  - python[2|3]-cryptography
+  - iptables
+  - ipset
