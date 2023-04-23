@@ -26,6 +26,7 @@ Read the documentation to see how the project is used
 
 all node please install python.
 
+* [x] UnionTech OS
 * [x] Arch Linux
 * [x] CentOS (7.\*, 8.\*)
 * [x] Ubuntu (16.\*, 18.\*, 20.\*, 21.\*, 22.\*) 
