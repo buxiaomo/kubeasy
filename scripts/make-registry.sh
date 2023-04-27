@@ -70,34 +70,28 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.8
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.13.1
-docker tag quay.io/cilium/cilium:v1.13.1 ${REGISTRY_URL}/cilium/cilium:v1.13.1
-docker push ${REGISTRY_URL}/cilium/cilium:v1.13.1
+docker pull quay.io/cilium/cilium:v1.13.2
+docker tag quay.io/cilium/cilium:v1.13.2 ${REGISTRY_URL}/cilium/cilium:v1.13.2
+docker push ${REGISTRY_URL}/cilium/cilium:v1.13.2
 
-docker pull quay.io/cilium/operator-generic:v1.13.1
-docker tag quay.io/cilium/operator-generic:v1.13.1 ${REGISTRY_URL}/cilium/operator-generic:v1.13.1
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.13.1
+docker pull quay.io/cilium/operator-generic:v1.13.2
+docker tag quay.io/cilium/operator-generic:v1.13.2 ${REGISTRY_URL}/cilium/operator-generic:v1.13.2
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.13.2
 
-docker pull quay.io/cilium/hubble-ui-backend:v0.10.0
-docker tag quay.io/cilium/hubble-ui-backend:v0.10.0 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.10.0
-docker push ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.10.0
+docker pull quay.io/cilium/hubble-ui-backend:v0.11.0
+docker tag quay.io/cilium/hubble-ui-backend:v0.11.0 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.11.0
+docker push ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.11.0
 
-docker pull quay.io/cilium/hubble-ui:v0.10.0
-docker tag quay.io/cilium/hubble-ui:v0.10.0 ${REGISTRY_URL}/cilium/hubble-ui:v0.10.0
-docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.10.0
+docker pull quay.io/cilium/hubble-ui:v0.11.0
+docker tag quay.io/cilium/hubble-ui:v0.11.0 ${REGISTRY_URL}/cilium/hubble-ui:v0.11.0
+docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.11.0
 
-docker pull quay.io/cilium/hubble-relay:v1.13.1
-docker tag quay.io/cilium/hubble-relay:v1.13.1 ${REGISTRY_URL}/cilium/hubble-relay:v1.13.1
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.13.1
+docker pull quay.io/cilium/hubble-relay:v1.13.2
+docker tag quay.io/cilium/hubble-relay:v1.13.2 ${REGISTRY_URL}/cilium/hubble-relay:v1.13.2
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.13.2
 
 
 # nvidia-device-plugin
 docker pull nvcr.io/nvidia/k8s-device-plugin:v0.13.0
 docker tag nvcr.io/nvidia/k8s-device-plugin:v0.13.0 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
 docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
-
-
-# kube-state-metrics
-docker pull registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.7.0
-docker tag registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.7.0 ${REGISTRY_URL}/kube-state-metrics/kube-state-metrics:v2.7.0
-docker push ${REGISTRY_URL}/kube-state-metrics/kube-state-metrics:v2.7.0
