@@ -268,10 +268,10 @@ data:
     cluster-name: default
     peer-service: "hubble-peer.kube-system.svc.cluster.local:443"
     listen-address: :4245
-    dial-timeout:
-    retry-timeout:
-    sort-buffer-len-max:
-    sort-buffer-drain-timeout:
+    dial-timeout: 
+    retry-timeout: 
+    sort-buffer-len-max: 
+    sort-buffer-drain-timeout: 
     tls-client-cert-file: /var/lib/hubble-relay/tls/client.crt
     tls-client-key-file: /var/lib/hubble-relay/tls/client.key
     tls-hubble-server-ca-files: /var/lib/hubble-relay/tls/hubble-server-ca.crt
@@ -284,7 +284,7 @@ metadata:
   name: hubble-ui-nginx
   namespace: kube-system
 data:
-  nginx.conf: "server {\n    listen       8081;\n    listen       [::]:8081;\n    server_name  localhost;\n    root /app;\n    index index.html;\n    client_max_body_size 1G;\n\n    location / {\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n\n        # CORS\n        add_header Access-Control-Allow-Methods \"GET, POST, PUT, HEAD, DELETE, OPTIONS\";\n        add_header Access-Control-Allow-Origin *;\n        add_header Access-Control-Max-Age 1728000;\n        add_header Access-Control-Expose-Headers content-length,grpc-status,grpc-message;\n        add_header Access-Control-Allow-Headers range,keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout;\n        if ($request_method = OPTIONS) {\n            return 204;\n        }\n        # /CORS\n\n        location /api {\n            proxy_http_version 1.1;\n            proxy_pass_request_headers on;\n            proxy_hide_header Access-Control-Allow-Origin;\n            proxy_pass http://127.0.0.1:8090;\n        }\n\n        location / {\n            try_files $uri $uri/ /index.html;\n        }\n    }\n}"
+  nginx.conf: "server {\n    listen       8081;\n    listen       [::]:8081;\n    server_name  localhost;\n    root /app;\n    index index.html;\n    client_max_body_size 1G;\n\n    location / {\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n\n        # CORS\n        add_header Access-Control-Allow-Methods \"GET, POST, PUT, HEAD, DELETE, OPTIONS\";\n        add_header Access-Control-Allow-Origin *;\n        add_header Access-Control-Max-Age 1728000;\n        add_header Access-Control-Expose-Headers content-length,grpc-status,grpc-message;\n        add_header Access-Control-Allow-Headers range,keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout;\n        if ($request_method = OPTIONS) {\n            return 204;\n        }\n        # /CORS\n\n        location /api {\n            proxy_http_version 1.1;\n            proxy_pass_request_headers on;\n            proxy_hide_header Access-Control-Allow-Origin;\n            proxy_pass http://127.0.0.1:8090;\n        }\n        location / {\n            # double `/index.html` is required here \n            try_files $uri $uri/ /index.html /index.html;\n        }\n    }\n}"
 ---
 # Source: cilium/templates/cilium-agent/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -813,7 +813,7 @@ spec:
     spec:
       containers:
       - name: cilium-agent
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.1"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.2"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-agent
@@ -886,10 +886,10 @@ spec:
           postStart:
             exec:
               command:
-              - "/cni-install.sh"
-              - "--enable-debug=false"
-              - "--cni-exclusive=true"
-              - "--log-file=/var/run/cilium/cilium-cni.log"
+              - "bash"
+              - "-c"
+              - |
+                /cni-install.sh --enable-debug=false --cni-exclusive=true --log-file=/var/run/cilium/cilium-cni.log
           preStop:
             exec:
               command:
@@ -951,7 +951,7 @@ spec:
           mountPath: /tmp
       initContainers:
       - name: config
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.1"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.2"
         imagePullPolicy: IfNotPresent
         command:
         - cilium
@@ -975,7 +975,7 @@ spec:
       # from a privileged container because the mount propagation bidirectional
       # only works from privileged containers.
       - name: mount-bpf-fs
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.1"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.2"
         imagePullPolicy: IfNotPresent
         args:
         - 'mount | grep "/sys/fs/bpf type bpf" || mount -t bpf bpf /sys/fs/bpf'
@@ -991,7 +991,7 @@ spec:
           mountPath: /sys/fs/bpf
           mountPropagation: Bidirectional
       - name: clean-cilium-state
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.1"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.2"
         imagePullPolicy: IfNotPresent
         command:
         - /init-container.sh
@@ -1036,7 +1036,7 @@ spec:
             memory: 100Mi # wait-for-kube-proxy
       # Install the CNI binaries in an InitContainer so we don't have a writable host mount in the agent
       - name: install-cni-binaries
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.1"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.13.2"
         imagePullPolicy: IfNotPresent
         command:
           - "/install-plugin.sh"
@@ -1177,7 +1177,7 @@ spec:
     spec:
       containers:
       - name: cilium-operator
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.13.1"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.13.2"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-operator-generic
@@ -1269,7 +1269,7 @@ spec:
     spec:
       containers:
         - name: hubble-relay
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.13.1"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.13.2"
           imagePullPolicy: IfNotPresent
           command:
             - hubble-relay
@@ -1293,7 +1293,7 @@ spec:
             readOnly: true
           terminationMessagePolicy: FallbackToLogsOnError
       restartPolicy: Always
-      priorityClassName:
+      priorityClassName: 
       serviceAccount: "hubble-relay"
       serviceAccountName: "hubble-relay"
       automountServiceAccountToken: false
@@ -1360,13 +1360,13 @@ spec:
         fsGroup: 1001
         runAsGroup: 1001
         runAsUser: 1001
-      priorityClassName:
+      priorityClassName: 
       serviceAccount: "hubble-ui"
       serviceAccountName: "hubble-ui"
       automountServiceAccountToken: true
       containers:
       - name: frontend
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-ui:v0.10.0"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-ui:v0.11.0"
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -1379,7 +1379,7 @@ spec:
           mountPath: /tmp
         terminationMessagePolicy: FallbackToLogsOnError
       - name: backend
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-ui-backend:v0.10.0"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-ui-backend:v0.11.0"
         imagePullPolicy: IfNotPresent
         env:
         - name: EVENTS_SERVER_PORT
