@@ -110,8 +110,8 @@
   ansible.builtin.file:
     name: "/etc/kubernetes/pki/etcd"
     state: directory
-    owner: etcd
-    group: etcd
+    owner: root
+    group: root
 
 - name: Distribution certificate
   include_tasks: "{% if PKI_URL is defined %}pki{% else %}local{% endif %}.yml"
