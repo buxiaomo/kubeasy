@@ -1,21 +1,5 @@
 ---
 # tasks file for etcd
-- name: Add the group 'etcd'
-  ansible.builtin.group:
-    name: etcd
-    state: present
-    system: True
-
-- name: Add the user 'etcd'
-  ansible.builtin.user:
-    name: etcd
-    home: "{{ etcd.datadir | default('/var/lib/etcd') }}"
-    comment: etcd service account
-    create_home: False
-    shell: /sbin/nologin
-    system: True
-    group: etcd
-
 - name: Distribution package
   ansible.builtin.copy:
     src: "etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
@@ -75,8 +59,8 @@
     name: "{{ etcd.datadir | default('/var/lib/etcd') }}"
     state: directory
     mode: 0700
-    owner: etcd
-    group: etcd
+    owner: root
+    group: root
   tags:
     - update
 
@@ -100,8 +84,8 @@
   ansible.builtin.file:
     name: "{{ etcd.datadir | default('/var/lib/etcd') }}"
     state: directory
-    owner: etcd
-    group: etcd
+    owner: root
+    group: root
     mode: 0700
   tags:
     - update
@@ -124,7 +108,7 @@
     path: /etc/kubernetes/pki/etcd/server.key
     size: 2048
     mode: 0600
-    owner: etcd
+    owner: root
     group: root
   register: etcd_tls_server_key
   tags:
@@ -134,7 +118,7 @@
 # server
 - name: Generate etcd server csr
   community.crypto.openssl_csr:
-    owner: etcd
+    owner: root
     group: root
     path: /etc/kubernetes/pki/etcd/server.csr
     privatekey_path: /etc/kubernetes/pki/etcd/server.key
@@ -175,7 +159,7 @@
     force: "{{ expired | default(false) }}"
     provider: ownca
     mode: 0644
-    owner: etcd
+    owner: root
     group: root
   register: etcd_tls_server_crt
   notify: restarted etcd
@@ -189,7 +173,7 @@
     path: /etc/kubernetes/pki/etcd/peer.key
     size: 2048
     mode: 0600
-    owner: etcd
+    owner: root
     group: root
   register: etcd_tls_peer_key
   tags:
@@ -198,7 +182,7 @@
 
 - name: Generate etcd peer csr
   community.crypto.openssl_csr:
-    owner: etcd
+    owner: root
     group: root
     path: /etc/kubernetes/pki/etcd/peer.csr
     privatekey_path: /etc/kubernetes/pki/etcd/peer.key
@@ -236,7 +220,7 @@
     force: "{{ expired | default(false) }}"
     provider: ownca
     mode: 0644
-    owner: etcd
+    owner: root
     group: root
   register: etcd_tls_peer_crt
   notify: restarted etcd
@@ -250,7 +234,7 @@
     path: /etc/kubernetes/pki/etcd/healthcheck-client.key
     size: 2048
     mode: 0600
-    owner: etcd
+    owner: root
     group: root
   tags:
     - renew
@@ -258,7 +242,7 @@
 
 - name: Generate etcd healthcheck csr
   community.crypto.openssl_csr:
-    owner: etcd
+    owner: root
     group: root
     path: /etc/kubernetes/pki/etcd/healthcheck-client.csr
     privatekey_path: /etc/kubernetes/pki/etcd/healthcheck-client.key
@@ -287,7 +271,7 @@
     force: "{{ expired | default(false) }}"
     provider: ownca
     mode: 0644
-    owner: etcd
+    owner: root
     group: root
   register: etcd_tls_client_cert
   notify: restarted etcd
