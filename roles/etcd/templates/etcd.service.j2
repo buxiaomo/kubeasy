@@ -15,7 +15,6 @@ After=network-online.target firewalld.service
 Wants=network-online.target
 
 [Service]
-User=etcd
 Type=notify
 Restart=always
 RestartSec=5s
