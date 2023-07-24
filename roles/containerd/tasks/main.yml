@@ -6,7 +6,7 @@
 
 - name: Distribution RunC package
   ansible.builtin.copy:
-    src: "runc.amd64"
+    src: "runc.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}"
     dest: "/usr/local/bin/runc"
     owner: root
     group: root
