@@ -20,7 +20,7 @@
 
 - name: Drain Node
   ansible.builtin.shell: |
-    kubectl drain {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].ansible_hostname | lower }}{% endif %} --ignore-daemonsets --delete-local-data --force
+    kubectl drain {% if nodename is defined %}{{ nodename | lower }}{% else %}{{ hostvars[inventory_hostname].ansible_hostname | lower }}{% endif %} --ignore-daemonsets --delete-local-data --force --disable-eviction
   delegate_to: "{{ groups['master'][0] }}"
   when: 
     - KUBE_ACTION | default('deploy')  == "upgrade"
