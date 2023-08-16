@@ -293,7 +293,7 @@
   ansible.builtin.shell: |
     NAME=$(date +%Y-%m-%d)
     mkdir -p {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}
-    timeout 1s /usr/local/bin/etcdctl --endpoints {{ inventory_hostname | ip_format }}:2379 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key snapshot save {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}/kubernetes-etcd.${NAME}.backup.db
+    timeout 15s /usr/local/bin/etcdctl --endpoints {{ inventory_hostname | ip_format }}:2379 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt --key /etc/kubernetes/pki/etcd/server.key snapshot save {{ etcd.backupDir | default("/etc/kubernetes/tmp") }}/kubernetes-etcd.${NAME}.backup.db
   environment:
     ETCDCTL_API: 3
   ignore_errors: True
