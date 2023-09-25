@@ -88,6 +88,6 @@ docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.14.2
 
 
 # nvidia-device-plugin
-docker pull nvcr.io/nvidia/k8s-device-plugin:v0.13.0
-docker tag nvcr.io/nvidia/k8s-device-plugin:v0.13.0 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
-docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
+docker pull nvcr.io/nvidia/k8s-device-plugin:v0.14.1
+docker tag nvcr.io/nvidia/k8s-device-plugin:v0.14.1 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.1
+docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.1
