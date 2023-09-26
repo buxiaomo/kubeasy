@@ -6,6 +6,7 @@ After=network.target
 [Service]
 Slice=podruntime.slice
 ExecStartPre=/sbin/modprobe overlay
+ExecStartPre=/usr/bin/env iptables -P FORWARD ACCEPT
 ExecStart=/usr/local/bin/containerd
 Restart=always
 RestartSec=5
