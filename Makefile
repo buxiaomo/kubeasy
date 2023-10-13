@@ -214,7 +214,7 @@ prepare:
 	@./scripts/prepare.sh $(KUBE_VERSION)
 
 download:
-	@./scripts/nexus.py --kubernetes $(KUBE_VERSION) \
+	./scripts/nexus.py --kubernetes $(KUBE_VERSION) \
 		--etcd $(ETCD_VERSION) \
 		--cni $(CNI_VERSION) \
 		--docker $(DOCKER_VERSION) \
