@@ -30,7 +30,7 @@ jobs:
                   if ! [ grep -E "^KUBE_VERSION:=${version:1}" Makefile >/dev/null 2>&1 ]; then
                       echo "upgrade kubernetes to ${version}"
 
-                      sed -i "s/^KUBE_VERSION:=.*/KUBE_VERSION:=${version:1}/" Makefile
+                      sed -i "s/^KUBE_VERSION:=.*/KUBE_VERSION:=${version:1}/g" Makefile
                       git add Makefile
                       git commit -m "upgrade kubernetes to ${version}"
                       git push origin ${branch}
