@@ -23,7 +23,7 @@ jobs:
           KUBE_VERSION=$(curl -s 'https://api.github.com/repos/kubernetes/kubernetes/tags?page=1&per_page=100' | jq -r '.[]  | select(.name | test("^v[0-9]+.[0-9]+.[0-9]+$")) | .name' | sort -rV | awk -F. 'a[$1$2]++ == 0 {print}' | awk '{print $1}')
           for version in ${KUBE_VERSION[@]}; do
               branch=${version::5}
-              if git branch -a | grep "${branch}" >/dev/null 2>&1; then
+              if [ git branch -a | grep "${branch}" >/dev/null 2>&1 ]; then
                   git checkout ${branch} >/dev/null 2>&1
                   git pull
                   if ! [ grep -E "^KUBE_VERSION:=${version:1}" Makefile >/dev/null 2>&1 ]; then
