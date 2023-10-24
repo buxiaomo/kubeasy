@@ -27,7 +27,7 @@ jobs:
               if [ $? -eq 0 ]; then
                   git checkout ${branch} >/dev/null 2>&1
                   git pull
-                  if ! [ grep -E "^KUBE_VERSION:=${version:1}" Makefile >/dev/null 2>&1 ]; then
+                  if ! [ grep -E "^KUBE_VERSION:=${version:1}" Makefile ] >/dev/null 2>&1; then
                       echo "upgrade kubernetes to ${version}"
 
                       sed -i "s/^KUBE_VERSION:=.*/KUBE_VERSION:=${version:1}/g" Makefile
@@ -43,8 +43,8 @@ jobs:
               fi
           done
 
-          if [ ${#NEW_VERSION[*]} != 0 ];then
-            echo "NEW_VERSION=${NEW_VERSION[*]}" >> $GITHUB_ENV
+          if [ ${#NEW_VERSION[*]} != 0 ]; then
+              echo "NEW_VERSION=${NEW_VERSION[*]}" >>$GITHUB_ENV
           fi
 
       - name: notify to slack
