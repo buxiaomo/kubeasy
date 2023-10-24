@@ -25,7 +25,7 @@ jobs:
           for version in ${KUBE_VERSION[@]}; do
               branch=${version::5}
               if ! git branch | grep "${branch}" ; then
-                  git checkout origin/${branch}
+                  git checkout ${branch}
                   git pull
                   if ! grep -E "^KUBE_VERSION:=${version:1}" Makefile ; then
                       echo "upgrade kubernetes to ${version}"
