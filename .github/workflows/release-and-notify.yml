@@ -20,7 +20,7 @@ jobs:
           set -x
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-
+          git fetch
           KUBE_VERSION=$(curl -s 'https://api.github.com/repos/kubernetes/kubernetes/tags?page=1&per_page=100' | jq -r '.[]  | select(.name | test("^v[0-9]+.[0-9]+.[0-9]+$")) | .name' | sort -rV | awk -F. 'a[$1$2]++ == 0 {print}' | awk '{print $1}')
           for version in ${KUBE_VERSION[@]}; do
               branch=${version::5}
