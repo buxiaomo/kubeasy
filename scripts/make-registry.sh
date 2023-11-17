@@ -67,25 +67,25 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.9
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.14.2
-docker tag quay.io/cilium/cilium:v1.14.2 ${REGISTRY_URL}/cilium/cilium:v1.14.2
-docker push ${REGISTRY_URL}/cilium/cilium:v1.14.2
+docker pull quay.io/cilium/cilium:v1.14.4
+docker tag quay.io/cilium/cilium:v1.14.4 ${REGISTRY_URL}/cilium/cilium:v1.14.4
+docker push ${REGISTRY_URL}/cilium/cilium:v1.14.4
 
-docker pull quay.io/cilium/operator-generic:v1.14.2
-docker tag quay.io/cilium/operator-generic:v1.14.2 ${REGISTRY_URL}/cilium/operator-generic:v1.14.2
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.14.2
+docker pull quay.io/cilium/operator-generic:v1.14.4
+docker tag quay.io/cilium/operator-generic:v1.14.4 ${REGISTRY_URL}/cilium/operator-generic:v1.14.4
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.14.4
 
-docker pull quay.io/cilium/hubble-ui-backend:v0.12.0
-docker tag quay.io/cilium/hubble-ui-backend:v0.12.0 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.12.0
-docker push ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.12.0
+docker pull quay.io/cilium/hubble-ui-backend:v0.12.1
+docker tag quay.io/cilium/hubble-ui-backend:v0.12.1 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.12.1
+docker push ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.12.1
 
-docker pull quay.io/cilium/hubble-ui:v0.12.0
-docker tag quay.io/cilium/hubble-ui:v0.12.0 ${REGISTRY_URL}/cilium/hubble-ui:v0.12.0
-docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.12.0
+docker pull quay.io/cilium/hubble-ui:v0.12.1
+docker tag quay.io/cilium/hubble-ui:v0.12.1 ${REGISTRY_URL}/cilium/hubble-ui:v0.12.1
+docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.12.1
 
-docker pull quay.io/cilium/hubble-relay:v1.14.2
-docker tag quay.io/cilium/hubble-relay:v1.14.2 ${REGISTRY_URL}/cilium/hubble-relay:v1.14.2
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.14.2
+docker pull quay.io/cilium/hubble-relay:v1.14.4
+docker tag quay.io/cilium/hubble-relay:v1.14.4 ${REGISTRY_URL}/cilium/hubble-relay:v1.14.4
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.14.4
 
 
 # nvidia-device-plugin
