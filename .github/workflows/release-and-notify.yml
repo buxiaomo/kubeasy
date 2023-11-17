@@ -39,6 +39,12 @@ jobs:
 
                       git tag -a -m $(git rev-parse HEAD) ${version}
                       git push -v origin refs/tags/${version}
+
+                      curl -X POST \
+                      -H "Accept: application/vnd.github.everest-preview+json" \
+                      -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+                      "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+                      -d '{"event_type": "auto-release-package"}'
                   fi
               else
                   NEW_VERSION[${#NEW_VERSION[*]}]=${version}
