@@ -20,8 +20,8 @@ jobs:
         run: |
           #!/bin/bash
           set -x
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          git config --global user.name "buxiaomo"
+          git config --global user.email "95112082@qq.com"
           git fetch
           KUBE_VERSION=$(curl -s 'https://api.github.com/repos/kubernetes/kubernetes/tags?page=1&per_page=100' | jq -r '.[]  | select(.name | test("^v[0-9]+.[0-9]+.[0-9]+$")) | .name' | sort -rV | awk -F. 'a[$1$2]++ == 0 {print}' | awk '{print $1}')
           for version in ${KUBE_VERSION[@]}; do
