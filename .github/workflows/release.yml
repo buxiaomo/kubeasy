@@ -23,11 +23,12 @@ jobs:
           git fetch
           echo "${{ github.event.client_payload.tag }}"
           if [ ! -n ${{ github.event.client_payload.tag }} ];then
-            export GIT_TAG=${{ github.ref_name }}
-          else
             export GIT_TAG=${{ github.event.client_payload.tag }}
+          else
+            export GIT_TAG=${{ github.ref_name }}
           fi
-          
+          echo "${GIT_TAG}"
+
           git checkout ${GIT_TAG::5}
 
           ## src code
