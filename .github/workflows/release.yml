@@ -32,6 +32,7 @@ jobs:
           fi
 
           echo "GIT_TAG: ${GIT_TAG}"
+          echo "GIT_TAG=${GIT_TAG}" >> $GITHUB_ENV
 
           git checkout ${GIT_TAG::5}
 
@@ -104,8 +105,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          tag_name: ${GIT_TAG}
-          release_name: ${GIT_TAG}
+          tag_name: ${{ env.GIT_TAG }}
+          release_name: ${{ env.GIT_TAG }}
           draft: false
           prerelease: false
 
@@ -136,8 +137,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-registry-${GIT_TAG}.tar.gz
-          asset_name: kubeasy-registry-${GIT_TAG}.tar.gz
+          asset_path: /tmp/kubeasy-registry-${{ env.GIT_TAG }}.tar.gz
+          asset_name: kubeasy-registry-${{ env.GIT_TAG }}.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Release Asset(kubeasy registry sha256)
@@ -146,8 +147,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-registry-${GIT_TAG}.tar.gz.sha256
-          asset_name: kubeasy-registry-${GIT_TAG}.tar.gz.sha256
+          asset_path: /tmp/kubeasy-registry-${{ env.GIT_TAG }}.tar.gz.sha256
+          asset_name: kubeasy-registry-${{ env.GIT_TAG }}.tar.gz.sha256
           asset_content_type: application/gzip
 
 
@@ -157,8 +158,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-binary-${GIT_TAG}.tar.gz
-          asset_name: kubeasy-binary-${GIT_TAG}.tar.gz
+          asset_path: /tmp/kubeasy-binary-${{ env.GIT_TAG }}.tar.gz
+          asset_name: kubeasy-binary-${{ env.GIT_TAG }}.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Release Asset(kubeasy binary sha256)
@@ -167,8 +168,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-binary-${GIT_TAG}.tar.gz.sha256
-          asset_name: kubeasy-binary-${GIT_TAG}.tar.gz.sha256
+          asset_path: /tmp/kubeasy-binary-${{ env.GIT_TAG }}.tar.gz.sha256
+          asset_name: kubeasy-binary-${{ env.GIT_TAG }}.tar.gz.sha256
           asset_content_type: application/gzip
 
 
@@ -178,8 +179,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-offline-${GIT_TAG}.tar.gz
-          asset_name: kubeasy-offline-${GIT_TAG}.tar.gz
+          asset_path: /tmp/kubeasy-offline-${{ env.GIT_TAG }}.tar.gz
+          asset_name: kubeasy-offline-${{ env.GIT_TAG }}.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Release Asset(kubeasy offline sha256)
@@ -188,8 +189,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-offline-${GIT_TAG}.tar.gz.sha256
-          asset_name: kubeasy-offline-${GIT_TAG}.tar.gz.sha256
+          asset_path: /tmp/kubeasy-offline-${{ env.GIT_TAG }}.tar.gz.sha256
+          asset_name: kubeasy-offline-${{ env.GIT_TAG }}.tar.gz.sha256
           asset_content_type: application/gzip
 
       - name: Upload Release Asset(kubeasy artifact)
@@ -198,8 +199,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-artifact-${GIT_TAG}.tar.gz
-          asset_name: kubeasy-artifact-${GIT_TAG}.tar.gz
+          asset_path: /tmp/kubeasy-artifact-${{ env.GIT_TAG }}.tar.gz
+          asset_name: kubeasy-artifact-${{ env.GIT_TAG }}.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Release Asset(kubeasy artifact sha256)
@@ -208,6 +209,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/kubeasy-artifact-${GIT_TAG}.tar.gz.sha256
-          asset_name: kubeasy-artifact-${GIT_TAG}.tar.gz.sha256
+          asset_path: /tmp/kubeasy-artifact-${{ env.GIT_TAG }}.tar.gz.sha256
+          asset_name: kubeasy-artifact-${{ env.GIT_TAG }}.tar.gz.sha256
           asset_content_type: application/gzip
