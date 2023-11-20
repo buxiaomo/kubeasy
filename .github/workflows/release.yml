@@ -21,8 +21,13 @@ jobs:
         run: |
           pip3 install requests
           git fetch
-          echo "${{ github.ref }}"
-          export GIT_TAG=${{ github.ref_name }}
+          echo "${{ github.event.client_payload.tag }}"
+          if [ ! -n ${{ github.event.client_payload.tag }} ];then
+            export GIT_TAG=${{ github.ref_name }}
+          else
+            export GIT_TAG=${{ github.event.client_payload.tag }}
+          fi
+          
           git checkout ${GIT_TAG::5}
 
           ## src code

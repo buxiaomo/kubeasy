@@ -44,7 +44,7 @@ jobs:
                       -H "Accept: application/vnd.github.everest-preview+json" \
                       -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
                       "https://api.github.com/repos/${{ github.repository }}/dispatches" \
-                      -d "{\"event_type\": \"auto-release-package\", \"tag\", \"${version}\"}"
+                      -d '{"event_type": "auto-release-package", "client_payload": {"tag": "'"${version}"'"}}'
                   fi
               else
                   NEW_VERSION[${#NEW_VERSION[*]}]=${version}
