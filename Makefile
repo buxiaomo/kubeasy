@@ -10,7 +10,7 @@ DOWNLOAD_WAY:=official
 # kubernetes version
 KUBE_VERSION:=1.28.4
 ETCD_VERSION:=3.5.9
-CNI_VERSION:=1.3.0
+CNI_VERSION:=1.4.0
 
 # kubernetes container runtime
 # only support containerd
