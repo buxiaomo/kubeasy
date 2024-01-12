@@ -17,10 +17,14 @@ Kubernetes network:         {{ KUBE_NETWORK }}
 Etcd version:               {{ ETCD_VERSION }}
 {% if KUBE_RUNTIME == 'docker' %}
 Docker version:             {{ DOCKER_VERSION }}
-{% else %}
+{% endif %}
+{% if KUBE_RUNTIME == 'containerd' %}
 Containerd version:         {{ CONTAINERD_VERSION }}
 Crictl version:             {{ CRICTL_VERSION }}
 Runc version:               {{ RUNC_VERSION }}
+{% endif %}
+{% if KUBE_RUNTIME == 'crio' %}
+Cri-o version:              {{ CRIO_VERSION }}
 {% endif %}
 CNI version:                {{ CNI_VERSION }}
 

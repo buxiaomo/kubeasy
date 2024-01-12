@@ -1,0 +1,20 @@
+---
+# defaults file for crio
+crio:
+  datadir: /var/lib/containers/storage
+  # auto create crio primary partition
+  # device: /dev/sdb
+  registries:
+    search:
+      - "registry.access.redhat.com"
+      - "registry.fedoraproject.org"
+      - "quay.io"
+      - "docker.io"
+    insecure:
+      - "harbor.example.com"
+    block: []
+  daemon:
+    storage:
+      size: "10G"
+  extraArgs:
+    - "--log-format json"

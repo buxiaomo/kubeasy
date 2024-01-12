@@ -1,0 +1,35 @@
+[storage]
+  driver = "overlay"
+  runroot = "/var/run/containers/storage"
+  graphroot = "/var/lib/containers/storage"
+
+{% for item in ansible_mounts %}
+  {% if crio.device is defined %}
+    {% if item.device == crio.device %}
+      {% if "prjquota" in item.options %}
+  [storage.options]
+    additionalimagestores = []
+    size = "{{ crio.daemon.storage.size | default('10G') }}"
+      {% else %}
+  # not support
+  # [storage.options]
+  #   additionalimagestores = []
+  #   size = "{{ crio.daemon.storage.size | default('10G') }}"
+      {% endif %}
+    {% endif %}
+  {% else %}
+    {% if item.mount == "/" %}
+      {% if "prjquota" in item.options %}
+  [storage.options]
+    additionalimagestores = []
+    size = "{{ crio.daemon.storage.size | default('10G') }}"
+      {% else %}
+  # not support
+  # [storage.options]
+  #   additionalimagestores = []
+  #   size = "{{ crio.daemon.storage.size | default('10G') }}"
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+

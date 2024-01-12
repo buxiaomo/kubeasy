@@ -34,6 +34,10 @@ case ${KUBE_RUNTIME} in
   echo -e "Crictl version: \t\t\033[32m${CRICTL_VERSION}\033[0m"
   ANSIBLE_ENV="${ANSIBLE_ENV} -e CONTAINERD_VERSION=${CONTAINERD_VERSION} -e RUNC_VERSION=${RUNC_VERSION} -e CRICTL_VERSION=${CRICTL_VERSION}"
   ;;
+"crio")
+  echo -e "Cri-O version: \t\t\t\033[32m${CRIO_VERSION}\033[0m"
+  ANSIBLE_ENV="${ANSIBLE_ENV} -e CRIO_VERSION=${CRIO_VERSION}"
+  ;;
 *)
   echo "Unknown runtime!!!"
   exit 0
@@ -71,15 +75,15 @@ fi
 
 echo
 echo -e "\033[32mPress any key to install...or Press Ctrl+c to cancel\033[0m"
-OLDCONFIG=`stty -g`
+OLDCONFIG=$(stty -g)
 stty -icanon -echo min 1 time 0
 dd count=1 2>/dev/null
 stty ${OLDCONFIG}
 
 case $1 in
 "deploy")
-  if [ $(git rev-parse --abbrev-ref HEAD) == 'main' ]; then
-    echo -e "\033[31mMessage: main branch is develop, Please do not use in production.\033[0m"
+  if [ $(git rev-parse --abbrev-ref HEAD) == 'main' ] || [ $(git rev-parse --abbrev-ref HEAD) == 'fix' ]; then
+    echo -e "\033[31mMessage: main and fix branch is develop, Please do not use in production.\033[0m"
   else
     branch=$(git rev-parse --abbrev-ref HEAD)
     if [ "v${KUBE_VERSION:0:4}" != ${branch} ]; then

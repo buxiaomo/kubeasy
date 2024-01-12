@@ -1,0 +1,127 @@
+---
+# tasks file for crio
+- name: Install nvidia-container-runtime
+  include_tasks: "{{ ansible_distribution_file_variety }}.yml"
+  when: gpu | default(false)
+
+- name: Distribution package
+  ansible.builtin.copy:
+    src: "cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"
+    dest: "/usr/local/src/cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.{{ CRIO_VERSION }}.tar.gz"
+    owner: root
+    group: root
+  register: local
+  ignore_errors: True
+  notify: restart crio
+  tags:
+    - upgrade
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Download package
+  get_url:
+    url: "{{ download_url }}"
+    dest: "/usr/local/src/cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"
+    force: true
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: crio_pkg
+  until: crio_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  notify: restart crio
+  when: local.failed
+  tags:
+    - upgrade
+
+- name: Extract package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"
+    dest: /usr/local/bin
+    remote_src: yes
+    extra_opts:
+      - --strip-components=2 
+    include: 
+      - cri-o/bin/
+    owner: root
+    group: root
+  notify: restart crio
+  tags:
+    - upgrade
+
+- name: Create data directory
+  ansible.builtin.file:
+    name: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - /etc/containers
+    - /etc/crio
+    - "{{ crio.datadir | default('/var/lib/containers/storage') }}"
+  tags:
+    - upgrade
+    - update
+
+- name: Configuration cri-o
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  register: crio_cfg
+  with_items:
+    - { "src": "crictl.yaml.j2", "dest": "/etc/crictl.yaml" }
+    - { "src": "crio.conf.j2", "dest": "/etc/crio/crio.conf" }
+    - { "src": "registries.conf.j2", "dest": "/etc/containers/registries.conf" }
+    - { "src": "policy.json.j2", "dest": "/etc/containers/policy.json" }
+    - { "src": "storage.conf.j2", "dest": "/etc/containers/storage.conf" }
+  tags:
+    - upgrade
+    - update
+
+- name: Create a containerd primary partition
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ crio.device }}"
+    state: present
+  when: crio.device is defined
+
+- name: Mount containerd root dir
+  ansible.posix.mount:
+    src: "{{ crio.device }}"
+    path: "{{ crio.datadir | default('/var/lib/containers/storage') }}"
+    fstype: xfs
+    opts: defaults,pquota
+    state: mounted
+  when: crio.device is defined
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: crio.service.j2
+    dest: /etc/systemd/system/crio.service
+  register: crio_systemd
+  notify: restart crio
+  tags:
+    - upgrade
+    - update
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: crio
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+    masked: yes
+  when: crio_pkg.changed or 
+        crio_cfg.changed or 
+        crio_systemd.changed or 
+        ansible_facts.services['crio.service']['state'] != 'running'
