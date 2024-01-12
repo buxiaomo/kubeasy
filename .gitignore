@@ -8,6 +8,7 @@ test.md
 scripts/binaries
 roles/cni/files/*
 roles/containerd/files/*
+roles/crio/files/*
 roles/docker/files/*
 roles/etcd/files/*
 roles/kube-apiserver/files/*
