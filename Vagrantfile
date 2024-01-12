@@ -4,6 +4,8 @@
 # ssh -i .ssh/id_rsa root@192.168.56.10
 
 # Set the .env file and install the necessary plug-ins
+# $ mkdir .ssh
+# $ ssh-keygen -t rsa -P "" -f ./.ssh/id_rsa
 # $ vagrant plugin install vagrant-env
 # $ cat .env
 # BOX=buxiaomo/fedora
@@ -14,9 +16,9 @@
 VAGRANTFILE_API_VERSION = "2"
 
 cluster = {
-  "worker01" => { :ip => "192.168.56.11", :cpus => 4, :mem => 4096 },
-  "worker02" => { :ip => "192.168.56.12", :cpus => 4, :mem => 4096 },
-  "master01" => { :ip => "192.168.56.10", :cpus => 4, :mem => 4096 },
+  "worker01" => { :ip => "192.168.56.11", :cpus => 2, :mem => 2048 },
+  "worker02" => { :ip => "192.168.56.12", :cpus => 2, :mem => 2048 },
+  "master01" => { :ip => "192.168.56.10", :cpus => 2, :mem => 2048 },
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -34,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
       cfg.vm.provision "shell" do |s|
         s.path = "./tests/prepare.sh"
-        s.args = [ ENV['KUBE_VERSION'], ENV['KUBE_NETWORK'], "vagrant" ]
+        s.args = [ ENV['KUBE_VERSION'], ENV['KUBE_RUNTIME'], ENV['KUBE_NETWORK'], "vagrant" ]
       end
     end
   end

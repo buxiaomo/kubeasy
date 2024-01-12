@@ -1,0 +1,11 @@
+---
+# handlers file for crio
+- name: restart crio
+  ansible.builtin.systemd:
+    name: crio
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: 
+    - KUBE_ACTION != "deploy" 
+    - KUBE_ACTION != "scale"

@@ -1,0 +1,19 @@
+[registries.search]
+registries = {{ crio.registries.search | unique }}
+{% set insecure=[] %}
+{%- if REGISTRY_URL is defined -%}
+    {% if REGISTRY_URL | urlsplit('port') is not none %}
+        {{ insecure.append(REGISTRY_URL | urlsplit('hostname')~":"~REGISTRY_URL | urlsplit('port')) }}
+    {% else %}
+        {{ insecure.append(REGISTRY_URL | urlsplit('hostname')) }}
+    {% endif %}
+{%- endif %}
+{%- for r in crio.registries.insecure %}
+    {{ insecure.append(r) }}
+{%- endfor %}
+
+[registries.insecure]
+registries = {{ insecure | unique }}
+
+[registries.block]
+registries = {{ crio.registries.block | unique }}

@@ -60,6 +60,7 @@ fi
 if [ -f ./scripts/src/kubeasy-binary-v${KUBE_VERSION}.tar.gz ]; then
   tar -zxf ./scripts/src/kubeasy-binary-v${KUBE_VERSION}.tar.gz -C ./scripts/src
   mkdir -p ./roles/kube-apiserver/files/${KUBE_VERSION} ./roles/kube-controller-manager/files/${KUBE_VERSION} ./roles/kube-scheduler/files/${KUBE_VERSION} ./roles/kubectl/files/${KUBE_VERSION} ./roles/kube-proxy/files/${KUBE_VERSION} ./roles/kubelet/files/${KUBE_VERSION}
+  find ./scripts/src/${KUBE_VERSION} -name cri-o.amd64.*.tar.gz -exec cp "{}" ./roles/crio/files \;
   find ./scripts/src/${KUBE_VERSION} -name containerd-*-linux-amd64.tar.gz -exec cp "{}" ./roles/containerd/files \;
   find ./scripts/src/${KUBE_VERSION} -name runc.* -exec cp "{}" ./roles/containerd/files \;
   find ./scripts/src/${KUBE_VERSION} -name crictl-*-linux-amd64.tar.gz -exec cp "{}" ./roles/containerd/files \;

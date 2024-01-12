@@ -12,7 +12,10 @@ def Download(url, path, quiet):
     response = requests.get(url, stream=True)
     size = 0
     chunk_size = 1024
-    content_size = int(response.headers['content-length'])
+    if response.headers.get('content-length') is not None:
+        content_size = int(response.headers['content-length'])
+    else:
+        content_size = 98244686
     try:
         if response.status_code == 200:
             print('=> start download {name} {size:.2f} MB'.format(
@@ -102,6 +105,17 @@ def downloadToLocal(arg):
                 {
                     'src': "./scripts/src/%s/docker-%s.tgz" % (arg.kubernetes, version),
                     'dest': "/linux/static/stable/x86_64"
+                }
+            )
+
+    version = arg.crio
+    if version is not None:
+        url = "https://storage.googleapis.com/cri-o/artifacts/cri-o.amd64.v%s.tar.gz" % (version)
+        if Download(url, "%s/cri-o.amd64.v%s.tar.gz" % (basePath, version), arg.quiet):
+            jsonFile.append(
+                {
+                    'src': "./scripts/src/%s/cri-o.amd64.v%s.tar.gz" % (arg.kubernetes, version),
+                    'dest': "/cri-o/artifacts/v%s" % version
                 }
             )
 
@@ -223,6 +237,7 @@ if __name__ == "__main__":
     parser.add_argument('--containerd', metavar='string', required=True, help='containerd version')
     parser.add_argument('--runc', metavar='string', required=True, help='runc version')
     parser.add_argument('--crictl', metavar='string', required=True, help='crictl version')
+    parser.add_argument('--crio', metavar='string', required=True, help='cri-o version')
 
     subparsers = parser.add_subparsers(
         title='commands',
