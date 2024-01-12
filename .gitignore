@@ -9,6 +9,7 @@ scripts/binaries
 roles/cni/files/*
 roles/containerd/files/*
 roles/docker/files/*
+roles/crio/files/*
 roles/etcd/files/*
 roles/kube-apiserver/files/*
 roles/kube-controller-manager/files/*
