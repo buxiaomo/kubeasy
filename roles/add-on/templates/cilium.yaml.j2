@@ -859,7 +859,7 @@ spec:
     spec:
       containers:
       - name: cilium-agent
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.5"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.6"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-agent
@@ -936,10 +936,10 @@ spec:
                     # dependencies on anything that is part of the startup script
                     # itself, and can be safely run multiple times per node (e.g. in
                     # case of a restart).
-                    if [[ "$(iptables-save | grep -c 'AWS-SNAT-CHAIN|AWS-CONNMARK-CHAIN')" != "0" ]];
+                    if [[ "$(iptables-save | grep -E -c 'AWS-SNAT-CHAIN|AWS-CONNMARK-CHAIN')" != "0" ]];
                     then
                         echo 'Deleting iptables rules created by the AWS CNI VPC plugin'
-                        iptables-save | grep -v 'AWS-SNAT-CHAIN|AWS-CONNMARK-CHAIN' | iptables-restore
+                        iptables-save | grep -E -v 'AWS-SNAT-CHAIN|AWS-CONNMARK-CHAIN' | iptables-restore
                     fi
                     echo 'Done!'
                     
@@ -1004,7 +1004,7 @@ spec:
           mountPath: /tmp
       initContainers:
       - name: config
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.5"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.6"
         imagePullPolicy: IfNotPresent
         command:
         - cilium
@@ -1028,7 +1028,7 @@ spec:
       # from a privileged container because the mount propagation bidirectional
       # only works from privileged containers.
       - name: mount-bpf-fs
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.5"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.6"
         imagePullPolicy: IfNotPresent
         args:
         - 'mount | grep "/sys/fs/bpf type bpf" || mount -t bpf bpf /sys/fs/bpf'
@@ -1044,7 +1044,7 @@ spec:
           mountPath: /sys/fs/bpf
           mountPropagation: Bidirectional
       - name: clean-cilium-state
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.5"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.6"
         imagePullPolicy: IfNotPresent
         command:
         - /init-container.sh
@@ -1085,7 +1085,7 @@ spec:
           mountPath: /var/run/cilium # wait-for-kube-proxy
       # Install the CNI binaries in an InitContainer so we don't have a writable host mount in the agent
       - name: install-cni-binaries
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.5"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.14.6"
         imagePullPolicy: IfNotPresent
         command:
           - "/install-plugin.sh"
@@ -1246,7 +1246,7 @@ spec:
     spec:
       containers:
       - name: cilium-operator
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.14.5"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.14.6"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-operator-generic
@@ -1357,7 +1357,7 @@ spec:
             runAsGroup: 65532
             runAsNonRoot: true
             runAsUser: 65532
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.14.5"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.14.6"
           imagePullPolicy: IfNotPresent
           command:
             - hubble-relay
