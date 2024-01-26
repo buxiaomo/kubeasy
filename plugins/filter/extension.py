@@ -23,7 +23,7 @@ def component_version(value):
             "plugin": {
                 "coredns": "1.9.3",
                 "metrics": "0.6.2",
-                "pause": "3.8"
+                "pause": "3.9"
             }
         }
     }
