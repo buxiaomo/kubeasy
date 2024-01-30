@@ -7,7 +7,7 @@
 - name: Distribution package
   ansible.builtin.copy:
     src: "cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"
-    dest: "/usr/local/src/cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.{{ CRIO_VERSION }}.tar.gz"
+    dest: "/usr/local/src/cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"
     owner: root
     group: root
   register: local
