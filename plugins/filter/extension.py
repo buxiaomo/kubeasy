@@ -16,7 +16,7 @@ def component_version(value):
             "cni": "1.1.1",
             "runtime": {
                 "docker": "20.10.17",
-                "containerd": "1.6.8",
+                "containerd": "1.7.13",
                 "runc": "1.1.3",
                 "crictl": "1.24.1"
             },
