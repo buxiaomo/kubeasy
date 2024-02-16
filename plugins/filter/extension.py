@@ -16,9 +16,9 @@ def component_version(value):
             "cni": "1.2.0",
             "runtime": {
                 "docker": "20.10.17",
-                "containerd": "1.7.0",
-                "runc": "1.1.4",
-                "crictl": "1.26.0"
+                "containerd": "1.7.13",
+                "runc": "1.1.3",
+                "crictl": "1.24.1"
             },
             "plugin": {
                 "coredns": "1.10.1",
