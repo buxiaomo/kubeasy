@@ -18,21 +18,17 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull calico/cni:v3.25.2
-docker tag calico/cni:v3.25.2 ${REGISTRY_URL}/calico/cni:v3.25.2
-docker push ${REGISTRY_URL}/calico/cni:v3.25.2
+docker pull docker.io/calico/cni:v3.27.0
+docker tag docker.io/calico/cni:v3.27.0 ${REGISTRY_URL}/calico/cni:v3.27.0
+docker push ${REGISTRY_URL}/calico/cni:v3.27.0
 
-docker pull calico/pod2daemon-flexvol:v3.25.2
-docker tag calico/pod2daemon-flexvol:v3.25.2 ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.25.2
-docker push ${REGISTRY_URL}/calico/pod2daemon-flexvol:v3.25.2
+docker pull docker.io/calico/node:v3.27.0
+docker tag docker.io/calico/node:v3.27.0 ${REGISTRY_URL}/calico/node:v3.27.0
+docker push ${REGISTRY_URL}/calico/node:v3.27.0
 
-docker pull calico/node:v3.25.2
-docker tag calico/node:v3.25.2 ${REGISTRY_URL}/calico/node:v3.25.2
-docker push ${REGISTRY_URL}/calico/node:v3.25.2
-
-docker pull calico/kube-controllers:v3.25.2
-docker tag calico/kube-controllers:v3.25.2 ${REGISTRY_URL}/calico/kube-controllers:v3.25.2
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.25.2
+docker pull docker.io/calico/kube-controllers:v3.27.0
+docker tag docker.io/calico/kube-controllers:v3.27.0 ${REGISTRY_URL}/calico/kube-controllers:v3.27.0
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.27.0
 
 
 # canal
@@ -52,9 +48,9 @@ docker pull docker.io/flannel/flannel-cni-plugin:v1.2.0
 docker tag docker.io/flannel/flannel-cni-plugin:v1.2.0 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.2.0
 docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.2.0
 
-docker pull docker.io/flannel/flannel:v0.22.3
-docker tag docker.io/flannel/flannel:v0.22.3 ${REGISTRY_URL}/flannel/flannel:v0.22.3
-docker push ${REGISTRY_URL}/flannel/flannel:v0.22.3
+docker pull docker.io/flannel/flannel:v0.24.0
+docker tag docker.io/flannel/flannel:v0.24.0 ${REGISTRY_URL}/flannel/flannel:v0.24.0
+docker push ${REGISTRY_URL}/flannel/flannel:v0.24.0
 
 
 # metrics-server
@@ -70,13 +66,13 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.9
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.14.2
-docker tag quay.io/cilium/cilium:v1.14.2 ${REGISTRY_URL}/cilium/cilium:v1.14.2
-docker push ${REGISTRY_URL}/cilium/cilium:v1.14.2
+docker pull quay.io/cilium/cilium:v1.14.5
+docker tag quay.io/cilium/cilium:v1.14.5 ${REGISTRY_URL}/cilium/cilium:v1.14.5
+docker push ${REGISTRY_URL}/cilium/cilium:v1.14.5
 
-docker pull quay.io/cilium/operator-generic:v1.14.2
-docker tag quay.io/cilium/operator-generic:v1.14.2 ${REGISTRY_URL}/cilium/operator-generic:v1.14.2
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.14.2
+docker pull quay.io/cilium/operator-generic:v1.14.5
+docker tag quay.io/cilium/operator-generic:v1.14.5 ${REGISTRY_URL}/cilium/operator-generic:v1.14.5
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.14.5
 
 docker pull quay.io/cilium/hubble-ui-backend:v0.12.0
 docker tag quay.io/cilium/hubble-ui-backend:v0.12.0 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.12.0
@@ -86,9 +82,9 @@ docker pull quay.io/cilium/hubble-ui:v0.12.0
 docker tag quay.io/cilium/hubble-ui:v0.12.0 ${REGISTRY_URL}/cilium/hubble-ui:v0.12.0
 docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.12.0
 
-docker pull quay.io/cilium/hubble-relay:v1.14.2
-docker tag quay.io/cilium/hubble-relay:v1.14.2 ${REGISTRY_URL}/cilium/hubble-relay:v1.14.2
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.14.2
+docker pull quay.io/cilium/hubble-relay:v1.14.5
+docker tag quay.io/cilium/hubble-relay:v1.14.5 ${REGISTRY_URL}/cilium/hubble-relay:v1.14.5
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.14.5
 
 
 # nvidia-device-plugin
