@@ -153,12 +153,12 @@ spec:
       containers:
       - args:
         - --cert-dir=/tmp
-        - --secure-port=4443
+        - --secure-port=10250
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
         - --metric-resolution=15s
         - --kubelet-insecure-tls
-        image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/metrics-server/metrics-server:v0.6.4"
+        image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/metrics-server/metrics-server:v0.7.0"
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -169,7 +169,7 @@ spec:
           periodSeconds: 10
         name: metrics-server
         ports:
-        - containerPort: 4443
+        - containerPort: 10250
           name: https
           protocol: TCP
         readinessProbe:
@@ -186,9 +186,14 @@ spec:
             memory: 200Mi
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /tmp
           name: tmp-dir
@@ -199,17 +204,6 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp-dir
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: metrics-server
-  namespace: kube-system
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      k8s-app: metrics-server
 ---
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
