@@ -220,15 +220,15 @@ data:
 
   kube-proxy-replacement: "false"
   kube-proxy-replacement-healthz-bind-address: ""
-  bpf-lb-sock: "false"
-  enable-host-port: "false"
-  enable-external-ips: "false"
-  enable-node-port: "false"
+  bpf-lb-sock: "true"
+  enable-host-port: "true"
+  enable-external-ips: "true"
+  enable-node-port: "true"
   enable-health-check-nodeport: "true"
   enable-health-check-loadbalancer-ip: "false"
   node-port-bind-protection: "true"
   enable-auto-protect-node-port-range: "true"
-  bpf-lb-mode: "dsr"
+  bpf-lb-mode: "snat"
   bpf-lb-acceleration: "native"
   enable-svc-source-range-check: "true"
   enable-l2-neigh-discovery: "true"
@@ -1261,7 +1261,11 @@ metadata:
 spec:
   # See docs on ServerCapabilities.LeasesResourceLock in file pkg/k8s/version/version.go
   # for more details.
+{% if groups['kubernetes'] | unique | length == 1 %}
+  replicas: 1
+{% else %}
   replicas: 2
+{% endif %}
   selector:
     matchLabels:
       io.cilium/app: operator
