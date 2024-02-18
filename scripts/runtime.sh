@@ -24,6 +24,6 @@ else
 fi
 echo -e "\033[32mDeploy ansible...\033[0m"
 mkdir -p /usr/local/src/pip
-pip3 install --no-cache-dir --upgrade pip ${PIP_CMD}
-TMPDIR=/usr/local/src/pip pip3 install --no-cache-dir --upgrade --ignore-installed -r requirements.txt ${PIP_CMD}
+pip3 install --no-cache-dir --upgrade pip ${PIP_ARGS}
+TMPDIR=/usr/local/src/pip pip3 install --no-cache-dir --upgrade --ignore-installed -r requirements.txt ${PIP_ARGS}
 rm -rf /usr/local/src/pip
