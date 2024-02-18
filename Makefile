@@ -49,9 +49,11 @@ PKI_URL:=
 # e2e test software version
 SONOBUOY_VERSION:=0.18.5
 
+PIP_CMD:=
+
 # Install ansible on depoy server
 runtime:
-	@./scripts/runtime.sh
+	@PIP_CMD=$(PIP_CMD) ./scripts/runtime.sh
 
 hosts:
 	@[ -f ./inventory/$(PROJECT_NAME)-$(PROJECT_ENV).ini ] || cp ./inventory/template/etcd-on-master.template ./inventory/$(PROJECT_NAME)-$(PROJECT_ENV).ini
