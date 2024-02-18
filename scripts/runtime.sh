@@ -24,11 +24,6 @@ else
 fi
 echo -e "\033[32mDeploy ansible...\033[0m"
 mkdir -p /usr/local/src/pip
-pip3 install --no-cache-dir --upgrade pip
-pip3 install --help | grep '\-\-use-pep517' >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    TMPDIR=/usr/local/src/pip pip3 install --no-cache-dir --upgrade --ignore-installed -r requirements.txt --use-pep517
-else
-    TMPDIR=/usr/local/src/pip pip3 install --no-cache-dir --upgrade --ignore-installed -r requirements.txt
-fi
+pip3 install --no-cache-dir --upgrade pip ${PIP_CMD}
+TMPDIR=/usr/local/src/pip pip3 install --no-cache-dir --upgrade --ignore-installed -r requirements.txt ${PIP_CMD}
 rm -rf /usr/local/src/pip
