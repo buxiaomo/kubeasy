@@ -24,7 +24,7 @@ RUNC_VERSION:=1.1.12
 CRIO_VERSION:=1.28.3
 
 # kubernetes network plugin
-# flannel, calico, canal, cilium, none
+# flannel, calico, canal, cilium, antrea, none
 KUBE_NETWORK:=flannel
 
 # Private registry
