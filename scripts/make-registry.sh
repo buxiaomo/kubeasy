@@ -91,3 +91,13 @@ docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.15.1
 docker pull nvcr.io/nvidia/k8s-device-plugin:v0.14.4
 docker tag nvcr.io/nvidia/k8s-device-plugin:v0.14.4 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.4
 docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.4
+
+
+# antrea
+docker pull projects.registry.vmware.com/antrea/antrea-agent-ubuntu:v1.15.0
+docker tag projects.registry.vmware.com/antrea/antrea-agent-ubuntu:v1.15.0 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v1.15.0
+docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v1.15.0
+
+docker pull projects.registry.vmware.com/antrea/antrea-controller-ubuntu:v1.15.0
+docker tag projects.registry.vmware.com/antrea/antrea-controller-ubuntu:v1.15.0 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v1.15.0
+docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v1.15.0
