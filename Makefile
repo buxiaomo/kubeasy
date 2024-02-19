@@ -22,7 +22,7 @@ CRICTL_VERSION:=1.27.0
 RUNC_VERSION:=1.1.12
 
 # kubernetes network plugin
-# flannel, calico, canal, cilium, none
+# flannel, calico, canal, cilium, antrea, none
 KUBE_NETWORK:=flannel
 
 # Private registry
