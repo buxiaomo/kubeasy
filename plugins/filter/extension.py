@@ -16,15 +16,9 @@ def component_version(value):
             "cni": "1.4.0",
             "runtime": {
                 "docker": "20.10.17",
-<<<<<<< HEAD
-                "containerd": "1.7.12",
-                "runc": "1.1.4",
-                "crictl": "1.26.0"
-=======
                 "containerd": "1.7.13",
                 "runc": "1.1.3",
-                "crictl": "1.24.1"
->>>>>>> d0d3877 (upgrade flannel to v0.24.2)
+                "crictl": "1.27.0"
             },
             "plugin": {
                 "coredns": "1.11.1",
