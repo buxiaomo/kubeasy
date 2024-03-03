@@ -1,7 +1,7 @@
 [storage]
   driver = "overlay"
-  runroot = "/var/run/containers/storage"
-  graphroot = "/var/lib/containers/storage"
+  runroot = "/run/containers/storage"
+  graphroot = "{{ crio.datadir | default('/var/lib/containers/storage') }}"
 
 {% for item in ansible_mounts %}
   {% if crio.device is defined %}
