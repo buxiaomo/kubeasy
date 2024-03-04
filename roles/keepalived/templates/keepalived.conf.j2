@@ -15,7 +15,7 @@ vrrp_instance haproxy-vip {
     state BACKUP
     priority 101
 {% if inventory_hostname | ip == 4 %}
-    interface {{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list | selectattr('ipv4.address', 'equalto', inventory_hostname) | first | json_query('device') }}
+    interface {{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list | json_query(ipv4_query) | first | json_query('device') }}
 {% elif inventory_hostname | ip == 6 %}
     interface {{ ansible_facts | dict2items | selectattr('value.ipv6', 'defined') | map(attribute='value') | list | json_query(ipv6_query) | first | json_query('device') }}
 {% endif %}
