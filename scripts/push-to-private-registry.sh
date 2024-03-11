@@ -43,3 +43,12 @@ for r in $(curl -s 127.0.0.1:5000/v2/_catalog | jq -r .repositories[]); do
     skopeo copy --src-tls-verify=false --dest-username=${username} --dest-password=${password} --dest-tls-verify=false docker://127.0.0.1:5000/${r}:${t} docker://${toHarbor}
   done
 done
+echo -e "\033[32m[sync] done.\033[0m"
+echo -e "\033[32muninstall registry.\033[0m"
+systemctl stop registry.service
+systemctl disable registry.service
+rm -rf /usr/local/etc/registry.yml /etc/systemd/system/registry.service /usr/local/bin/registry
+systemctl daemon-reload
+echo -e "\033[32mPlease use new registry address.\033[0m"
+echo -e "\033[32mFor example:\033[0m"
+echo -e "\033[32m    make deploy REGISTRY_URL=http://${host}/${repo} \033[0m"
