@@ -140,7 +140,7 @@ required_plugins = []
       key_model = "node"
 
     [plugins."io.containerd.grpc.v1.cri".registry]
-      config_path = ""
+      config_path = "/etc/containerd/certs.d"
 
       [plugins."io.containerd.grpc.v1.cri".registry.auths]
 
@@ -149,10 +149,6 @@ required_plugins = []
       [plugins."io.containerd.grpc.v1.cri".registry.headers]
 
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-{% if containerd.daemon.endpoint is defined %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-          endpoint = {{ containerd.daemon.endpoint | list }}
-{% endif %}
 
 {% if REGISTRY_URL is defined %}
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}"]
