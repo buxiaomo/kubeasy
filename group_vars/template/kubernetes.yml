@@ -29,7 +29,15 @@ docker:
     exec-opts:
       - "native.cgroupdriver=systemd"
     registry-mirrors:
-      - "https://i3jtbyvy.mirror.aliyuncs.com"
+      - "https://docker.mirrors.sjtug.sjtu.edu.cn"
+      - "https://gcr.m.daocloud.io"
+      - "https://k8s.m.daocloud.io"
+      - "https://elastic.m.daocloud.io"
+      - "https://ghcr.m.daocloud.io"
+      - "https://k8s-gcr.m.daocloud.io"
+      - "https://mcr.m.daocloud.io"
+      - "https://nvcr.m.daocloud.io"
+      - "https://quay.m.daocloud.io"
     insecure-registries:
       - "harbor.example.com"
     storage-driver: "overlay2"
@@ -71,9 +79,16 @@ containerd:
   # auto create containerd primary partition
   # device: /dev/sdb
   daemon:
-    endpoint:
-      - "https://registry-1.docker.io"
-      - "https://i3jtbyvy.mirror.aliyuncs.com"
+    mirrors:
+      "https://docker.io": https://docker.mirrors.sjtug.sjtu.edu.cn
+      "https://gcr.io": https://gcr.m.daocloud.io
+      "https://registry.k8s.io": https://k8s.m.daocloud.io
+      "https://docker.elastic.co": https://elastic.m.daocloud.io
+      "https://ghcr.io": https://ghcr.m.daocloud.io
+      "https://k8s.gcr.io": https://k8s-gcr.m.daocloud.io
+      "https://mcr.microsoft.com": https://mcr.m.daocloud.io
+      "https://nvcr.io": https://nvcr.m.daocloud.io
+      "https://quay.io": https://quay.m.daocloud.io
     registry:
       - "https://harbor.example.com"
 
