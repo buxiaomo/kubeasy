@@ -13,7 +13,7 @@ ETCD_VERSION:=3.5.10
 CNI_VERSION:=1.4.1
 
 # kubernetes container runtime
-# only support containerd
+# crio, containerd
 KUBE_RUNTIME:=containerd
 DOCKER_VERSION:=20.10.17
 
