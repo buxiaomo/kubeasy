@@ -5046,7 +5046,7 @@ spec:
                             flags:
                               type: integer
                               minimum: 0
-                              maximum: 7
+                              maximum: 255
                 liveTraffic:
                   type: boolean
                 droppedOnly:
@@ -5161,7 +5161,7 @@ spec:
                             flags:
                               type: integer
                               minimum: 0
-                              maximum: 7
+                              maximum: 255
                           type: object
                         udp:
                           properties:
@@ -6631,11 +6631,13 @@ rules:
     resources:
       - secrets
     resourceNames:
+      - antrea-controller-tls
       - antrea-ipsec-ca
     verbs:
       - get
       - update
       - watch
+      - list
   - apiGroups:
       - ""
     resources:
@@ -7048,7 +7050,7 @@ spec:
       serviceAccountName: antrea-agent
       initContainers:
         - name: install-cni
-          image: "{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v1.15.0"
+          image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v1.15.1"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -7081,7 +7083,7 @@ spec:
             mountPath: /var/run/antrea
       containers:
         - name: antrea-agent
-          image: "{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v1.15.0"
+          image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v1.15.1"
           imagePullPolicy: IfNotPresent
           command: ["antrea-agent"]
           # Log to both "/var/log/antrea/" and stderr (so "kubectl logs" can work).-
@@ -7172,7 +7174,7 @@ spec:
           - name: xtables-lock
             mountPath: /run/xtables.lock
         - name: antrea-ovs
-          image: "{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v1.15.0"
+          image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v1.15.1"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -7288,7 +7290,7 @@ spec:
       serviceAccountName: antrea-controller
       containers:
         - name: antrea-controller
-          image: "{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://projects.registry.vmware.com') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v1.15.0"
+          image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v1.15.1"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
