@@ -10,7 +10,6 @@
     - name: Create applications configure files
       vars:
         ipv6_query: "[*].{device: device, ipv4: ipv4, ipv6: ipv6[? address == '{{ inventory_hostname }}']}[?ipv6]"
-        ipv4_query: "[*].{device: device, ipv4: ipv4, ipv6: ipv6[? address == '{{ inventory_hostname }}']}[?ipv4]"
       ansible.builtin.template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
