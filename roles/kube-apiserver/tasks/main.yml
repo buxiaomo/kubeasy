@@ -114,6 +114,7 @@
     ownca_path: /etc/kubernetes/pki/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_apiserver_crt
@@ -160,6 +161,7 @@
     ownca_path: /etc/kubernetes/pki/front-proxy-ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/front-proxy-ca.key
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_frontproxyclient_crt
@@ -207,6 +209,7 @@
     ownca_path: /etc/kubernetes/pki/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_apiserverkubeletclient_crt
@@ -253,6 +256,7 @@
     ownca_path: /etc/kubernetes/pki/etcd/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_apiserveretcdclient_crt

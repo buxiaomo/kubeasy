@@ -1,4 +1,0 @@
-- name: Install some applications
-  yum:
-    name: "{{ package }}"
-    state: latest

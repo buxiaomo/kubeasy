@@ -88,6 +88,7 @@
     ownca_path: /etc/kubernetes/pki/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   notify: Clean admin crt
