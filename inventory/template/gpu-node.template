@@ -11,6 +11,10 @@ master
 worker
 
 [kubernetes:vars]
+; kubernetes cert expli time config
+; defualt expiration time is 10 years
+cert={"days": "+3650d"}
+
 ; kubernetes network config
 networking={"dnsDomain": "cluster.local", "serviceSubnet": "10.96.0.0/12", "podSubnet": "10.244.0.0/16", "mode": "ipvs"}
 
