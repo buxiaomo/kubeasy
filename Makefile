@@ -55,7 +55,7 @@ PIP_ARGS:=
 
 # Install ansible on depoy server
 runtime:
-	@PIP_ARGS=$(PIP_ARGS) ./scripts/runtime.sh
+	@PIP_ARGS="$(PIP_ARGS)" ./scripts/runtime.sh
 
 hosts:
 	@[ -f ./inventory/$(PROJECT_NAME)-$(PROJECT_ENV).ini ] || cp ./inventory/template/etcd-on-master.template ./inventory/$(PROJECT_NAME)-$(PROJECT_ENV).ini
