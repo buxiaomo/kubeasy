@@ -11,7 +11,7 @@
   when: timezone is defined
 
 - name: Install some applications
-  include_tasks: "{{ ansible_distribution_file_variety }}.yml"
+  include_tasks: "{{ ansible_os_family }}.yml"
 
 # - name: Install python applications
 #   pip:
