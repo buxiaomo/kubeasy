@@ -1,5 +1,5 @@
 [master]
-172.16.115.11 hostname=kube-ansble-c-m01 nodename=master01
+172.16.115.11 hostname=kube-ansble-c-m01 nodename=master01 scheduling=true
 
 [worker]
 172.16.115.12 hostname=kube-ansble-c-n01 nodename=worker01
