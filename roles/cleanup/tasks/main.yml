@@ -10,6 +10,7 @@
   when:
     - inventory_hostname in groups['master']
     - groups['master'] | unique | length >= 3
+    - not scheduling | default(false)
 
 - name: Update node roles
   ansible.builtin.shell: |
