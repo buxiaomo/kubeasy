@@ -14,8 +14,8 @@
     filename: nvidia-container-runtime
     update_cache: yes
   with_items:
-    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/$(ARCH) /"
-    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/nvidia-container-runtime/stable/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/$(ARCH) /"
+    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/ubuntu18.04/$(ARCH) /"
+    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/nvidia-container-runtime/stable/ubuntu18.04/$(ARCH) /"
     - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
 
 - name: Install nvidia-container-runtime
