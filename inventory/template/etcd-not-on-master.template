@@ -17,7 +17,7 @@ master
 worker
 
 [kubernetes:vars]
-; kubernetes cert expli time config
+; kubernetes certificate config
 ; defualt expiration time is 10 years
 cert={"days": "+3650d"}
 
