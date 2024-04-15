@@ -195,11 +195,7 @@ required_plugins = []
       key_model = "node"
 
     [plugins."io.containerd.grpc.v1.cri".registry]
-{% if containerd.daemon.mirrors is defined %}
-      config_path = "/etc/containerd/certs.d"
-{% else %}
       config_path = ""
-{% endif %}
 
       [plugins."io.containerd.grpc.v1.cri".registry.auths]
 
