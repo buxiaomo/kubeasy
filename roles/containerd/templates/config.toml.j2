@@ -169,9 +169,11 @@ required_plugins = []
       [plugins."io.containerd.grpc.v1.cri".registry.headers]
 
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-{% if containerd.daemon.endpoint is defined %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-          endpoint = {{ containerd.daemon.endpoint | list }}
+{% if containerd.daemon.mirrors is defined %}
+{% for r in containerd.daemon.mirrors.items() %}
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ r[0] | urlsplit('hostname') }}{% if r[0] | urlsplit('port') is not none %}:{{ r[0] | urlsplit('port')}}{% endif %}"]
+          endpoint = [ "{{ r[1] }}" ]
+{% endfor %}
 {% endif %}
 
 {% if REGISTRY_URL is defined %}
