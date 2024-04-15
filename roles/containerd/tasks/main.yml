@@ -151,21 +151,6 @@
     - upgrade
     - update
 
-- name: Create mirrors certs directory
-  ansible.builtin.file:
-    name: "/etc/containerd/certs.d/{{ item.key | urlsplit('hostname') }}"
-    state: directory
-    mode: "0755"
-  loop: "{{ containerd.daemon.mirrors | dict2items }}"
-  when: containerd.daemon.mirrors is defined
-
-- name: Distribution mirrors configuration file
-  ansible.builtin.template:
-    src: hosts.toml.j2
-    dest: "/etc/containerd/certs.d/{{ item.key | urlsplit('hostname') }}/hosts.toml"
-  loop: "{{ containerd.daemon.mirrors | dict2items }}"
-  when: containerd.daemon.mirrors is defined
-
 - name: Create a containerd primary partition
   community.general.filesystem:
     fstype: xfs
