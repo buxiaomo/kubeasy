@@ -48,9 +48,9 @@ docker pull docker.io/flannel/flannel-cni-plugin:v1.4.0-flannel1
 docker tag docker.io/flannel/flannel-cni-plugin:v1.4.0-flannel1 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.4.0-flannel1
 docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.4.0-flannel1
 
-docker pull docker.io/flannel/flannel:v0.24.4
-docker tag docker.io/flannel/flannel:v0.24.4 ${REGISTRY_URL}/flannel/flannel:v0.24.4
-docker push ${REGISTRY_URL}/flannel/flannel:v0.24.4
+docker pull docker.io/flannel/flannel:v0.25.1
+docker tag docker.io/flannel/flannel:v0.25.1 ${REGISTRY_URL}/flannel/flannel:v0.25.1
+docker push ${REGISTRY_URL}/flannel/flannel:v0.25.1
 
 
 # metrics-server
@@ -66,13 +66,13 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.9
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.15.3
-docker tag quay.io/cilium/cilium:v1.15.3 ${REGISTRY_URL}/cilium/cilium:v1.15.3
-docker push ${REGISTRY_URL}/cilium/cilium:v1.15.3
+docker pull quay.io/cilium/cilium:v1.15.4
+docker tag quay.io/cilium/cilium:v1.15.4 ${REGISTRY_URL}/cilium/cilium:v1.15.4
+docker push ${REGISTRY_URL}/cilium/cilium:v1.15.4
 
-docker pull quay.io/cilium/operator-generic:v1.15.3
-docker tag quay.io/cilium/operator-generic:v1.15.3 ${REGISTRY_URL}/cilium/operator-generic:v1.15.3
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.15.3
+docker pull quay.io/cilium/operator-generic:v1.15.4
+docker tag quay.io/cilium/operator-generic:v1.15.4 ${REGISTRY_URL}/cilium/operator-generic:v1.15.4
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.15.4
 
 docker pull quay.io/cilium/hubble-ui-backend:v0.13.0
 docker tag quay.io/cilium/hubble-ui-backend:v0.13.0 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.13.0
@@ -82,9 +82,9 @@ docker pull quay.io/cilium/hubble-ui:v0.13.0
 docker tag quay.io/cilium/hubble-ui:v0.13.0 ${REGISTRY_URL}/cilium/hubble-ui:v0.13.0
 docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.13.0
 
-docker pull quay.io/cilium/hubble-relay:v1.15.3
-docker tag quay.io/cilium/hubble-relay:v1.15.3 ${REGISTRY_URL}/cilium/hubble-relay:v1.15.3
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.15.3
+docker pull quay.io/cilium/hubble-relay:v1.15.4
+docker tag quay.io/cilium/hubble-relay:v1.15.4 ${REGISTRY_URL}/cilium/hubble-relay:v1.15.4
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.15.4
 
 
 # nvidia-device-plugin
