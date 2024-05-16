@@ -18,23 +18,23 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull docker.io/calico/cni:v3.27.3
-docker tag docker.io/calico/cni:v3.27.3 ${REGISTRY_URL}/calico/cni:v3.27.3
-docker push ${REGISTRY_URL}/calico/cni:v3.27.3
+docker pull docker.io/calico/cni:v3.28.0
+docker tag docker.io/calico/cni:v3.28.0 ${REGISTRY_URL}/calico/cni:v3.28.0
+docker push ${REGISTRY_URL}/calico/cni:v3.28.0
 
-docker pull docker.io/calico/node:v3.27.3
-docker tag docker.io/calico/node:v3.27.3 ${REGISTRY_URL}/calico/node:v3.27.3
-docker push ${REGISTRY_URL}/calico/node:v3.27.3
+docker pull docker.io/calico/node:v3.28.0
+docker tag docker.io/calico/node:v3.28.0 ${REGISTRY_URL}/calico/node:v3.28.0
+docker push ${REGISTRY_URL}/calico/node:v3.28.0
 
-docker pull docker.io/calico/kube-controllers:v3.27.3
-docker tag docker.io/calico/kube-controllers:v3.27.3 ${REGISTRY_URL}/calico/kube-controllers:v3.27.3
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.27.3
+docker pull docker.io/calico/kube-controllers:v3.28.0
+docker tag docker.io/calico/kube-controllers:v3.28.0 ${REGISTRY_URL}/calico/kube-controllers:v3.28.0
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.28.0
 
 
 # canal
-docker pull docker.io/flannel/flannel:v0.21.3
-docker tag docker.io/flannel/flannel:v0.21.3 ${REGISTRY_URL}/flannel/flannel:v0.21.3
-docker push ${REGISTRY_URL}/flannel/flannel:v0.21.3
+docker pull docker.io/flannel/flannel:v0.24.3
+docker tag docker.io/flannel/flannel:v0.24.3 ${REGISTRY_URL}/flannel/flannel:v0.24.3
+docker push ${REGISTRY_URL}/flannel/flannel:v0.24.3
 
 
 # coredns
