@@ -141,7 +141,7 @@ spec:
               fieldPath: metadata.namespace
         - name: EVENT_QUEUE_DEPTH
           value: "5000"
-        image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.25.2"
+        image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.25.3"
         name: kube-flannel
         resources:
           requests:
@@ -179,7 +179,7 @@ spec:
         - /etc/cni/net.d/10-flannel.conflist
         command:
         - cp
-        image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.25.2"
+        image: "{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/flannel/flannel:v0.25.3"
         name: install-cni
         volumeMounts:
         - mountPath: /etc/cni/net.d
