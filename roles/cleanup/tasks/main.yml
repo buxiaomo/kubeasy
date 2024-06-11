@@ -3,9 +3,9 @@
 - name: Master not scheduling
   ansible.builtin.shell: |
     {% if nodename is defined %}
-      /usr/local/bin/kubectl taint node {{ nodename | lower }} node-role.kubernetes.io/master="":NoSchedule --overwrite
+      /usr/local/bin/kubectl taint node {{ nodename | lower }} node-role.kubernetes.io/control-plane="":NoSchedule --overwrite
     {% else %}
-      /usr/local/bin/kubectl taint node {{ hostvars[inventory_hostname].ansible_hostname | lower }} node-role.kubernetes.io/master="":NoSchedule --overwrite
+      /usr/local/bin/kubectl taint node {{ hostvars[inventory_hostname].ansible_hostname | lower }} node-role.kubernetes.io/control-plane="":NoSchedule --overwrite
     {% endif %}
   when:
     - inventory_hostname in groups['master']
@@ -15,9 +15,9 @@
 - name: Update node roles
   ansible.builtin.shell: |
     {% if nodename is defined %}
-      /usr/local/bin/kubectl label node {{ nodename | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+      /usr/local/bin/kubectl label node {{ nodename | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/control-plane=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% else %}
-      /usr/local/bin/kubectl label node {{ hostvars[inventory_hostname].ansible_hostname | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/master=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
+      /usr/local/bin/kubectl label node {{ hostvars[inventory_hostname].ansible_hostname | lower }} {% if inventory_hostname in groups['master'] %} node-role.kubernetes.io/control-plane=""{% else %} node-role.kubernetes.io/worker=""{% endif %} --overwrite
     {% endif %}
     {% if inventory_hostname in groups['master'] %}
       {% if nodename is defined %}
