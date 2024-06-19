@@ -81,7 +81,7 @@
       - keyEncipherment
     extended_key_usage:
       - serverAuth
-    subject_alt_name: "{{ item.value | union(apiServer.certSANs | default(['DNS:*.kubernetes.local'])) | unique }}"
+    subject_alt_name: "{{ item.value | union(apiServer.certSANs | default(['DNS:*.kubernetes.local'])) | sort | unique }}"
   with_dict:
     subject_alt_name:
       - "DNS:localhost"
