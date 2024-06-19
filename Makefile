@@ -10,7 +10,7 @@ DOWNLOAD_WAY:=official
 # kubernetes version
 KUBE_VERSION:=1.28.11
 ETCD_VERSION:=3.5.9
-CNI_VERSION:=1.5.0
+CNI_VERSION:=1.5.1
 
 # kubernetes container runtime
 # crio, containerd
