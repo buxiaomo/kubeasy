@@ -133,7 +133,7 @@
     extended_key_usage:
       - serverAuth
       - clientAuth
-    subject_alt_name: "{{ item.value | unique }}"
+    subject_alt_name: "{{ item.value | sort | unique }}"
   with_dict:
     subject_alt_name:
       - "DNS:localhost"
