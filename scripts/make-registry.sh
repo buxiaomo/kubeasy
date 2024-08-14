@@ -95,10 +95,10 @@ docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.15.1
 
 
 # antrea
-docker pull antrea/antrea-agent-ubuntu:v2.0.1
-docker tag antrea/antrea-agent-ubuntu:v2.0.1 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.0.1
-docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.0.1
+docker pull antrea/antrea-agent-ubuntu:v2.1.0
+docker tag antrea/antrea-agent-ubuntu:v2.1.0 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.1.0
+docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.1.0
 
-docker pull antrea/antrea-controller-ubuntu:v2.0.1
-docker tag antrea/antrea-controller-ubuntu:v2.0.1 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.0.1
-docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.0.1
+docker pull antrea/antrea-controller-ubuntu:v2.1.0
+docker tag antrea/antrea-controller-ubuntu:v2.1.0 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.1.0
+docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.1.0
