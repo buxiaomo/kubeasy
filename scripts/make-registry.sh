@@ -60,9 +60,9 @@ docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.7.1
 
 
 # pause
-docker pull registry.aliyuncs.com/google_containers/pause:3.9
-docker tag registry.aliyuncs.com/google_containers/pause:3.9 ${REGISTRY_URL}/google_containers/pause:3.9
-docker push ${REGISTRY_URL}/google_containers/pause:3.9
+docker pull registry.aliyuncs.com/google_containers/pause:3.10
+docker tag registry.aliyuncs.com/google_containers/pause:3.10 ${REGISTRY_URL}/google_containers/pause:3.10
+docker push ${REGISTRY_URL}/google_containers/pause:3.10
 
 
 # cilium
@@ -94,10 +94,10 @@ docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.15.1
 
 
 # antrea
-docker pull antrea/antrea-agent-ubuntu:v2.0.1
-docker tag antrea/antrea-agent-ubuntu:v2.0.1 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.0.1
-docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.0.1
+docker pull antrea/antrea-agent-ubuntu:v2.1.0
+docker tag antrea/antrea-agent-ubuntu:v2.1.0 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.1.0
+docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.1.0
 
-docker pull antrea/antrea-controller-ubuntu:v2.0.1
-docker tag antrea/antrea-controller-ubuntu:v2.0.1 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.0.1
-docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.0.1
+docker pull antrea/antrea-controller-ubuntu:v2.1.0
+docker tag antrea/antrea-controller-ubuntu:v2.1.0 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.1.0
+docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.1.0
