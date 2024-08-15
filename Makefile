@@ -8,7 +8,7 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.28.12
+KUBE_VERSION:=1.28.13
 ETCD_VERSION:=3.5.9
 CNI_VERSION:=1.5.1
 
