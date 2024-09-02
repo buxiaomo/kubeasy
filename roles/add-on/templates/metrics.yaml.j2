@@ -159,7 +159,7 @@ spec:
         - --metric-resolution=15s
         - --kubelet-insecure-tls
         - --logging-format=json
-        image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/metrics-server/metrics-server:v0.7.1"
+        image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/metrics-server/metrics-server:v0.7.2"
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
