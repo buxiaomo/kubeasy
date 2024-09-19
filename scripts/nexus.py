@@ -192,13 +192,12 @@ def downloadToLocal(arg):
         "kubelet",
     ]
     for f in file_list:
-        url = "https://storage.googleapis.com/kubernetes-release/release/v%s/bin/linux/amd64/%s" % (
-            arg.kubernetes, f)
+        url = "https://dl.k8s.io/v%s/bin/linux/amd64/%s" % (arg.kubernetes, f)
         if Download(url, "%s/%s" % (basePath, f), arg.quiet):
             jsonFile.append(
                 {
                     'src': "./scripts/src/%s/%s" % (arg.kubernetes, f),
-                    'dest': "/kubernetes-release/release/v%s/bin/linux/amd64" % arg.kubernetes
+                    'dest': "/v%s/bin/linux/amd64" % arg.kubernetes
                 }
             )
 
