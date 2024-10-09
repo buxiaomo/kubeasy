@@ -269,7 +269,7 @@ data:
   hubble-tls-client-ca-files: /var/lib/cilium/tls/hubble/client-ca.crt
   ipam: "cluster-pool"
   ipam-cilium-node-update-rate: "15s"
-  cluster-pool-ipv4-cidr: "{{ networking.podSubnet | default('10.244.0.0/16') }}"
+  cluster-pool-ipv4-cidr: "10.244.0.0/16"
   cluster-pool-ipv4-mask-size: "24"
   egress-gateway-reconciliation-trigger-interval: "1s"
   enable-vtep: "false"
@@ -277,7 +277,6 @@ data:
   vtep-cidr: ""
   vtep-mask: ""
   vtep-mac: ""
-  procfs: "/host/proc"
   bpf-root: "/sys/fs/bpf"
   cgroup-root: "/run/cilium/cgroupv2"
   enable-k8s-terminating-endpoint: "true"
@@ -1355,45 +1354,15 @@ spec:
               command:
               - /cni-uninstall.sh
         securityContext:
-          seLinuxOptions:
-            level: s0
-            type: spc_t
-          capabilities:
-            add:
-              - CHOWN
-              - KILL
-              - NET_ADMIN
-              - NET_RAW
-              - IPC_LOCK
-              - SYS_MODULE
-              - SYS_ADMIN
-              - SYS_RESOURCE
-              - DAC_OVERRIDE
-              - FOWNER
-              - SETGID
-              - SETUID
-            drop:
-              - ALL
+          privileged: true
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
         - name: envoy-sockets
           mountPath: /var/run/cilium/envoy/sockets
           readOnly: false
-        # Unprivileged containers need to mount /proc/sys/net from the host
-        # to have write access
-        - mountPath: /host/proc/sys/net
-          name: host-proc-sys-net
-        # Unprivileged containers need to mount /proc/sys/kernel from the host
-        # to have write access
-        - mountPath: /host/proc/sys/kernel
-          name: host-proc-sys-kernel
         - name: bpf-maps
           mountPath: /sys/fs/bpf
-          # Unprivileged containers can't set mount propagation to bidirectional
-          # in this case we will mount the bpf fs from an init container that
-          # is privileged and set the mount propagation from host to container
-          # in Cilium.
-          mountPropagation: HostToContainer
+          mountPropagation: Bidirectional
         - name: cilium-run
           mountPath: /var/run/cilium
         - name: cilium-netns
@@ -1462,35 +1431,7 @@ spec:
           mountPath: /hostbin
         terminationMessagePolicy: FallbackToLogsOnError
         securityContext:
-          seLinuxOptions:
-            level: s0
-            type: spc_t
-          capabilities:
-            add:
-              - SYS_ADMIN
-              - SYS_CHROOT
-              - SYS_PTRACE
-            drop:
-              - ALL
-      # Mount the bpf fs if it is not mounted. We will perform this task
-      # from a privileged container because the mount propagation bidirectional
-      # only works from privileged containers.
-      - name: mount-bpf-fs
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
-        imagePullPolicy: IfNotPresent
-        args:
-        - 'mount | grep "/sys/fs/bpf type bpf" || mount -t bpf bpf /sys/fs/bpf'
-        command:
-        - /bin/bash
-        - -c
-        - --
-        terminationMessagePolicy: FallbackToLogsOnError
-        securityContext:
           privileged: true
-        volumeMounts:
-        - name: bpf-maps
-          mountPath: /sys/fs/bpf
-          mountPropagation: Bidirectional
       - name: clean-cilium-state
         image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
         imagePullPolicy: IfNotPresent
@@ -1517,17 +1458,7 @@ spec:
               optional: true
         terminationMessagePolicy: FallbackToLogsOnError
         securityContext:
-          seLinuxOptions:
-            level: s0
-            type: spc_t
-          capabilities:
-            add:
-              - NET_ADMIN
-              - SYS_MODULE
-              - SYS_ADMIN
-              - SYS_RESOURCE
-            drop:
-              - ALL
+          privileged: true
         volumeMounts:
         - name: bpf-maps
           mountPath: /sys/fs/bpf
@@ -1548,9 +1479,7 @@ spec:
             cpu: 100m
             memory: 10Mi
         securityContext:
-          seLinuxOptions:
-            level: s0
-            type: spc_t
+          privileged: true
           capabilities:
             drop:
               - ALL
@@ -1665,14 +1594,6 @@ spec:
                 path: local-etcd-client.crt
               - key: ca.crt
                 path: local-etcd-client-ca.crt
-      - name: host-proc-sys-net
-        hostPath:
-          path: /proc/sys/net
-          type: Directory
-      - name: host-proc-sys-kernel
-        hostPath:
-          path: /proc/sys/kernel
-          type: Directory
       - name: hubble-tls
         projected:
           # note: the leading zero means this number is in octal representation: do not remove it
@@ -2177,3 +2098,10 @@ spec:
         name: hubble-ui-nginx-conf
       - emptyDir: {}
         name: tmp-dir
+
+NOTES:
+You have successfully installed Cilium with Hubble Relay and Hubble UI.
+
+Your release version is 1.16.2.
+
+For any further help, visit https://docs.cilium.io/en/v1.16/gettinghelp
