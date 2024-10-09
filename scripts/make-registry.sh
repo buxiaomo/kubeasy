@@ -67,13 +67,13 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.9
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.15.7
-docker tag quay.io/cilium/cilium:v1.15.7 ${REGISTRY_URL}/cilium/cilium:v1.15.7
-docker push ${REGISTRY_URL}/cilium/cilium:v1.15.7
+docker pull quay.io/cilium/cilium:v1.16.2
+docker tag quay.io/cilium/cilium:v1.16.2 ${REGISTRY_URL}/cilium/cilium:v1.16.2
+docker push ${REGISTRY_URL}/cilium/cilium:v1.16.2
 
-docker pull quay.io/cilium/operator-generic:v1.15.7
-docker tag quay.io/cilium/operator-generic:v1.15.7 ${REGISTRY_URL}/cilium/operator-generic:v1.15.7
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.15.7
+docker pull quay.io/cilium/operator-generic:v1.16.2
+docker tag quay.io/cilium/operator-generic:v1.16.2 ${REGISTRY_URL}/cilium/operator-generic:v1.16.2
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.16.2
 
 docker pull quay.io/cilium/hubble-ui-backend:v0.13.1
 docker tag quay.io/cilium/hubble-ui-backend:v0.13.1 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.13.1
@@ -83,9 +83,13 @@ docker pull quay.io/cilium/hubble-ui:v0.13.1
 docker tag quay.io/cilium/hubble-ui:v0.13.1 ${REGISTRY_URL}/cilium/hubble-ui:v0.13.1
 docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.13.1
 
-docker pull quay.io/cilium/hubble-relay:v1.15.7
-docker tag quay.io/cilium/hubble-relay:v1.15.7 ${REGISTRY_URL}/cilium/hubble-relay:v1.15.7
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.15.7
+docker pull quay.io/cilium/hubble-relay:v1.16.2
+docker tag quay.io/cilium/hubble-relay:v1.16.2 ${REGISTRY_URL}/cilium/hubble-relay:v1.16.2
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.16.2
+
+docker pull quay.io/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
+docker tag quay.io/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047 ${REGISTRY_URL}/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
+docker push ${REGISTRY_URL}/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
 
 
 # nvidia-device-plugin
