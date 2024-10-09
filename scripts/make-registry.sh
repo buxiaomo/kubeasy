@@ -89,7 +89,7 @@ docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.16.2
 
 docker pull quay.io/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
 docker tag quay.io/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047 ${REGISTRY_URL}/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
-docker push ${REGISTRY_URL}/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
+docker push ${REGISTRY_URL}/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047
 
 
 # nvidia-device-plugin
