@@ -44,16 +44,6 @@ data:
   ca.crt: {{ lookup('file', "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt") | b64encode }}
   ca.key: {{ lookup('file', "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key") | b64encode }}
 ---
-# Source: cilium/templates/hubble/tls-helm/ca-secret.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hubble-ca-secret
-  namespace: kube-system
-data:
-  ca.crt: {{ lookup('file', "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.crt") | b64encode }}
-  ca.key: {{ lookup('file', "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/cilium.key") | b64encode }}
----
 # Source: cilium/templates/hubble/tls-helm/relay-client-secret.yaml
 apiVersion: v1
 kind: Secret
@@ -110,6 +100,19 @@ data:
   # https://docs.cilium.io/en/latest/security/policy/intro/#policy-enforcement-modes
   enable-policy: "default"
   policy-cidr-match-mode: ""
+  # If you want metrics enabled in all of your Cilium agents, set the port for
+  # which the Cilium agents will have their metrics exposed.
+  # This option deprecates the "prometheus-serve-addr" in the
+  # "cilium-metrics-config" ConfigMap
+  # NOTE that this will open the port on ALL nodes where Cilium pods are
+  # scheduled.
+  prometheus-serve-addr: ":9962"
+  # A space-separated list of controller groups for which to enable metrics.
+  # The special values of "all" and "none" are supported.
+  controller-group-metrics:
+    write-cni-file
+    sync-host-ips
+    sync-lb-maps-with-k8s-services
   # If you want metrics enabled in cilium-operator, set the port for
   # which the Cilium Operator will have their metrics exposed.
   # NOTE that this will open the port on the nodes where Cilium operator pod
@@ -229,6 +232,7 @@ data:
   kube-proxy-replacement-healthz-bind-address: ""
   bpf-lb-sock: "true"
   bpf-lb-sock-terminate-pod-connections: "true"
+  bpf-lb-sock-hostns-only: "true"
   enable-host-port: "true"
   enable-external-ips: "true"
   enable-node-port: "true"
@@ -269,7 +273,7 @@ data:
   hubble-tls-client-ca-files: /var/lib/cilium/tls/hubble/client-ca.crt
   ipam: "cluster-pool"
   ipam-cilium-node-update-rate: "15s"
-  cluster-pool-ipv4-cidr: "10.244.0.0/16"
+  cluster-pool-ipv4-cidr: "{{ networking.podSubnet | default('10.244.0.0/16') }}",
   cluster-pool-ipv4-mask-size: "24"
   egress-gateway-reconciliation-trigger-interval: "1s"
   enable-vtep: "false"
@@ -815,6 +819,15 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - configmaps
+  resourceNames:
+  - cilium-config
+  verbs:
+   # allow patching of the configmap to set annotations
+  - patch
+- apiGroups:
+  - ""
+  resources:
   - nodes
   verbs:
   - list
@@ -1249,6 +1262,8 @@ spec:
   template:
     metadata:
       annotations:
+        prometheus.io/port: "9962"
+        prometheus.io/scrape: "true"
       labels:
         k8s-app: cilium
         app.kubernetes.io/name: cilium-agent
@@ -1259,7 +1274,7 @@ spec:
           type: Unconfined
       containers:
       - name: cilium-agent
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.3"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-agent
@@ -1353,6 +1368,15 @@ spec:
             exec:
               command:
               - /cni-uninstall.sh
+        ports:
+        - name: peer-service
+          containerPort: 4244
+          hostPort: 4244
+          protocol: TCP
+        - name: prometheus
+          containerPort: 9962
+          hostPort: 9962
+          protocol: TCP
         securityContext:
           privileged: true
         terminationMessagePolicy: FallbackToLogsOnError
@@ -1386,7 +1410,7 @@ spec:
           mountPath: /tmp
       initContainers:
       - name: config
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.3"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-dbg
@@ -1407,7 +1431,7 @@ spec:
           mountPath: /tmp
         terminationMessagePolicy: FallbackToLogsOnError
       - name: apply-sysctl-overwrites
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.3"
         imagePullPolicy: IfNotPresent
         env:
         - name: BIN_PATH
@@ -1433,7 +1457,7 @@ spec:
         securityContext:
           privileged: true
       - name: clean-cilium-state
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.3"
         imagePullPolicy: IfNotPresent
         command:
         - /init-container.sh
@@ -1470,7 +1494,7 @@ spec:
           mountPath: /var/run/cilium # wait-for-kube-proxy
       # Install the CNI binaries in an InitContainer so we don't have a writable host mount in the agent
       - name: install-cni-binaries
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.2"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium:v1.16.3"
         imagePullPolicy: IfNotPresent
         command:
           - "/install-plugin.sh"
@@ -1643,7 +1667,7 @@ spec:
           type: Unconfined
       containers:
       - name: cilium-envoy
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium-envoy:v1.29.9-1726784081-a90146d13b4cd7d168d573396ccf2b3db5a3b047"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/cilium-envoy:v1.29.9-1728346947-0d05e48bfbb8c4737ec40d5781d970a550ed2bbd"
         imagePullPolicy: IfNotPresent
         command:
         - /usr/bin/cilium-envoy-starter
@@ -1819,7 +1843,7 @@ spec:
     spec:
       containers:
       - name: cilium-operator
-        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.16.2"
+        image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/operator-generic:v1.16.3"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-operator-generic
@@ -1934,7 +1958,7 @@ spec:
             runAsGroup: 65532
             runAsNonRoot: true
             runAsUser: 65532
-          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.16.2"
+          image: "{{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/cilium/hubble-relay:v1.16.3"
           imagePullPolicy: IfNotPresent
           command:
             - hubble-relay
