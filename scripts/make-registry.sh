@@ -48,9 +48,9 @@ docker pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel2
 docker tag docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel2 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.5.1-flannel2
 docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.5.1-flannel2
 
-docker pull docker.io/flannel/flannel:v0.26.0
-docker tag docker.io/flannel/flannel:v0.26.0 ${REGISTRY_URL}/flannel/flannel:v0.26.0
-docker push ${REGISTRY_URL}/flannel/flannel:v0.26.0
+docker pull docker.io/flannel/flannel:v0.26.1
+docker tag docker.io/flannel/flannel:v0.26.1 ${REGISTRY_URL}/flannel/flannel:v0.26.1
+docker push ${REGISTRY_URL}/flannel/flannel:v0.26.1
 
 
 # metrics-server
