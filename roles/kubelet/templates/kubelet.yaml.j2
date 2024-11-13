@@ -18,10 +18,10 @@ cgroupDriver: systemd
 cgroupsPerQOS: true
 clusterDNS:
 {% if networking.serviceSubnet.split(',') | length == 2 %}
-- {{ networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(2) }}
-- {{ networking.serviceSubnet.split(',')[1] | default('fd74:ca9b:0172:0019::/110') | ansible.netcommon.next_nth_usable(2) }}
+- {{ networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.utils.next_nth_usable(2) }}
+- {{ networking.serviceSubnet.split(',')[1] | default('fd74:ca9b:0172:0019::/110') | ansible.utils.next_nth_usable(2) }}
 {% else %}
-- {{ networking.serviceSubnet | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(2) }}
+- {{ networking.serviceSubnet | default('10.96.0.0/12') | ansible.utils.next_nth_usable(2) }}
 {% endif %}
 clusterDomain: {{ networking.dnsDomain | default('cluster.local') }}
 configMapAndSecretChangeDetectionStrategy: Watch
