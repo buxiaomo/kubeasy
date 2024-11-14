@@ -187,6 +187,26 @@
     - upgrade
     - update
 
+- name: Create systemd service.d
+  ansible.builtin.file:
+    name: /etc/systemd/system/containerd.service.d
+    state: directory
+    mode: "0755"
+  when: proxy_env is defined
+  notify: restart containerd
+  tags:
+    - update
+
+- name: Install systemd file proxy.conf
+  ansible.builtin.template:
+    src: proxy.conf.j2
+    dest: /etc/systemd/system/containerd.service.d/proxy.conf
+  register: containerd_systemd_d
+  when: proxy_env is defined
+  notify: restart containerd
+  tags:
+    - update
+
 - name: Populate service facts
   ansible.builtin.service_facts:
 
@@ -202,6 +222,7 @@
         crictl_pkg.changed or 
         containerd_cfg.changed or
         containerd_systemd.changed or
+        containerd_systemd_d.changed or
         ansible_facts.services['containerd.service']['state'] != 'running'
 
 - name: Install crictl completion
