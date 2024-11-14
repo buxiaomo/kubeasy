@@ -1,0 +1,12 @@
+{% if proxy_env is defined %}
+{% if proxy_env.http_proxy is defined and proxy_env.http_proxy != "" %}
+[Service]
+Environment="HTTP_PROXY={{ proxy_env.http_proxy }}"
+{% endif %}
+{% if proxy_env.https_proxy is defined and proxy_env.https_proxy != "" %}
+Environment="HTTPS_PROXY={{ proxy_env.https_proxy }}"
+{% endif %}
+{% if proxy_env.no_proxy is defined  and proxy_env.no_proxy != "" %}
+Environment="NO_PROXY={{ proxy_env.no_proxy }}"
+{% endif %}
+{% endif %}
