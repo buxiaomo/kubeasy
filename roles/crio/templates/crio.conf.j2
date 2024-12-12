@@ -24,7 +24,7 @@
   [crio.image]
     default_transport = "docker://"
     global_auth_file = ""
-    pause_image = "{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') }}{% endif %}/google_containers/pause:{{ KUBE_VERSION | component_version | community.general.json_query('plugin.pause') }}"
+    pause_image = "{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') }}{% endif %}/google_containers/pause:3.10"
     pause_image_auth_file = ""
     pause_command = "/pause"
     signature_policy = ""

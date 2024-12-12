@@ -216,7 +216,6 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-    masked: yes
   when: runc_pkg.changed or 
         containerd_pkg.changed or 
         crictl_pkg.changed or 

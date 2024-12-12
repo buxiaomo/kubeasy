@@ -120,7 +120,6 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-    masked: yes
   when: crio_pkg.changed or 
         crio_cfg.changed or 
         crio_systemd.changed or 

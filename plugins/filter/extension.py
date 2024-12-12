@@ -7,34 +7,6 @@ from distutils.version import LooseVersion, StrictVersion
 from ansible.module_utils._text import to_native, to_text
 from ansible.utils.version import SemanticVersion
 
-# {{ value | component_version | community.general.json_query("etcd") }}
-# pip3 install jmespath
-def component_version(value):
-    version_map = {
-        "1.32": {
-            "etcd": "3.5.16",
-            "cni": "1.4.0",
-            "runtime": {
-                "docker": "20.10.17",
-                "containerd": "1.7.13",
-                "runc": "1.1.3",
-                "crictl": "1.27.0"
-            },
-            "plugin": {
-                "coredns": "1.11.3",
-                "metrics": "0.6.3",
-                "pause": "3.10"
-            }
-        }
-    }
-
-    if version_map.get(value) is not None:
-        return version_map.get(value)
-    if version_map.get(value[:4]) is None:
-        raise errors.AnsibleFilterError('kubernetes version not supported, please check the git branch')
-    return version_map.get(value[:4])
-
-
 # {{ value | ip }}
 # return 4 or 6
 def ip(value):

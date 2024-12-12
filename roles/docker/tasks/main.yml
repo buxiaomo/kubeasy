@@ -147,7 +147,6 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
-    masked: yes
   when: docker_pkg.changed or 
         docker_cfg.changed or 
         docker_systemd.changed or 
