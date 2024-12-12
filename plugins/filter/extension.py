@@ -42,7 +42,7 @@ def split_string(string, separator=' '):
             'split plugin error: %s, provided string: "%s"' % str(e), str(string))
 
 
-def split_regex(string, separator_pattern='\s+'):
+def split_regex(string, separator_pattern='\\s+'):
     try:
         return re.split(separator_pattern, string)
     except Exception as e:
@@ -122,7 +122,6 @@ class FilterModule(object):
             'interception': interception,
             'ip_format': ip_format,
             'ip': ip,
-            'component_version': component_version,
             'timeFormat': timeFormat
         }
 
