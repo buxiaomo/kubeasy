@@ -38,9 +38,9 @@ docker push ${REGISTRY_URL}/flannel/flannel:v0.24.4
 
 
 # coredns
-docker pull registry.k8s.io/coredns/coredns:v1.11.1
-docker tag registry.k8s.io/coredns/coredns:v1.11.1 ${REGISTRY_URL}/coredns/coredns:v1.11.1
-docker push ${REGISTRY_URL}/coredns/coredns:v1.11.1
+docker pull registry.k8s.io/coredns/coredns:v1.11.3
+docker tag registry.k8s.io/coredns/coredns:v1.11.3 ${REGISTRY_URL}/coredns/coredns:v1.11.3
+docker push ${REGISTRY_URL}/coredns/coredns:v1.11.3
 
 
 # flannel
