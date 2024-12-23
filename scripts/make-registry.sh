@@ -44,13 +44,13 @@ docker push ${REGISTRY_URL}/coredns/coredns:v1.11.3
 
 
 # flannel
-docker pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel2
-docker tag docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel2 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.5.1-flannel2
-docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.5.1-flannel2
+docker pull docker.io/flannel/flannel-cni-plugin:v1.6.0-flannel1
+docker tag docker.io/flannel/flannel-cni-plugin:v1.6.0-flannel1 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.6.0-flannel1
+docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.6.0-flannel1
 
-docker pull docker.io/flannel/flannel:v0.26.1
-docker tag docker.io/flannel/flannel:v0.26.1 ${REGISTRY_URL}/flannel/flannel:v0.26.1
-docker push ${REGISTRY_URL}/flannel/flannel:v0.26.1
+docker pull docker.io/flannel/flannel:v0.26.2
+docker tag docker.io/flannel/flannel:v0.26.2 ${REGISTRY_URL}/flannel/flannel:v0.26.2
+docker push ${REGISTRY_URL}/flannel/flannel:v0.26.2
 
 
 # metrics-server
