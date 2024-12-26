@@ -51,20 +51,6 @@ SONOBUOY_VERSION:=0.56.14
 
 PIP_ARGS:=
 
-PIP_ARGS:=
-
-PIP_ARGS:=
-
-PIP_ARGS:=
-
-PIP_ARGS:=
-
-PIP_ARGS:=
-
-PIP_ARGS:=
-
-PIP_ARGS:=
-
 # Install ansible on depoy server
 runtime:
 	@PIP_ARGS="$(PIP_ARGS)" ./scripts/runtime.sh
