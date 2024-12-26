@@ -543,6 +543,11 @@ spec:
                       cidr:
                         type: string
                         format: cidr
+                      except:
+                        type: array
+                        items:
+                          type: string
+                          format: cidr
                 serviceReference:
                   type: object
                   properties:
@@ -979,6 +984,11 @@ spec:
                                 cidr:
                                   type: string
                                   format: cidr
+                                except:
+                                  type: array
+                                  items:
+                                    type: string
+                                    format: cidr
                             group:
                               type: string
                             serviceAccount:
@@ -1261,6 +1271,11 @@ spec:
                                 cidr:
                                   type: string
                                   format: cidr
+                                except:
+                                  type: array
+                                  items:
+                                    type: string
+                                    format: cidr
                             group:
                               type: string
                             fqdn:
@@ -1861,6 +1876,11 @@ spec:
                       cidr:
                         type: string
                         format: cidr
+                      except:
+                        type: array
+                        items:
+                          type: string
+                          format: cidr
                 serviceReference:
                   type: object
                   properties:
@@ -2477,6 +2497,11 @@ spec:
                                 cidr:
                                   type: string
                                   format: cidr
+                                except:
+                                  type: array
+                                  items:
+                                    type: string
+                                    format: cidr
                             nodeSelector:
                               type: object
                               properties:
@@ -2726,6 +2751,11 @@ spec:
                                 cidr:
                                   type: string
                                   format: cidr
+                                except:
+                                  type: array
+                                  items:
+                                    type: string
+                                    format: cidr
                             fqdn:
                               type: string
                             nodeSelector:
@@ -2865,6 +2895,203 @@ spec:
     kind: NodeLatencyMonitor
     shortNames:
       - nlm
+
+---
+# Source: antrea/crds/packetcapture.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: packetcaptures.crd.antrea.io
+  labels:
+    app: antrea
+spec:
+  group: crd.antrea.io
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      additionalPrinterColumns:
+        - jsonPath: .spec.source.pod
+          description: The name of the source Pod.
+          name: Source-Pod
+          type: string
+          priority: 10
+        - jsonPath: .spec.destination.pod
+          description: The name of the destination Pod.
+          name: Destination-Pod
+          type: string
+          priority: 10
+        - jsonPath: .spec.source.ip
+          description: The IP address of the source.
+          name: Source-IP
+          type: string
+          priority: 10
+        - jsonPath: .spec.destination.ip
+          description: The IP address of the destination.
+          name: Destination-IP
+          type: string
+          priority: 10
+        - jsonPath: .spec.timeout
+          description: Timeout in seconds.
+          name: Timeout
+          type: integer
+          priority: 10
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      schema:
+        openAPIV3Schema:
+          type: object
+          required:
+            - spec
+          properties:
+            spec:
+              type: object
+              required:
+                - source
+                - captureConfig
+                - destination
+              anyOf:
+                - properties:
+                    source:
+                      required: [pod]
+                - properties:
+                    destination:
+                      required: [pod]
+              properties:
+                source:
+                  type: object
+                  oneOf:
+                    - required:
+                      - pod
+                    - required:
+                      - ip
+                  properties:
+                    pod:
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        namespace:
+                          type: string
+                          default: default
+                        name:
+                          type: string
+                    ip:
+                      type: string
+                      format: ipv4
+                destination:
+                  type: object
+                  oneOf:
+                    - required:
+                      - pod
+                    - required:
+                      - ip
+                  properties:
+                    pod:
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        namespace:
+                          type: string
+                          default: default
+                        name:
+                          type: string
+                    ip:
+                      type: string
+                      format: ipv4
+                packet:
+                  type: object
+                  properties:
+                    ipFamily:
+                      type: string
+                      enum: [IPv4]
+                      default: IPv4
+                    protocol:
+                      x-kubernetes-int-or-string: true
+                    transportHeader:
+                      type: object
+                      properties:
+                        udp:
+                          type: object
+                          properties:
+                            srcPort:
+                              type: integer
+                              minimum: 1
+                              maximum: 65535
+                            dstPort:
+                              type: integer
+                              minimum: 1
+                              maximum: 65535
+                        tcp:
+                          type: object
+                          properties:
+                            srcPort:
+                              type: integer
+                              minimum: 1
+                              maximum: 65535
+                            dstPort:
+                              type: integer
+                              minimum: 1
+                              maximum: 65535
+
+                timeout:
+                  type: integer
+                  minimum: 1
+                  maximum: 300
+                  default: 60
+                captureConfig:
+                  type: object
+                  oneOf:
+                    - required:
+                      - firstN
+                  properties:
+                    firstN:
+                      type: object
+                      required:
+                        - number
+                      properties:
+                        number:
+                          type: integer
+                          format: int32
+                fileServer:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                      pattern: 'sftp:\/\/[\w-_./]+:\d+'
+            status:
+              type: object
+              properties:
+                numberCaptured:
+                  type: integer
+                filePath:
+                  type: string
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      status:
+                        type: string
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      message:
+                        type: string
+      subresources:
+        status: {}
+  scope: Cluster
+  names:
+    plural: packetcaptures
+    singular: packetcapture
+    kind: PacketCapture
+    shortNames:
+      - pcap
 
 ---
 # Source: antrea/crds/supportbundlecollection.yaml
@@ -3732,12 +3959,19 @@ data:
     # enabled, otherwise this flag will not take effect.
     #  TopologyAwareHints: true
 
+    # Enable ServiceTrafficDistribution in AntreaProxy. This requires AntreaProxy and EndpointSlice to be
+    # enabled, otherwise this flag will not take effect.
+    #  ServiceTrafficDistribution: true
+
     # Enable support for cleaning up stale UDP Service conntrack connections in AntreaProxy. This requires AntreaProxy to
     # be enabled, otherwise this flag will not take effect.
     #  CleanupStaleUDPSvcConntrack: true
 
-    # Enable traceflow which provides packet tracing feature to diagnose network issue.
+    # Enable Traceflow which provides packet tracing feature to diagnose network issue.
     #  Traceflow: true
+
+    # Enable PacketCapture feature which supports capturing packets to diagnose network issues.
+    #  PacketCapture: false
 
     # Enable NodePortLocal feature to make the Pods reachable externally through NodePort
     #  NodePortLocal: true
@@ -3823,6 +4057,29 @@ data:
     # Make sure it doesn't conflict with your existing interfaces.
     hostGateway: "antrea-gw0"
 
+    # Determines how traffic is encapsulated. It has the following options:
+    # encap(default):    Inter-node Pod traffic is always encapsulated and Pod to external network
+    #                    traffic is SNAT'd.
+    # noEncap:           Inter-node Pod traffic is not encapsulated; Pod to external network traffic is
+    #                    SNAT'd if noSNAT is not set to true. Underlying network must be capable of
+    #                    supporting Pod traffic across IP subnets.
+    # hybrid:            noEncap if source and destination Nodes are on the same subnet, otherwise encap.
+    # networkPolicyOnly: Antrea enforces NetworkPolicy only, and utilizes CNI chaining and delegates Pod
+    #                    IPAM and connectivity to the primary CNI.
+    #
+    trafficEncapMode: "encap"
+
+    # Whether or not to SNAT (using the Node IP) the egress traffic from a Pod to the external network.
+    # This option is for the noEncap traffic mode only, and the default value is false. In the noEncap
+    # mode, if the cluster's Pod CIDR is reachable from the external network, then the Pod traffic to
+    # the external network needs not be SNAT'd. In the networkPolicyOnly mode, antrea-agent never
+    # performs SNAT and this option will be ignored; for other modes it must be set to false.
+    noSNAT: false
+
+    # Fully randomize source port mapping in SNAT rules used for egress traffic from Pods to the
+    # external network.
+    snatFullyRandomPorts: false
+
     # Tunnel protocols used for encapsulating traffic across Nodes. If WireGuard is enabled in trafficEncryptionMode,
     # this option will not take effect. Supported values:
     # - geneve (default)
@@ -3872,6 +4129,7 @@ data:
     # Default MTU to use for the host gateway interface and the network interface of each Pod.
     # If omitted, antrea-agent will discover the MTU of the Node's primary interface and
     # also adjust MTU to accommodate for tunnel encapsulation overhead (if applicable).
+    # If the MTU is updated, the new value will only be applied to new workloads.
     defaultMTU: 0
 
     # packetInRate defines the OVS controller packet rate limits for different
@@ -3892,6 +4150,10 @@ data:
       # The maximum number of Egress IPs that can be assigned to a Node. It's useful when the Node network restricts
       # the number of secondary IPs a Node can have, e.g. EKS. It must not be greater than 255.
       maxEgressIPsPerNode: 255
+      # Fully randomize source port mapping in Egress SNAT rules. This has no impact on the default SNAT
+      # rules enforced by each Node for local Pod traffic. By default, we use the same value as for the
+      # top-level snatFullyRandomPorts configuration, but this field can be used as an override.
+      snatFullyRandomPorts:
 
 {% if (networking.podSubnet.split(',') | length == 2) and (networking.serviceSubnet.split(',') | length == 2) %}
 {% if networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(2) | ip == 4 %}
@@ -4533,6 +4795,20 @@ rules:
   - apiGroups:
       - crd.antrea.io
     resources:
+      - packetcaptures
+    verbs:
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - crd.antrea.io
+    resources:
+      - packetcaptures/status
+    verbs:
+      - update
+  - apiGroups:
+      - crd.antrea.io
+    resources:
       - egresses
     verbs:
       - get
@@ -4611,6 +4887,7 @@ rules:
       - secrets
     resourceNames:
       - antrea-bgp-passwords
+      - antrea-packetcapture-fileserver-auth
     verbs:
       - get
       - list
@@ -5223,7 +5500,7 @@ spec:
         kubectl.kubernetes.io/default-container: antrea-agent
         # Automatically restart Pods with a RollingUpdate if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 20130c4a5dbfeec75182bc3053288f64c06d0350b34c86675ac88d5961c47853
+        checksum/config: 2b4d82bcb825d50926115bad2125097f85aed424bfc49147444314cad8b7826a
       labels:
         app: antrea
         component: antrea-agent
@@ -5242,7 +5519,7 @@ spec:
       serviceAccountName: antrea-agent
       initContainers:
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.1.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.2.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5275,7 +5552,7 @@ spec:
             mountPath: /var/run/antrea
       containers:
         - name: antrea-agent
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.1.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.2.0
           imagePullPolicy: IfNotPresent
           command: ["antrea-agent"]
           # Log to both "/var/log/antrea/" and stderr (so "kubectl logs" can work).-
@@ -5366,7 +5643,7 @@ spec:
           - name: xtables-lock
             mountPath: /run/xtables.lock
         - name: antrea-ovs
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.1.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.2.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5459,7 +5736,7 @@ spec:
       annotations:
         # Automatically restart Pod if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 20130c4a5dbfeec75182bc3053288f64c06d0350b34c86675ac88d5961c47853
+        checksum/config: 2b4d82bcb825d50926115bad2125097f85aed424bfc49147444314cad8b7826a
       labels:
         app: antrea
         component: antrea-controller
@@ -5482,7 +5759,7 @@ spec:
       serviceAccountName: antrea-controller
       containers:
         - name: antrea-controller
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.1.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.2.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
