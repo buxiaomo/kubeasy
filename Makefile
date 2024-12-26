@@ -59,6 +59,8 @@ PIP_ARGS:=
 
 PIP_ARGS:=
 
+PIP_ARGS:=
+
 # Install ansible on depoy server
 runtime:
 	@PIP_ARGS="$(PIP_ARGS)" ./scripts/runtime.sh
