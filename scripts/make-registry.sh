@@ -44,19 +44,19 @@ docker push ${REGISTRY_URL}/coredns/coredns:1.9.3
 
 
 # flannel
-docker pull docker.io/flannel/flannel-cni-plugin:v1.4.0-flannel1
-docker tag docker.io/flannel/flannel-cni-plugin:v1.4.0-flannel1 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.4.0-flannel1
-docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.4.0-flannel1
+docker pull docker.io/flannel/flannel-cni-plugin:v1.4.1-flannel1
+docker tag docker.io/flannel/flannel-cni-plugin:v1.4.1-flannel1 ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.4.1-flannel1
+docker push ${REGISTRY_URL}/flannel/flannel-cni-plugin:v1.4.1-flannel1
 
-docker pull docker.io/flannel/flannel:v0.24.2
-docker tag docker.io/flannel/flannel:v0.24.2 ${REGISTRY_URL}/flannel/flannel:v0.24.2
-docker push ${REGISTRY_URL}/flannel/flannel:v0.24.2
+docker pull docker.io/flannel/flannel:v0.25.4
+docker tag docker.io/flannel/flannel:v0.25.4 ${REGISTRY_URL}/flannel/flannel:v0.25.4
+docker push ${REGISTRY_URL}/flannel/flannel:v0.25.4
 
 
 # metrics-server
-docker pull registry.k8s.io/metrics-server/metrics-server:v0.6.4
-docker tag registry.k8s.io/metrics-server/metrics-server:v0.6.4 ${REGISTRY_URL}/metrics-server/metrics-server:v0.6.4
-docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.6.4
+docker pull registry.k8s.io/metrics-server/metrics-server:v0.7.1
+docker tag registry.k8s.io/metrics-server/metrics-server:v0.7.1 ${REGISTRY_URL}/metrics-server/metrics-server:v0.7.1
+docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.7.1
 
 
 # pause
@@ -66,13 +66,13 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.9
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.15.1
-docker tag quay.io/cilium/cilium:v1.15.1 ${REGISTRY_URL}/cilium/cilium:v1.15.1
-docker push ${REGISTRY_URL}/cilium/cilium:v1.15.1
+docker pull quay.io/cilium/cilium:v1.15.4
+docker tag quay.io/cilium/cilium:v1.15.4 ${REGISTRY_URL}/cilium/cilium:v1.15.4
+docker push ${REGISTRY_URL}/cilium/cilium:v1.15.4
 
-docker pull quay.io/cilium/operator-generic:v1.15.1
-docker tag quay.io/cilium/operator-generic:v1.15.1 ${REGISTRY_URL}/cilium/operator-generic:v1.15.1
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.15.1
+docker pull quay.io/cilium/operator-generic:v1.15.4
+docker tag quay.io/cilium/operator-generic:v1.15.4 ${REGISTRY_URL}/cilium/operator-generic:v1.15.4
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.15.4
 
 docker pull quay.io/cilium/hubble-ui-backend:v0.13.0
 docker tag quay.io/cilium/hubble-ui-backend:v0.13.0 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.13.0
@@ -82,12 +82,22 @@ docker pull quay.io/cilium/hubble-ui:v0.13.0
 docker tag quay.io/cilium/hubble-ui:v0.13.0 ${REGISTRY_URL}/cilium/hubble-ui:v0.13.0
 docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.13.0
 
-docker pull quay.io/cilium/hubble-relay:v1.15.1
-docker tag quay.io/cilium/hubble-relay:v1.15.1 ${REGISTRY_URL}/cilium/hubble-relay:v1.15.1
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.15.1
+docker pull quay.io/cilium/hubble-relay:v1.15.4
+docker tag quay.io/cilium/hubble-relay:v1.15.4 ${REGISTRY_URL}/cilium/hubble-relay:v1.15.4
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.15.4
 
 
 # nvidia-device-plugin
 docker pull nvcr.io/nvidia/k8s-device-plugin:v0.14.4
 docker tag nvcr.io/nvidia/k8s-device-plugin:v0.14.4 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.4
 docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.4
+
+
+# antrea
+docker pull antrea/antrea-agent-ubuntu:v2.0.0
+docker tag antrea/antrea-agent-ubuntu:v2.0.0 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.0.0
+docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.0.0
+
+docker pull antrea/antrea-controller-ubuntu:v2.0.0
+docker tag antrea/antrea-controller-ubuntu:v2.0.0 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.0.0
+docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.0.0

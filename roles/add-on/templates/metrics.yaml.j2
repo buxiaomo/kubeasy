@@ -158,7 +158,8 @@ spec:
         - --kubelet-use-node-status-port
         - --metric-resolution=15s
         - --kubelet-insecure-tls
-        image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/metrics-server/metrics-server:v0.6.4"
+        - --logging-format=json
+        image: "{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.k8s.io') | urlsplit('path') }}{% endif %}/metrics-server/metrics-server:v0.7.1"
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -186,14 +187,17 @@ spec:
             memory: 200Mi
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /tmp
           name: tmp-dir
-      nodeSelector:
-        kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
       serviceAccountName: metrics-server
       volumes:
@@ -203,6 +207,8 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
+  labels:
+    k8s-app: metrics-server
   name: metrics-server
   namespace: kube-system
 spec:

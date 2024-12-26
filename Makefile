@@ -8,21 +8,21 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.25.16
-ETCD_VERSION:=3.5.4
-CNI_VERSION:=1.4.0
+KUBE_VERSION:=1.26.15
+ETCD_VERSION:=3.5.6
+CNI_VERSION:=1.4.1
 
 # kubernetes container runtime
 # docker, containerd
 KUBE_RUNTIME:=docker
 DOCKER_VERSION:=23.0.1
 
-CONTAINERD_VERSION:=1.7.13
+CONTAINERD_VERSION:=1.7.18
 CRICTL_VERSION:=1.27.0
 RUNC_VERSION:=1.1.12
 
 # kubernetes network plugin
-# flannel, calico, canal, cilium, none
+# flannel, calico, canal, cilium, antrea, none
 KUBE_NETWORK:=flannel
 
 # Private registry
