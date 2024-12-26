@@ -19,13 +19,9 @@ After=network.target local-fs.target
 
 [Service]
 Slice=podruntime.slice
-<<<<<<< HEAD
-ExecStartPre=/sbin/modprobe overlay
-=======
 #uncomment to enable the experimental sbservice (sandboxed) version of containerd/cri integration
 #Environment="ENABLE_CRI_SANDBOXES=sandboxed"
 ExecStartPre=-/sbin/modprobe overlay
->>>>>>> origin/v1.24
 ExecStartPre=/usr/bin/env iptables -P FORWARD ACCEPT
 ExecStart=/usr/local/bin/containerd
 
