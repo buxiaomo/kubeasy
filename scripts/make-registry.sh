@@ -18,17 +18,17 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull docker.io/calico/cni:v3.27.0
-docker tag docker.io/calico/cni:v3.27.0 ${REGISTRY_URL}/calico/cni:v3.27.0
-docker push ${REGISTRY_URL}/calico/cni:v3.27.0
+docker pull docker.io/calico/cni:v3.26.4
+docker tag docker.io/calico/cni:v3.26.4 ${REGISTRY_URL}/calico/cni:v3.26.4
+docker push ${REGISTRY_URL}/calico/cni:v3.26.4
 
-docker pull docker.io/calico/node:v3.27.0
-docker tag docker.io/calico/node:v3.27.0 ${REGISTRY_URL}/calico/node:v3.27.0
-docker push ${REGISTRY_URL}/calico/node:v3.27.0
+docker pull docker.io/calico/node:v3.26.4
+docker tag docker.io/calico/node:v3.26.4 ${REGISTRY_URL}/calico/node:v3.26.4
+docker push ${REGISTRY_URL}/calico/node:v3.26.4
 
-docker pull docker.io/calico/kube-controllers:v3.27.0
-docker tag docker.io/calico/kube-controllers:v3.27.0 ${REGISTRY_URL}/calico/kube-controllers:v3.27.0
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.27.0
+docker pull docker.io/calico/kube-controllers:v3.26.4
+docker tag docker.io/calico/kube-controllers:v3.26.4 ${REGISTRY_URL}/calico/kube-controllers:v3.26.4
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.26.4
 
 
 # canal
@@ -88,6 +88,6 @@ docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.14.5
 
 
 # nvidia-device-plugin
-docker pull nvcr.io/nvidia/k8s-device-plugin:v0.13.0
-docker tag nvcr.io/nvidia/k8s-device-plugin:v0.13.0 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
-docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.13.0
+docker pull nvcr.io/nvidia/k8s-device-plugin:v0.14.4
+docker tag nvcr.io/nvidia/k8s-device-plugin:v0.14.4 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.4
+docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.14.4
