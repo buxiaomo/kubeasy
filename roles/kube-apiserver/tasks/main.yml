@@ -81,7 +81,7 @@
       - keyEncipherment
     extended_key_usage:
       - serverAuth
-    subject_alt_name: "{{ item.value | union(apiServer.certSANs | default(['DNS:*.kubernetes.local'])) | unique }}"
+    subject_alt_name: "{{ item.value | union(apiServer.certSANs | default(['DNS:*.kubernetes.local'])) | sort | unique }}"
   with_dict:
     subject_alt_name:
       - "DNS:localhost"
@@ -96,8 +96,8 @@
       - "IP:127.0.0.1"
       - "IP:0:0:0:0:0:0:0:1"
       - "IP:::1"
-      - "IP:{{ networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(1) }}"
-      - "IP:{{ networking.serviceSubnet.split(',')[1] | default('fd74:ca9b:0172:0019::/110') | ansible.netcommon.next_nth_usable(1) }}"
+      - "IP:{{ networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.utils.next_nth_usable(1) }}"
+      - "IP:{{ networking.serviceSubnet.split(',')[1] | default('fd74:ca9b:0172:0019::/110') | ansible.utils.next_nth_usable(1) }}"
       - "IP:{{ inventory_hostname }}"
       - "{% if ansible_default_ipv6.address is defined %}IP:{{ ansible_default_ipv6.address }}{% else %}IP:::1{% endif %}"
       - "{% if ipv6 is defined %}IP:{{ ipv6 }}{% else %}IP:::1{% endif %}"
@@ -114,6 +114,7 @@
     ownca_path: /etc/kubernetes/pki/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_apiserver_crt
@@ -160,6 +161,7 @@
     ownca_path: /etc/kubernetes/pki/front-proxy-ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/front-proxy-ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_frontproxyclient_crt
@@ -207,6 +209,7 @@
     ownca_path: /etc/kubernetes/pki/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_apiserverkubeletclient_crt
@@ -253,6 +256,7 @@
     ownca_path: /etc/kubernetes/pki/etcd/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
   register: apiserver_tls_apiserveretcdclient_crt

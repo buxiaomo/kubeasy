@@ -1,7 +1,10 @@
 - name: Add an Apt signing key
   ansible.builtin.apt_key:
-    url: https://nvidia.github.io/nvidia-container-runtime/gpgkey
+    url: "{{ item }}"
     state: present
+  with_items:
+    - "https://nvidia.github.io/nvidia-container-runtime/gpgkey"
+    - "https://nvidia.github.io/libnvidia-container/gpgkey"
 
 - name: Add specified repository into sources list
   ansible.builtin.apt_repository:
@@ -11,8 +14,9 @@
     filename: nvidia-container-runtime
     update_cache: yes
   with_items:
-    - "deb https://nvidia.github.io/libnvidia-container/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/amd64 /"
-    - "deb https://nvidia.github.io/nvidia-container-runtime/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/amd64 /"
+    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/ubuntu18.04/$(ARCH) /"
+    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/nvidia-container-runtime/stable/ubuntu18.04/$(ARCH) /"
+    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
 
 - name: Install nvidia-container-runtime
   apt:

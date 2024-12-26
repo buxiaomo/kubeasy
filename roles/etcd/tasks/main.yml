@@ -133,7 +133,7 @@
     extended_key_usage:
       - serverAuth
       - clientAuth
-    subject_alt_name: "{{ item.value | unique }}"
+    subject_alt_name: "{{ item.value | sort | unique }}"
   with_dict:
     subject_alt_name:
       - "DNS:localhost"
@@ -157,6 +157,7 @@
     ownca_path: /etc/kubernetes/pki/etcd/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
     owner: root
@@ -218,6 +219,7 @@
     ownca_path: /etc/kubernetes/pki/etcd/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
     owner: root
@@ -269,6 +271,7 @@
     ownca_path: /etc/kubernetes/pki/etcd/ca.crt
     ownca_privatekey_path: /etc/kubernetes/pki/etcd/ca.key
     force: "{{ expired | default(false) }}"
+    ownca_not_after: "{{ cert.days | default('+3650d')}}"
     provider: ownca
     mode: 0644
     owner: root

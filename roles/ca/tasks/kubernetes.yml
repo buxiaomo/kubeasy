@@ -33,6 +33,7 @@
     privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/ca.key"
     mode: 0644
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: selfsigned
   run_once: true
   delegate_to: localhost
@@ -74,6 +75,7 @@
     privatekey_path: "/etc/ssl/kubernetes/{{ PROJECT_NAME | default('kubeasy') }}/{{ PROJECT_ENV | default('dev') }}/front-proxy-ca.key"
     mode: 0644
     force: "{{ expired | default(false) }}"
+    selfsigned_not_after: "{{ cert.days | default('+3650d')}}"
     provider: selfsigned
   run_once: true
   delegate_to: localhost

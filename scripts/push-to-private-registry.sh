@@ -32,10 +32,6 @@ while getopts "h:r:u:p:" opt_name; do
 done
 
 set -e
-if [ -n ${username} ] || [ -n ${password} ]; then
-  echo ${password} | docker login --username ${username} --password-stdin ${host} >/dev/null
-fi
-
 for r in $(curl -s 127.0.0.1:5000/v2/_catalog | jq -r .repositories[]); do
   for t in $(curl -s 127.0.0.1:5000/v2/${r}/tags/list | jq -r .tags[]); do
     if [ "$repo" == "" ]; then
@@ -43,17 +39,16 @@ for r in $(curl -s 127.0.0.1:5000/v2/_catalog | jq -r .repositories[]); do
     else
       export toHarbor=${host}/${repo}/${r}:${t}
     fi
-    echo "[message] pull 127.0.0.1:5000/${r}:${t}"
-    docker pull 127.0.0.1:5000/${r}:${t} >/dev/null
-
-    echo "[message] rename 127.0.0.1:5000/${r}:${t} -> ${toHarbor}"
-    docker tag 127.0.0.1:5000/${r}:${t} ${toHarbor} >/dev/null
-
-    echo "[message] push ${toHarbor}"
-    docker push ${toHarbor} >/dev/null
-
-    echo "[message] clean ${toHarbor}"
-    docker rmi --force 127.0.0.1:5000/${r}:${t} ${toHarbor} >/dev/null
-    echo ""
+    echo "[sync] 127.0.0.1:5000/${r}:${t}"
+    skopeo copy --src-tls-verify=false --dest-username=${username} --dest-password=${password} --dest-tls-verify=false docker://127.0.0.1:5000/${r}:${t} docker://${toHarbor}
   done
 done
+echo -e "\033[32m[sync] done.\033[0m"
+echo -e "\033[32muninstall registry.\033[0m"
+systemctl stop registry.service
+systemctl disable registry.service
+rm -rf /usr/local/etc/registry.yml /etc/systemd/system/registry.service /usr/local/bin/registry
+systemctl daemon-reload
+echo -e "\033[32mPlease use new registry address.\033[0m"
+echo -e "\033[32mFor example:\033[0m"
+echo -e "\033[32m    make deploy REGISTRY_URL=http://${host}/${repo} \033[0m"
