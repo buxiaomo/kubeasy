@@ -55,14 +55,3 @@ jobs:
           if [ ${#NEW_VERSION[*]} != 0 ];then
             echo "NEW_VERSION=${NEW_VERSION[*]}" >> $GITHUB_ENV
           fi
-
-      - name: notify to slack
-        uses: buxiaomo/slack-notify@v1
-        if: env.NEW_VERSION
-        with:
-          channel: "#kubeasy"
-          username: "webhookbot"
-          icon_url: "https://avatars.githubusercontent.com/u/65916846?v=4"
-          title: "A new version of kubernetes has been released"
-          text: "${{ env.NEW_VERSION }}"
-          webhook_url: "${{ secrets.SLACK_WEBHOOK }}"
