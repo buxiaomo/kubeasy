@@ -2,8 +2,8 @@
   ansible.builtin.apt_key:
     url: "{{ item }}"
     state: present
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
   with_items:
-    - "https://nvidia.github.io/nvidia-container-runtime/gpgkey"
     - "https://nvidia.github.io/libnvidia-container/gpgkey"
 
 - name: Add specified repository into sources list
@@ -14,8 +14,6 @@
     filename: nvidia-container-runtime
     update_cache: yes
   with_items:
-    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/$(ARCH) /"
-    - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/nvidia-container-runtime/stable/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/$(ARCH) /"
     - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
 
 - name: Install nvidia-container-runtime
