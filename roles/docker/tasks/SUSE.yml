@@ -2,6 +2,8 @@
   ansible.builtin.rpm_key:
     state: present
     key: https://nvidia.github.io/libnvidia-container/gpgkey
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+
 
 - name: Add specified repository into sources
   community.general.zypper_repository:
@@ -13,3 +15,4 @@
     name: nvidia-container-runtime
     state: latest
     update_cache: yes
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
