@@ -21,3 +21,4 @@
     name: "nvidia-container-runtime"
     state: present
     update_cache: yes
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
