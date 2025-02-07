@@ -2,8 +2,11 @@
   get_url:
     url: https://nvidia.github.io/nvidia-container-runtime/{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}/nvidia-container-runtime.repo
     dest: /etc/yum.repos.d/nvidia-container-runtime.repo
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+
 
 - name: Install nvidia-container-runtime
   yum:
     name: nvidia-container-runtime
     state: latest
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
