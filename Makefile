@@ -13,9 +13,9 @@ ETCD_VERSION:=3.5.7
 CNI_VERSION:=1.6.2
 
 # kubernetes container runtime
-# docker, containerd
-KUBE_RUNTIME:=docker
-DOCKER_VERSION:=23.0.1
+# only support containerd
+KUBE_RUNTIME:=containerd
+DOCKER_VERSION:=20.10.17
 
 CONTAINERD_VERSION:=2.0.2
 CRICTL_VERSION:=1.27.1
