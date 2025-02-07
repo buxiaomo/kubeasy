@@ -66,13 +66,13 @@ docker push ${REGISTRY_URL}/google_containers/pause:3.9
 
 
 # cilium
-docker pull quay.io/cilium/cilium:v1.16.3
-docker tag quay.io/cilium/cilium:v1.16.3 ${REGISTRY_URL}/cilium/cilium:v1.16.3
-docker push ${REGISTRY_URL}/cilium/cilium:v1.16.3
+docker pull quay.io/cilium/cilium:v1.17.0
+docker tag quay.io/cilium/cilium:v1.17.0 ${REGISTRY_URL}/cilium/cilium:v1.17.0
+docker push ${REGISTRY_URL}/cilium/cilium:v1.17.0
 
-docker pull quay.io/cilium/operator-generic:v1.16.3
-docker tag quay.io/cilium/operator-generic:v1.16.3 ${REGISTRY_URL}/cilium/operator-generic:v1.16.3
-docker push ${REGISTRY_URL}/cilium/operator-generic:v1.16.3
+docker pull quay.io/cilium/operator-generic:v1.17.0
+docker tag quay.io/cilium/operator-generic:v1.17.0 ${REGISTRY_URL}/cilium/operator-generic:v1.17.0
+docker push ${REGISTRY_URL}/cilium/operator-generic:v1.17.0
 
 docker pull quay.io/cilium/hubble-ui-backend:v0.13.1
 docker tag quay.io/cilium/hubble-ui-backend:v0.13.1 ${REGISTRY_URL}/cilium/hubble-ui-backend:v0.13.1
@@ -82,13 +82,13 @@ docker pull quay.io/cilium/hubble-ui:v0.13.1
 docker tag quay.io/cilium/hubble-ui:v0.13.1 ${REGISTRY_URL}/cilium/hubble-ui:v0.13.1
 docker push ${REGISTRY_URL}/cilium/hubble-ui:v0.13.1
 
-docker pull quay.io/cilium/hubble-relay:v1.16.3
-docker tag quay.io/cilium/hubble-relay:v1.16.3 ${REGISTRY_URL}/cilium/hubble-relay:v1.16.3
-docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.16.3
+docker pull quay.io/cilium/hubble-relay:v1.17.0
+docker tag quay.io/cilium/hubble-relay:v1.17.0 ${REGISTRY_URL}/cilium/hubble-relay:v1.17.0
+docker push ${REGISTRY_URL}/cilium/hubble-relay:v1.17.0
 
-docker pull quay.io/cilium/cilium-envoy:v1.29.9-1728346947-0d05e48bfbb8c4737ec40d5781d970a550ed2bbd
-docker tag quay.io/cilium/cilium-envoy:v1.29.9-1728346947-0d05e48bfbb8c4737ec40d5781d970a550ed2bbd ${REGISTRY_URL}/cilium/cilium-envoy:v1.29.9-1728346947-0d05e48bfbb8c4737ec40d5781d970a550ed2bbd
-docker push ${REGISTRY_URL}/cilium/cilium-envoy:v1.29.9-1728346947-0d05e48bfbb8c4737ec40d5781d970a550ed2bbd
+docker pull quay.io/cilium/cilium-envoy:v1.31.5-1737535524-fe8efeb16a7d233bffd05af9ea53599340d3f18e
+docker tag quay.io/cilium/cilium-envoy:v1.31.5-1737535524-fe8efeb16a7d233bffd05af9ea53599340d3f18e ${REGISTRY_URL}/cilium/cilium-envoy:v1.31.5-1737535524-fe8efeb16a7d233bffd05af9ea53599340d3f18e
+docker push ${REGISTRY_URL}/cilium/cilium-envoy:v1.31.5-1737535524-fe8efeb16a7d233bffd05af9ea53599340d3f18e
 
 
 # nvidia-device-plugin
