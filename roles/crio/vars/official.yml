@@ -1,1 +1,2 @@
 download_url: "https://storage.googleapis.com/cri-o/artifacts/cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"
+stargz_download_url: https://github.com/containerd/stargz-snapshotter/releases/download/v0.16.3/stargz-snapshotter-v0.16.3-linux-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz

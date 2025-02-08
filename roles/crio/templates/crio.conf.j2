@@ -79,7 +79,7 @@
     apparmor_profile = "crio-default"
     bind_mount_prefix = ""
     cgroup_manager = "systemd"
-    conmon = "/usr/local/bin/crio-conmon"
+    conmon = "/usr/local/bin/conmon"
     conmon_cgroup = "podruntime.slice"
     conmon_env = ["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "TERM=xterm"]
     container_exits_dir = "/var/run/crio/exits"
@@ -130,13 +130,13 @@
         runtime_type = "oci"
 {% else %}
       [crio.runtime.runtimes.crun]
-        runtime_path = "/usr/local/bin/crio-crun"
-        monitor_path = "/usr/local/bin/crio-conmon"
+        runtime_path = "/usr/local/bin/crun"
+        monitor_path = "/usr/local/bin/conmon"
         allowed_annotations = [
             "io.containers.trace-syscall",
         ]
 
       [crio.runtime.runtimes.runc]
-        runtime_path = "/usr/local/bin/crio-runc"
-        monitor_path = "/usr/local/bin/crio-conmon"
+        runtime_path = "/usr/local/bin/runc"
+        monitor_path = "/usr/local/bin/conmon"
 {% endif %}

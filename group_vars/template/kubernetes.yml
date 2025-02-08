@@ -3,6 +3,9 @@ crio:
   datadir: /var/lib/containers/storage
   # auto create crio primary partition
   # device: /dev/sdb
+  # stargz-snapshotter, offline installation is not supported. network environment is required.
+  plugins:
+    stargz: false
   registries:
     search:
       - "registry.access.redhat.com"
@@ -78,6 +81,9 @@ containerd:
   datadir: /var/lib/containerd
   # auto create containerd primary partition
   # device: /dev/sdb
+  # stargz-snapshotter, offline installation is not supported. network environment is required.
+  plugins:
+    stargz: false
   daemon:
     # mirrors:
     #   "https://docker.io": https://docker.mirrors.sjtug.sjtu.edu.cn

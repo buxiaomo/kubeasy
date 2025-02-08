@@ -1,0 +1,85 @@
+- name: Install fuse package
+  package:
+    name: "fuse"
+    state: present
+    update_cache: yes
+
+- name: Load kernel modules
+  community.general.modprobe:
+    name: "fuse"
+    state: present
+
+- name: Write kernel modules to file
+  ansible.builtin.lineinfile:
+    path: "{{ modprobe.filename }}"
+    line: "fuse"
+    create: yes
+
+- name: Distribution stargz-snapshotter package
+  ansible.builtin.copy:
+    src: "stargz-snapshotter-v0.16.3-linux-amd64.tar.gz"
+    dest: "/usr/local/src/stargz-snapshotter-v0.16.3-linux-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    owner: root
+    group: root
+    mode: 0644
+  ignore_errors: True
+  register: stargz_local
+
+- name: Set OS dependent variables
+  include_vars: "{{ DOWNLOAD_WAY | default('official') }}.yml"
+  when: stargz_local.failed
+
+- name: Download stargz-snapshotter package
+  get_url:
+    url: "{{ stargz_download_url }}"
+    dest: "/usr/local/src/stargz-snapshotter-v0.16.3-linux-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    force: true
+    mode: 0644
+    owner: root
+    group: root
+    url_username: "{{ NEXUS_USERNAME | default('') }}"
+    url_password: "{{ NEXUS_PASSWORD | default('') }}"
+    timeout: 3
+  register: stargz_pkg
+  until: stargz_pkg is succeeded
+  retries: 10
+  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  when: stargz_local.failed
+
+- name: Extract stargz-snapshotter package
+  ansible.builtin.unarchive:
+    src: "/usr/local/src/stargz-snapshotter-v0.16.3-linux-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: 0755
+    include:
+      - stargz-store
+    remote_src: yes
+
+- name: Create stargz-snapshotter configuration directory
+  ansible.builtin.file:
+    name: "/etc/containerd-stargz-grpc"
+    state: directory
+    mode: "0755"
+
+- name: Configuration stargz-snapshotter
+  ansible.builtin.template:
+    src: containerd-stargz-grpc.toml.j2
+    dest: /etc/containerd-stargz-grpc/config.toml
+
+- name: Install systemd file
+  ansible.builtin.template:
+    src: stargz-store.service.j2
+    dest: /etc/systemd/system/stargz-store.service
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: stargz-store
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+    masked: yes

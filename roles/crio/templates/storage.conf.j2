@@ -8,6 +8,9 @@
     {% if item.device == crio.device %}
       {% if "prjquota" in item.options %}
   [storage.options]
+    {% if crio.plugins.stargz %}
+    additionallayerstores = ["/var/lib/stargz-store/store:ref"]
+    {% endif %}
     additionalimagestores = []
     size = "{{ crio.daemon.storage.size | default('10G') }}"
       {% else %}
@@ -21,6 +24,9 @@
     {% if item.mount == "/" %}
       {% if "prjquota" in item.options %}
   [storage.options]
+    {% if crio.plugins.stargz %}
+    additionallayerstores = ["/var/lib/stargz-store/store:ref"]
+    {% endif %}
     additionalimagestores = []
     size = "{{ crio.daemon.storage.size | default('10G') }}"
       {% else %}

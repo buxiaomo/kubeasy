@@ -1,3 +1,8 @@
-server = "{{ item.key }}"
-[host."{{ item.value }}"]
-   capabilities = ["pull", "resolve"]
+server = "{{ item }}"
+[host."{{ item | default('https://docker.io') | urlsplit('hostname') }}{% if item | default('https://docker.io') | urlsplit('port') is not none %}:{{item | default('https://docker.io') | urlsplit('port')}}{% endif %}"]
+    endpoint = [ "{{ item | urlsplit('scheme') }}://{{ item | default('https://docker.io') | urlsplit('hostname') }}{% if item | default('https://docker.io') | urlsplit('port') is not none %}:{{item | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
+{% if item | urlsplit('scheme') ==  "http" %}
+    insecure_skip_verify = true
+{% else %}
+    capabilities = ["pull", "resolve"]
+{% endif %}

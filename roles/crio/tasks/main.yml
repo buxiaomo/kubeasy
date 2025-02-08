@@ -4,6 +4,10 @@
   include_tasks: "{{ ansible_distribution_file_variety }}.yml"
   when: gpu | default(false)
 
+- name: Install stargz-snapshotter
+  include_tasks: "stargz-snapshotter.yml"
+  when: crio.plugins.stargz
+
 - name: Distribution package
   ansible.builtin.copy:
     src: "cri-o.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.v{{ CRIO_VERSION }}.tar.gz"

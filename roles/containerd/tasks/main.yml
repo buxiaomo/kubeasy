@@ -4,6 +4,10 @@
   include_tasks: "{{ ansible_distribution_file_variety }}.yml"
   when: gpu | default(false)
 
+- name: Install stargz-snapshotter
+  include_tasks: "stargz-snapshotter.yml"
+  when: containerd.plugins.stargz
+
 - name: Distribution RunC package
   ansible.builtin.copy:
     src: "runc.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}"
@@ -146,7 +150,29 @@
   with_items:
     - /etc/containerd
     - "{{ containerd.datadir | default('/var/lib/containerd') }}"
+    - /etc/containerd/certs.d
   notify: restart containerd
+  tags:
+    - upgrade
+    - update
+
+- name: Create insecure registries directory
+  ansible.builtin.file:
+    name: /etc/containerd/certs.d/{{ item | default('https://docker.io') | urlsplit('hostname') }}{% if item | default('https://docker.io') | urlsplit('port') is not none %}:{{item | default('https://docker.io') | urlsplit('port')}}{% endif %}
+    state: directory
+    mode: "0755"
+  loop: "{% if REGISTRY_URL is defined %}{{ containerd.daemon.registry | default([]) + [ REGISTRY_URL ] }}{% else %}{{ containerd.daemon.registry}}{% endif %}"
+  when: containerd.daemon.registry is defined or REGISTRY_URL is defined
+  tags:
+    - upgrade
+    - update
+
+- name: Configuration insecure registries
+  ansible.builtin.template:
+    src: hosts.toml.j2
+    dest: /etc/containerd/certs.d/{{ item | default('https://docker.io') | urlsplit('hostname') }}{% if item | default('https://docker.io') | urlsplit('port') is not none %}:{{item | default('https://docker.io') | urlsplit('port')}}{% endif %}/hosts.toml
+  loop: "{% if REGISTRY_URL is defined %}{{ containerd.daemon.registry | default([]) + [ REGISTRY_URL ] }}{% else %}{{ containerd.daemon.registry}}{% endif %}"
+  when: containerd.daemon.registry is defined or REGISTRY_URL is defined
   tags:
     - upgrade
     - update
