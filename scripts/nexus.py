@@ -121,12 +121,12 @@ def downloadToLocal(arg):
 
     version = arg.containerd
     if version is not None:
-        url = "https://github.com/containerd/containerd/releases/download/v%s/containerd-%s-linux-amd64.tar.gz" % (
+        url = "https://github.com/containerd/containerd/releases/download/v%s/containerd-static-%s-linux-amd64.tar.gz" % (
             version, version)
-        if Download(url, "%s/containerd-%s-linux-amd64.tar.gz" % (basePath, version), arg.quiet):
+        if Download(url, "%s/containerd-static-%s-linux-amd64.tar.gz" % (basePath, version), arg.quiet):
             jsonFile.append(
                 {
-                    'src': "./scripts/src/%s/containerd-%s-linux-amd64.tar.gz" % (arg.kubernetes, version),
+                    'src': "./scripts/src/%s/containerd-static-%s-linux-amd64.tar.gz" % (arg.kubernetes, version),
                     'dest': "/containerd/containerd/releases/download/v%s" % version
                 }
             )
