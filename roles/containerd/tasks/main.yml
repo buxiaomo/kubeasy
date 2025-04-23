@@ -19,8 +19,8 @@
 
 - name: Distribution Containerd package
   ansible.builtin.copy:
-    src: "containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
-    dest: "/usr/local/src/containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    src: "containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: "/usr/local/src/containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     owner: root
     group: root
     mode: 0644
@@ -70,7 +70,7 @@
 - name: Download Containerd package
   get_url:
     url: "{{ containerd_download_url }}"
-    dest: "/usr/local/src/containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    dest: "/usr/local/src/containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     mode: 0644
     owner: root
     group: root
@@ -88,7 +88,7 @@
 
 - name: Extract Containerd package
   ansible.builtin.unarchive:
-    src: "/usr/local/src/containerd-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    src: "/usr/local/src/containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     dest: /usr/local/bin
     owner: root
     group: root
