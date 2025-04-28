@@ -9,7 +9,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN ln /usr/bin/python3 /usr/bin/python \
+RUN ln /usr/local/bin/python3 /usr/bin/python \
     && make runtime
 
 VOLUME [ "/app/inventory", "/etc/ssl/kubernetes" ]
