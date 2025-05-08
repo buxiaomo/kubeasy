@@ -36,7 +36,10 @@
   register: crio_pkg
   until: crio_pkg is succeeded
   retries: 10
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   notify: restart crio
   when: local.failed
   tags:
