@@ -61,7 +61,10 @@
   register: runc_pkg
   until: runc_pkg is succeeded
   retries: 10
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   notify: restart containerd
   when: runc_local.failed
   tags:
@@ -80,7 +83,10 @@
   register: containerd_pkg
   until: containerd_pkg is succeeded
   retries: 10
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   notify: restart containerd
   when: containerd_local.failed
   tags:
@@ -113,7 +119,10 @@
   register: crictl_pkg
   until: crictl_pkg is succeeded
   retries: 10
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   notify: restart containerd
   when: crictl_local.failed
   tags:
