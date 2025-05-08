@@ -46,7 +46,10 @@
   register: docker_pkg
   until: docker_pkg is succeeded
   retries: 10
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   notify: restart docker
   when: local.failed
   tags:
@@ -160,5 +163,8 @@
     dest: /etc/bash_completion.d/docker
     mode: 0755
     timeout: 1
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   ignore_errors: True
