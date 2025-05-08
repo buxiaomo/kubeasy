@@ -32,7 +32,10 @@
   register: kubectl_pkg
   until: kubectl_pkg is succeeded
   retries: 15
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   when: local.failed
   tags:
     - upgrade
@@ -167,7 +170,10 @@
     dest: /etc/bash_completion.d/kubectl
     owner: root
     group: root
-  environment: "{{ proxy_env | default({'http_proxy': '', 'https_proxy': '', 'no_proxy': ''}) }}"
+  environment:
+    http_proxy: "{{ proxy_env.http_proxy | default('') }}"
+    https_proxy: "{{ proxy_env.https_proxy | default('') }}"
+    no_proxy: "{{ proxy_env.no_proxy | default('') }}"
   ignore_errors: True
   when:
     - inventory_hostname in groups['master']
