@@ -11,7 +11,7 @@ if [ $? -ne 0 ]; then
 fi
 echo -e "\033[32m-> Install registry.\033[0m"
 tar -zvxf ${SHELL_FOLDER}/registry_2.8.1_linux_amd64.tar.gz -C /usr/local/bin registry >/dev/null 2>&1
-cp -rf registry/* /usr/local/src/registry
+cp -rf registry /usr/local/src
 mkdir -p /usr/local/etc
 cat > /usr/local/etc/registry.yml << EOF
 version: 0.1
