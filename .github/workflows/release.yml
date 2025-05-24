@@ -14,6 +14,7 @@ jobs:
 
       - name: Setup environment
         run: |
+          set -x
           pip3 install requests
           git fetch
           export GIT_TAG=${{ github.ref_name }}
@@ -69,8 +70,8 @@ jobs:
           find scripts/src/${GIT_TAG:1} -name kubelet -exec cp "{}" ./roles/kubelet/files/${GIT_TAG:1} \;
           docker build -t ghcr.io/buxiaomo/kubeasy:${GIT_TAG} .
           docker tag ghcr.io/buxiaomo/kubeasy:${GIT_TAG} 127.0.0.1:5000/buxiaomo/kubeasy:${GIT_TAG}
-          docker push -q 127.0.0.1:5000/buxiaomo/kubeasy:${GIT_TAG}
-          docker push -q ghcr.io/buxiaomo/kubeasy:${GIT_TAG}
+          docker push 127.0.0.1:5000/buxiaomo/kubeasy:${GIT_TAG}
+          docker push ghcr.io/buxiaomo/kubeasy:${GIT_TAG}
           cp -r ./scripts/src/registry /tmp/kubeasy-offline-${GIT_TAG}
 
           pushd /tmp
