@@ -10,8 +10,9 @@ COPY . /app
 
 WORKDIR /app
 
-RUN ln /usr/bin/python3 /usr/bin/python \
-    && make runtime
+RUN ln /usr/local/bin/python3 /usr/bin/python \
+    && make runtime \
+    && ansible-galaxy collection install ansible.utils
 
 VOLUME [ "/app/inventory", "/etc/ssl/kubernetes" ]
 ENTRYPOINT [ "/app/entrypoint.sh" ]
