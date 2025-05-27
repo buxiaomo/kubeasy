@@ -2,7 +2,7 @@ FROM python:3.13.3-slim
 
 RUN apt-get update \
     && apt-get dist-upgrade -y \
-    && apt-get install --no-install-recommends make vim -y \
+    && apt-get install --no-install-recommends sensible-utils make vim openssh-client -y \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/*
 
