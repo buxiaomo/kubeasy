@@ -1,4 +1,4 @@
-FROM python:3.13.3-slim
+FROM python:3.7.9-slim
 
 RUN apt-get update \
     && apt-get dist-upgrade -y \
