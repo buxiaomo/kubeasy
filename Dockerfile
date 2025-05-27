@@ -2,6 +2,7 @@ FROM python:3.10.6
 
 RUN apt-get update \
     && apt-get dist-upgrade -y \
+    && apt-get install --no-install-recommends sensible-utils make vim openssh-client -y \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/*
 
