@@ -1645,6 +1645,13 @@ spec:
                 description: FlowLogGoldmaneServer is the flow server endpoint to
                   which flow data should be published.
                 type: string
+              flowLogsLocalReporter:
+                description: 'FlowLogsLocalReporter configures local unix socket for
+                  reporting flow data from each node. [Default: Disabled]'
+                enum:
+                - Disabled
+                - Enabled
+                type: string
               flowLogsPolicyEvaluationMode:
                 description: |-
                   Continuous - Felix evaluates active flows on a regular basis to determine the rule
@@ -1888,18 +1895,18 @@ spec:
               logSeverityFile:
                 description: 'LogSeverityFile is the log severity above which logs
                   are sent to the log file. [Default: Info]'
-                pattern: ^(?i)(Debug|Info|Warning|Error|Fatal)?$
+                pattern: ^(?i)(Trace|Debug|Info|Warning|Error|Fatal)?$
                 type: string
               logSeverityScreen:
                 description: 'LogSeverityScreen is the log severity above which logs
                   are sent to the stdout. [Default: Info]'
-                pattern: ^(?i)(Debug|Info|Warning|Error|Fatal)?$
+                pattern: ^(?i)(Trace|Debug|Info|Warning|Error|Fatal)?$
                 type: string
               logSeveritySys:
                 description: |-
                   LogSeveritySys is the log severity above which logs are sent to the syslog. Set to None for no logging to syslog.
                   [Default: Info]
-                pattern: ^(?i)(Debug|Info|Warning|Error|Fatal)?$
+                pattern: ^(?i)(Trace|Debug|Info|Warning|Error|Fatal)?$
                 type: string
               maxIpsetSize:
                 description: |-
@@ -9842,7 +9849,7 @@ spec:
         # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.30.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.30.1
           imagePullPolicy: IfNotPresent
           command: ["/opt/cni/bin/install"]
           envFrom:
@@ -9891,7 +9898,7 @@ spec:
         # i.e. bpf at /sys/fs/bpf and cgroup2 at /run/calico/cgroup. Calico-node initialisation is executed
         # in best effort fashion, i.e. no failure for errors, to not disrupt pod creation in iptable mode.
         - name: "mount-bpffs"
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.1
           imagePullPolicy: IfNotPresent
           command: ["calico-node", "-init", "-best-effort"]
           volumeMounts:
@@ -9917,7 +9924,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.1
           imagePullPolicy: IfNotPresent
           envFrom:
           - configMapRef:
@@ -10151,7 +10158,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/kube-controllers:v3.30.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/kube-controllers:v3.30.1
           imagePullPolicy: IfNotPresent
           env:
             # Choose which controllers to run.
