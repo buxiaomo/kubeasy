@@ -2,6 +2,8 @@
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin"
 
 KUBE_VERSION=$1
+REGISTRY_DIR=$2
+
 if ! command -v curl >/dev/null 2>&1; then
   echo -e "\033[31mNeed curl command!\033[0m"
   exit 1
@@ -75,7 +77,7 @@ if [ -f ./scripts/src/kubeasy-binary-v${KUBE_VERSION}.tar.gz ]; then
 fi
 
 if [ -f ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz ]; then
-  tar -zxf ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz -C /usr/local/src
+  tar -zxf ./scripts/src/kubeasy-registry-v${KUBE_VERSION}.tar.gz -C ${REGISTRY_DIR}
   tar -zxf /usr/local/src/registry_2.8.1_linux_amd64.tar.gz -C /usr/local/bin registry
   mkdir -p /usr/local/etc
   cat >/usr/local/etc/registry.yml <<EOF
@@ -87,7 +89,7 @@ storage:
   cache:
     blobdescriptor: inmemory
   filesystem:
-    rootdirectory: /usr/local/src/registry
+    rootdirectory: ${REGISTRY_DIR}/registry
 http:
   addr: :5000
   headers:
