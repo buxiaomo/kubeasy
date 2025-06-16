@@ -37,6 +37,11 @@ KUBE_NETWORK:=flannel
 # https://192.168.119.20
 REGISTRY_URL:=
 
+# Private registry directory
+# eg: /usr/local/src
+# If you use nexus, please set REGISTRY_DIR to /usr/local/src
+REGISTRY_DIR:= /usr/local/src
+
 # Nexus information
 # eg: http://192.168.119.20:5001
 NEXUS_DOMAIN_NAME:=
@@ -220,7 +225,7 @@ e2e:
 	@sonobuoy delete --all
 
 prepare:
-	@./scripts/prepare.sh $(KUBE_VERSION)
+	@./scripts/prepare.sh $(KUBE_VERSION) $(REGISTRY_DIR)
 
 download:
 	@./scripts/nexus.py --kubernetes $(KUBE_VERSION) \
