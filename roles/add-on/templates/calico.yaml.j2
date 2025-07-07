@@ -537,6 +537,8 @@ spec:
                   Option to keep the original nexthop field when routes are sent to a BGP Peer.
                   Setting "true" configures the selected BGP Peers node to use the "next hop keep;"
                   instead of "next hop self;"(default) in the specific branch of the Node on "bird.cfg".
+                  Note: that this field is deprecated. Users should use the NextHopMode field to control
+                  the next hop attribute for a BGP peer.
                 type: boolean
               localWorkloadSelector:
                 description: |-
@@ -547,6 +549,26 @@ spec:
                 description: |-
                   Time to allow for software restart.  When specified, this is configured as the graceful
                   restart timeout.  When not specified, the BIRD default of 120s is used.
+                type: string
+              nextHopMode:
+                allOf:
+                - enum:
+                  - Auto
+                  - Self
+                  - Keep
+                - enum:
+                  - Auto
+                  - Self
+                  - Keep
+                description: |-
+                  NextHopMode defines the method of calculating the next hop attribute for received routes.
+                  This replaces and expands the deprecated KeepOriginalNextHop field.
+                  Users should use this setting to control the next hop attribute for a BGP peer.
+                  When this is set, the value of the KeepOriginalNextHop field is ignored.
+                  if neither keepOriginalNextHop or nextHopMode is specified, BGP's default behaviour is used.
+                  Set it to “Auto” to apply BGP’s default behaviour.
+                  Set it to "Self" to configure "next hop self;" in "bird.cfg".
+                  Set it to "Keep" to configure "next hop keep;" in "bird.cfg".
                 type: string
               node:
                 description: |-
@@ -9852,7 +9874,7 @@ spec:
         # It can be deleted if this is a fresh installation, or if you have already
         # upgraded to use calico-ipam.
         - name: upgrade-ipam
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.30.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.30.2
           imagePullPolicy: IfNotPresent
           command: ["/opt/cni/bin/calico-ipam", "-upgrade"]
           envFrom:
@@ -9880,7 +9902,7 @@ spec:
         # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.30.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.30.2
           imagePullPolicy: IfNotPresent
           command: ["/opt/cni/bin/install"]
           envFrom:
@@ -9923,7 +9945,7 @@ spec:
         # i.e. bpf at /sys/fs/bpf and cgroup2 at /run/calico/cgroup. Calico-node initialisation is executed
         # in best effort fashion, i.e. no failure for errors, to not disrupt pod creation in iptable mode.
         - name: "mount-bpffs"
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.2
           imagePullPolicy: IfNotPresent
           command: ["calico-node", "-init", "-best-effort"]
           volumeMounts:
@@ -9949,7 +9971,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/node:v3.30.2
           imagePullPolicy: IfNotPresent
           envFrom:
           - configMapRef:
@@ -10209,7 +10231,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/kube-controllers:v3.30.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/calico/kube-controllers:v3.30.2
           imagePullPolicy: IfNotPresent
           env:
             # Choose which controllers to run.
