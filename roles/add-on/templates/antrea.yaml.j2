@@ -2106,8 +2106,14 @@ spec:
                       oneOf:
                         - format: ipv4
                         - format: ipv6
+                      x-kubernetes-validations:
+                      - message: gateway is immutable
+                        rule: self == oldSelf
                     prefixLength:
                       type: integer
+                      x-kubernetes-validations:
+                      - message: prefixLength is immutable
+                        rule: self == oldSelf
                       minimum: 1
                       maximum: 127
                     vlan:
@@ -3067,7 +3073,44 @@ spec:
                               type: integer
                               minimum: 1
                               maximum: 65535
-
+                            flags:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - value
+                                properties:
+                                  value:
+                                    type: integer
+                                    minimum: 0
+                                    maximum: 255
+                                  mask:
+                                    type: integer
+                                    minimum: 0
+                                    maximum: 255
+                        icmp:
+                          type: object
+                          properties:
+                            messages:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - type
+                                properties:
+                                  type:
+                                    x-kubernetes-int-or-string: true
+                                  code:
+                                    type: integer
+                                    minimum: 0
+                                    maximum: 255
+                      x-kubernetes-validations:
+                        - rule: "(has(self.icmp) ? 1 : 0) + (has(self.udp) ? 1 : 0) + (has(self.tcp) ? 1: 0) <= 1"
+                          message: "At most one of 'icmp', 'udp', or 'tcp' may be set"
+                direction:
+                  type: string
+                  enum: ["SourceToDestination", "DestinationToSource", "Both"]
+                  default: "SourceToDestination"
                 timeout:
                   type: integer
                   minimum: 1
@@ -4179,7 +4222,7 @@ data:
     # messages sent to antrea-agent. The number stands for the rate as packets per
     # second(pps) and the burst size will be automatically set to twice the rate.
     # When the rate and burst size are exceeded, new packets will be dropped.
-    packetInRate: 500
+    packetInRate: 5000
 
     # wireGuard specifies WireGuard related configurations.
     wireGuard:
@@ -4331,6 +4374,11 @@ data:
     # `antrea-agent` container must be set to the same value.
     apiPort: 10350
 
+    # clusterPort is the server port used by the antrea-agent to run a gossip-based cluster
+    # membership protocol. Currently it's used only when the Egress feature is enabled.
+    # Defaults to 10351.
+    clusterPort: 10351
+
     # Enable metrics exposure via Prometheus. Initializes Prometheus metrics listener.
     enablePrometheusMetrics: true
 
@@ -4352,7 +4400,7 @@ data:
       # If no PROTO is given, we consider "tls" as default. We support "tls", "tcp" and
       # "udp" protocols. "tls" is used for securing communication between flow exporter and
       # flow aggregator.
-      flowCollectorAddr: "flow-aggregator/flow-aggregator:4739:tls"
+      flowCollectorAddr: "flow-aggregator/flow-aggregator:14739:grpc"
 
       # Provide flow poll interval as a duration string. This determines how often the
       # flow exporter dumps connections from the conntrack module. Flow poll interval
@@ -4372,6 +4420,13 @@ data:
       # packet matching this flow has been observed since the last export event.
       # Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
       idleFlowExportTimeout: "15s"
+
+      # Provide the set of protocols to filter specific flows that will be
+      # exported. Invalid protocols do not error and instead warnings are
+      # logged on the antrea agent. By default the full set of supported
+      # protocols are exported which are:
+      # "tcp", "udp", "sctp"
+      protocolFilter: 
 
     nodePortLocal:
     # Enable NodePortLocal, a feature used to make Pods reachable using port forwarding on the host. To
@@ -4541,7 +4596,7 @@ data:
       # on the Node, antrea-agent will create it based on the configuration.
       # The following configuration specifies an OVS bridge with name "br1" and a
       # physical interface "eth1":
-      # [{bridgeName: "br1", physicalInterfaces: ["eth1"]}]
+      # [{bridgeName: "br1", physicalInterfaces: ["eth1"], enableMulticastSnooping: false}]
       ovsBridges:
   antrea-cni.conflist: |
     {
@@ -4735,6 +4790,7 @@ rules:
       - pods/status
     verbs:
       - patch
+      - update
   - apiGroups:
       - ""
     resources:
@@ -5564,7 +5620,7 @@ spec:
         kubectl.kubernetes.io/default-container: antrea-agent
         # Automatically restart Pods with a RollingUpdate if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 6b0b82d61a89692c8092a44ac0a7bb02647254384f5246282bbb6be56415d08b
+        checksum/config: 9aa91ee18252eb53f869c787913a108193152dfe0b429500356c4626d67a6712
       labels:
         app: antrea
         component: antrea-agent
@@ -5583,7 +5639,7 @@ spec:
       serviceAccountName: antrea-agent
       initContainers:
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.3.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5598,6 +5654,10 @@ spec:
             # binaries that need to be skipped for installation, e.g. "portmap, bandwidth".
             - name: SKIP_CNI_BINARIES
               value: ""
+            # CONFIG_FILE_MODE set the file permission for 10-antrea.conflist.
+            # The default value will be '644' if it's empty.
+            - name: CONFIG_FILE_MODE
+              value: "644"
           volumeMounts:
           - name: antrea-config
             mountPath: /etc/antrea/antrea-cni.conflist
@@ -5616,7 +5676,7 @@ spec:
             mountPath: /var/run/antrea
       containers:
         - name: antrea-agent
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.3.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.0
           imagePullPolicy: IfNotPresent
           command: ["antrea-agent"]
           # Log to both "/var/log/antrea/" and stderr (so "kubectl logs" can work).-
@@ -5709,7 +5769,7 @@ spec:
           - name: host-pod-resources
             mountPath: /var/lib/kubelet/pod-resources
         - name: antrea-ovs
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.3.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5806,7 +5866,7 @@ spec:
       annotations:
         # Automatically restart Pod if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 6b0b82d61a89692c8092a44ac0a7bb02647254384f5246282bbb6be56415d08b
+        checksum/config: 9aa91ee18252eb53f869c787913a108193152dfe0b429500356c4626d67a6712
       labels:
         app: antrea
         component: antrea-controller
@@ -5829,7 +5889,7 @@ spec:
       serviceAccountName: antrea-controller
       containers:
         - name: antrea-controller
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.3.1
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.4.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
