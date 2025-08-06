@@ -135,7 +135,9 @@ spec:
               fieldPath: metadata.namespace
         - name: EVENT_QUEUE_DEPTH
           value: "5000"
-        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.27.0
+        - name: CONT_WHEN_CACHE_NOT_READY
+          value: "false"
+        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.27.2
         name: kube-flannel
         resources:
           requests:
@@ -173,7 +175,7 @@ spec:
         - /etc/cni/net.d/10-flannel.conflist
         command:
         - cp
-        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.27.0
+        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.27.2
         name: install-cni
         volumeMounts:
         - mountPath: /etc/cni/net.d
