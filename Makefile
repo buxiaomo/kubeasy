@@ -21,7 +21,7 @@ CONTAINERD_VERSION:=2.1.3
 CRICTL_VERSION:=1.33.0
 RUNC_VERSION:=1.3.0
 
-CRIO_VERSION:=1.33.2
+CRIO_VERSION:=1.33.3
 
 # kubernetes network plugin
 # flannel, calico, canal, cilium, antrea, none
