@@ -4382,7 +4382,6 @@ data:
     # Enable metrics exposure via Prometheus. Initializes Prometheus metrics listener.
     enablePrometheusMetrics: true
 
-
     flowExporter:
       # Enable FlowExporter, a feature used to export polled conntrack connections as
       # IPFIX flow records from each agent to a configured collector. To enable this
@@ -4426,7 +4425,7 @@ data:
       # logged on the antrea agent. By default the full set of supported
       # protocols are exported which are:
       # "tcp", "udp", "sctp"
-      protocolFilter: 
+      protocolFilter:
 
     nodePortLocal:
     # Enable NodePortLocal, a feature used to make Pods reachable using port forwarding on the host. To
@@ -5620,7 +5619,7 @@ spec:
         kubectl.kubernetes.io/default-container: antrea-agent
         # Automatically restart Pods with a RollingUpdate if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 9aa91ee18252eb53f869c787913a108193152dfe0b429500356c4626d67a6712
+        checksum/config: 7246ad2aecb3e83060de547adaec7ac8a140920bf60f014d92e7aa3bb83ebf51
       labels:
         app: antrea
         component: antrea-agent
@@ -5639,7 +5638,7 @@ spec:
       serviceAccountName: antrea-agent
       initContainers:
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.1
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5676,7 +5675,7 @@ spec:
             mountPath: /var/run/antrea
       containers:
         - name: antrea-agent
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.1
           imagePullPolicy: IfNotPresent
           command: ["antrea-agent"]
           # Log to both "/var/log/antrea/" and stderr (so "kubectl logs" can work).-
@@ -5769,7 +5768,7 @@ spec:
           - name: host-pod-resources
             mountPath: /var/lib/kubelet/pod-resources
         - name: antrea-ovs
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.1
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5866,7 +5865,7 @@ spec:
       annotations:
         # Automatically restart Pod if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 9aa91ee18252eb53f869c787913a108193152dfe0b429500356c4626d67a6712
+        checksum/config: 7246ad2aecb3e83060de547adaec7ac8a140920bf60f014d92e7aa3bb83ebf51
       labels:
         app: antrea
         component: antrea-controller
@@ -5889,7 +5888,7 @@ spec:
       serviceAccountName: antrea-controller
       containers:
         - name: antrea-controller
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.4.0
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.4.1
           imagePullPolicy: IfNotPresent
           resources:
             requests:
