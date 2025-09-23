@@ -19,9 +19,9 @@ DOCKER_VERSION:=20.10.17
 
 CONTAINERD_VERSION:=2.1.4
 CRICTL_VERSION:=1.32.0
-RUNC_VERSION:=1.3.0
+RUNC_VERSION:=1.3.1
 
-CRIO_VERSION:=1.32.7
+CRIO_VERSION:=1.32.8
 
 # kubernetes network plugin
 # flannel, calico, canal, cilium, antrea, none
