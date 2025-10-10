@@ -48,9 +48,9 @@ docker pull ghcr.io/flannel-io/flannel-cni-plugin:v1.8.0-flannel1
 docker tag ghcr.io/flannel-io/flannel-cni-plugin:v1.8.0-flannel1 ${REGISTRY_URL}/flannel-io/flannel-cni-plugin:v1.8.0-flannel1
 docker push ${REGISTRY_URL}/flannel-io/flannel-cni-plugin:v1.8.0-flannel1
 
-docker pull ghcr.io/flannel-io/flannel:v0.27.3
-docker tag ghcr.io/flannel-io/flannel:v0.27.3 ${REGISTRY_URL}/flannel-io/flannel:v0.27.3
-docker push ${REGISTRY_URL}/flannel-io/flannel:v0.27.3
+docker pull ghcr.io/flannel-io/flannel:v0.27.4
+docker tag ghcr.io/flannel-io/flannel:v0.27.4 ${REGISTRY_URL}/flannel-io/flannel:v0.27.4
+docker push ${REGISTRY_URL}/flannel-io/flannel:v0.27.4
 
 
 # metrics-server
