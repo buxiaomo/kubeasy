@@ -2823,6 +2823,7 @@ spec:
                     loadBalancer:
                       properties:
                         assignIPs:
+                          default: AllServices
                           type: string
                       type: object
                     namespace:
@@ -2909,6 +2910,7 @@ spec:
                         loadBalancer:
                           properties:
                             assignIPs:
+                              default: AllServices
                               type: string
                           type: object
                         namespace:
@@ -7066,7 +7068,7 @@ spec:
         # It can be deleted if this is a fresh installation, or if you have already
         # upgraded to use calico-ipam.
         - name: upgrade-ipam
-          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.31.0
+          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.31.1
           imagePullPolicy: IfNotPresent
           command: ["/opt/cni/bin/calico-ipam", "-upgrade"]
           envFrom:
@@ -7094,7 +7096,7 @@ spec:
         # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.31.0
+          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/cni:v3.31.1
           imagePullPolicy: IfNotPresent
           command: ["/opt/cni/bin/install"]
           envFrom:
@@ -7138,7 +7140,7 @@ spec:
         # networking to allow communication with the API Server. Calico-node initialization is executed
         # in best effort fashion, i.e. no failure for errors, to not disrupt pod creation in iptables mode.
         - name: "ebpf-bootstrap"
-          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/node:v3.31.0
+          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/node:v3.31.1
           imagePullPolicy: IfNotPresent
           command: ["calico-node", "-init", "-best-effort"]
           volumeMounts:
@@ -7164,7 +7166,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/node:v3.31.0
+          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/node:v3.31.1
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -7424,7 +7426,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/kube-controllers:v3.31.0
+          image: {{ REGISTRY_URL | default('https://quay.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://quay.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://quay.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://quay.io') | urlsplit('path') }}{% endif %}/calico/kube-controllers:v3.31.1
           imagePullPolicy: IfNotPresent
           env:
             # Choose which controllers to run.
