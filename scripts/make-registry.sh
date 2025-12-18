@@ -38,9 +38,9 @@ docker push ${REGISTRY_URL}/flannel/flannel:v0.24.4
 
 
 # coredns
-docker pull registry.k8s.io/coredns/coredns:v1.12.0
-docker tag registry.k8s.io/coredns/coredns:v1.12.0 ${REGISTRY_URL}/coredns/coredns:v1.12.0
-docker push ${REGISTRY_URL}/coredns/coredns:v1.12.0
+docker pull registry.k8s.io/coredns/coredns:v1.12.1
+docker tag registry.k8s.io/coredns/coredns:v1.12.1 ${REGISTRY_URL}/coredns/coredns:v1.12.1
+docker push ${REGISTRY_URL}/coredns/coredns:v1.12.1
 
 
 # flannel
@@ -60,9 +60,9 @@ docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.0
 
 
 # pause
-docker pull registry.aliyuncs.com/google_containers/pause:3.10
-docker tag registry.aliyuncs.com/google_containers/pause:3.10 ${REGISTRY_URL}/google_containers/pause:3.10
-docker push ${REGISTRY_URL}/google_containers/pause:3.10
+docker pull registry.aliyuncs.com/google_containers/pause:3.10.1
+docker tag registry.aliyuncs.com/google_containers/pause:3.10.1 ${REGISTRY_URL}/google_containers/pause:3.10.1
+docker push ${REGISTRY_URL}/google_containers/pause:3.10.1
 
 
 # cilium
