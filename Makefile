@@ -10,7 +10,7 @@ DOWNLOAD_WAY:=official
 # kubernetes version
 KUBE_VERSION:=1.32.11
 ETCD_VERSION:=3.5.16
-CNI_VERSION:=1.8.0
+CNI_VERSION:=1.9.0
 
 # kubernetes container runtime
 # crio, containerd
@@ -19,9 +19,9 @@ DOCKER_VERSION:=20.10.17
 
 CONTAINERD_VERSION:=2.2.0
 CRICTL_VERSION:=1.32.0
-RUNC_VERSION:=1.3.3
+RUNC_VERSION:=1.4.0
 
-CRIO_VERSION:=1.32.10
+CRIO_VERSION:=1.32.11
 
 # kubernetes network plugin
 # flannel, calico, canal, cilium, antrea, none
