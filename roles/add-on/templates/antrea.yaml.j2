@@ -1792,6 +1792,174 @@ spec:
       - en
 
 ---
+# Source: antrea/crds/flowexporterdestination.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: flowexporterdestinations.crd.antrea.io
+  labels:
+    app: antrea
+spec:
+  group: crd.antrea.io
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      additionalPrinterColumns:
+      - name: Address:Port
+        type: string
+        description: Address of flow collector.
+        jsonPath: .spec.address
+      schema:
+        openAPIV3Schema:
+          type: object
+          required:
+            - spec
+          properties:
+            spec:
+              type: object
+              required:
+                - address
+                - protocol
+              properties:
+                address:
+                  type: string
+                  description: >
+                    The flow collector address including port as a string.
+
+                    Example:
+                    - flow-aggregator/flow-aggregator:14739
+                    - 10.244.10.10:4739
+                  pattern: ^.+:[0-9]+$
+                protocol:
+                  type: object
+                  description: >
+                    The protocol used to send flow details.
+
+                    Exactly one must be defined and non-nil.
+                  oneOf:
+                  - required: [ipfix]
+                  - required: [grpc]
+                  properties:
+                    ipfix:
+                      type: object
+                      description: Configuration for using IPFIX protocol.
+                      required:
+                      - transport
+                      properties:
+                        transport:
+                          type: string
+                          enum:
+                          - tcp
+                          - udp
+                          - tls
+                    grpc:
+                      type: object
+                      description: Configuration for using gRPC protocol.
+                filter:
+                  type: object
+                  properties:
+                    protocols:
+                      type: array
+                      description: >
+                        Filter for only flows whose protocol which match this filter.
+                        The default is accept all protocols if unset or nil.
+
+                        Supported values are [tcp, udp, sctp].
+                      items:
+                        type: string
+                        enum:
+                        - tcp
+                        - udp
+                        - sctp
+                activeFlowExportTimeoutSeconds:
+                  type: integer
+                  format: int32
+                  description: >
+                    Provide the active flow export timeout in seconds, which is the timeout after which a flow
+                    record is sent to the collector for active flows. Thus, for flows with a continuous
+                    stream of packets, a flow record will be exported to the collector once the elapsed
+                    time since the last export event is equal to the value of this timeout.
+                  minimum: 1
+                  default: 5
+                idleFlowExportTimeoutSeconds:
+                  type: integer
+                  format: int32
+                  description: >
+                    Provide the idle flow export timeout in seconds, which is the timeout after which a flow
+                    record is sent to the collector for idle flows. A flow is considered idle if no
+                    packet matching this flow has been observed since the last export event.
+                  minimum: 1
+                  default: 15
+                tlsConfig:
+                  type: object
+                  required:
+                  - caConfigMap
+                  properties:
+                    minTLSVersion:
+                      type: string
+                      description: >
+                        minTLSVersion specifies which version of TLS the client should accept from the server.
+                        This defaults to VersionTLS12 if unspecified.
+                      enum:
+                        - VersionTLS12
+                        - VersionTLS13
+                      default: VersionTLS12
+                    serverName:
+                      type: string
+                      description: >
+                        serverName is used to verify the hostname on the returned certificate. If specified
+                        it will be included in the client's handshake (SNI) to support virtual hosting unless
+                        it is an IP address. If this field is omitted, the hostname used for certificate 
+                        verification will default to the provided server address (spec.address).
+                      minLength: 1
+                    caConfigMap:
+                      type: object
+                      description: >
+                        Specify the location of the ConfigMap containing the CA certificate used to authenticate
+                        the collector service. The ConfigMap must store the certificate under the key 'ca.crt'.
+                        To ensure flow exporter will have access to this resource it must be granted the proper
+                        RBAC permissions.
+                      required:
+                      - namespace
+                      - name
+                      properties:
+                        namespace:
+                          type: string
+                          description: Namespace of the ConfigMap containing the CA certificate.
+                          minLength: 1
+                        name:
+                          type: string
+                          description: Name of the ConfigMap containing the CA certificate.
+                          minLength: 1
+                    clientSecret:
+                      type: object
+                      description: >
+                        Specify the location of the Secret containing the client certificate and private
+                        key for mTLS. The Secret must contain the keys 'tls.crt' and 'tls.key'.
+                        If omitted, client authentication will be disabled. To ensure flow exporter will
+                        have access to this resource it must be granted the proper RBAC permissions.
+                      required:
+                      - namespace
+                      - name
+                      properties:
+                        namespace:
+                          type: string
+                          description: Namespace of the Secret containing the client certificate/key.
+                          minLength: 1
+                        name:
+                          type: string
+                          description: Name of the Secret containing the client certificate/key.
+                          minLength: 1
+  scope: Cluster
+  names:
+    plural: flowexporterdestinations
+    singular: flowexporterdestination
+    kind: FlowExporterDestination
+    shortNames:
+      - flowexporterdest
+
+---
 # Source: antrea/crds/group.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -2986,24 +3154,20 @@ spec:
             spec:
               type: object
               required:
-                - source
                 - captureConfig
-                - destination
-              anyOf:
-                - properties:
-                    source:
-                      required: [pod]
-                - properties:
-                    destination:
-                      required: [pod]
+              x-kubernetes-validations:
+                - rule: "has(self.source.pod) || has(self.destination.pod)"
+                  message: "At least one of source.pod or destination.pod must be specified."
+                - rule: "!(has(self.capturePoint) && self.capturePoint == 'Source') || has(self.source.pod)"
+                  message: "source.pod must be set when capturePoint is 'Source'"
+                - rule: "!(has(self.capturePoint) && self.capturePoint == 'Destination') || has(self.destination.pod)"
+                  message: "destination.pod must be set when capturePoint is 'Destination'"
               properties:
                 source:
                   type: object
-                  oneOf:
-                    - required:
-                      - pod
-                    - required:
-                      - ip
+                  x-kubernetes-validations:
+                    - rule: "!(has(self.pod) && has(self.ip))"
+                      message: "At most one of 'pod' or 'ip' may be set"
                   properties:
                     pod:
                       type: object
@@ -3017,14 +3181,14 @@ spec:
                           type: string
                     ip:
                       type: string
-                      format: ipv4
+                      oneOf:
+                        - format: ipv4
+                        - format: ipv6
                 destination:
                   type: object
-                  oneOf:
-                    - required:
-                      - pod
-                    - required:
-                      - ip
+                  x-kubernetes-validations:
+                    - rule: "!(has(self.pod) && has(self.ip))"
+                      message: "At most one of 'pod' or 'ip' may be set"
                   properties:
                     pod:
                       type: object
@@ -3038,13 +3202,15 @@ spec:
                           type: string
                     ip:
                       type: string
-                      format: ipv4
+                      oneOf:
+                        - format: ipv4
+                        - format: ipv6
                 packet:
                   type: object
                   properties:
                     ipFamily:
                       type: string
-                      enum: [IPv4]
+                      enum: [IPv4, IPv6]
                       default: IPv4
                     protocol:
                       x-kubernetes-int-or-string: true
@@ -3104,13 +3270,32 @@ spec:
                                     type: integer
                                     minimum: 0
                                     maximum: 255
+                        icmpv6:
+                          type: object
+                          properties:
+                            messages:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - type
+                                properties:
+                                  type:
+                                    x-kubernetes-int-or-string: true
+                                  code:
+                                    type: integer
+                                    minimum: 0
+                                    maximum: 255
                       x-kubernetes-validations:
-                        - rule: "(has(self.icmp) ? 1 : 0) + (has(self.udp) ? 1 : 0) + (has(self.tcp) ? 1: 0) <= 1"
-                          message: "At most one of 'icmp', 'udp', or 'tcp' may be set"
+                        - rule: "(has(self.icmp) ? 1 : 0) + (has(self.icmpv6) ? 1 : 0) + (has(self.udp) ? 1 : 0) + (has(self.tcp) ? 1: 0) <= 1"
+                          message: "At most one of 'ICMP', 'ICMPv6', 'UDP', or 'TCP' may be set"
                 direction:
                   type: string
                   enum: ["SourceToDestination", "DestinationToSource", "Both"]
                   default: "SourceToDestination"
+                capturePoint:
+                  type: string
+                  enum: ["Source", "Destination"]
                 timeout:
                   type: integer
                   minimum: 1
@@ -4030,19 +4215,9 @@ data:
     # AllBeta is a global toggle for beta features. Per-feature key values override the default set by AllBeta.
     #  AllBeta: false
 
-    # Enable AntreaProxy which provides ServiceLB for in-cluster Services in antrea-agent.
-    # It should be enabled on Windows, otherwise NetworkPolicy will not take effect on
-    # Service traffic. Note that this feature gate is deprecated since this feature was
-    # promoted to GA in v1.14.
-    #  AntreaProxy: true
-
-    # Enable TopologyAwareHints in AntreaProxy. This requires AntreaProxy and EndpointSlice to be
-    # enabled, otherwise this flag will not take effect.
-    #  TopologyAwareHints: true
-
-    # Enable ServiceTrafficDistribution in AntreaProxy. This requires AntreaProxy and EndpointSlice to be
-    # enabled, otherwise this flag will not take effect.
-    #  ServiceTrafficDistribution: true
+    # Enable PreferSameTrafficDistribution so that AntreaProxy can honor the Service's trafficDistribution settings
+    # (PreferSameZone / PreferSameNode) when selecting backend Pods.
+    #  PreferSameTrafficDistribution: false
 
     # Enable support for cleaning up stale UDP Service conntrack connections in AntreaProxy. This requires AntreaProxy to
     # be enabled, otherwise this flag will not take effect.
@@ -4053,9 +4228,6 @@ data:
 
     # Enable PacketCapture feature which supports capturing packets to diagnose network issues.
     #  PacketCapture: false
-
-    # Enable NodePortLocal feature to make the Pods reachable externally through NodePort
-    #  NodePortLocal: true
 
     # Enable Antrea ClusterNetworkPolicy feature to complement K8s NetworkPolicy for cluster admins
     # to define security policies which apply to the entire cluster, and Antrea NetworkPolicy
@@ -4117,15 +4289,17 @@ data:
     # Allow users to apply ClusterNetworkPolicy to Kubernetes Nodes.
     #  NodeNetworkPolicy: false
 
-    # Enable L7FlowExporter on Pods and Namespaces to export the application layer flows such as HTTP flows.
-    #  L7FlowExporter: false
-
     # Enable NodeLatencyMonitor to monitor the latency between Nodes.
     #  NodeLatencyMonitor: false
 
     # Allow users to initiate BGP process on selected Kubernetes Nodes and advertise Service IPs, Pod IPs and Egress IPs to
     # remote BGP peers.
     #  BGPPolicy: false
+
+    # Enable Antrea to use nftables instead of iptables to enforce netfilter rules in the Node's host network for the
+    # functionalities and features that rely on netfilter. Currently, nftables support is limited to the following features:
+    # - AntreaProxy (proxyAll)
+    #  NFTablesHostNetworkMode: false
 
     # Name of the OpenVSwitch bridge antrea-agent will create and use.
     # Make sure it doesn't conflict with your existing OpenVSwitch bridges.
@@ -4150,6 +4324,13 @@ data:
     #                    IPAM and connectivity to the primary CNI.
     #
     trafficEncapMode: "encap"
+
+    # The aggregated cluster-wide Pod CIDRs (not the per-Node Pod CIDRs).
+    # This field is applicable only in networkPolicyOnly mode and ignored in other traffic modes. It can be left empty,
+    # but it is recommended to specify the correct Pod CIDRs string, as Traceflow may not work correctly for inter-Node
+    # Pod-to-Pod traffic otherwise.
+    # Example: "10.10.0.0/16" for IPv4-only, or "10.10.0.0/16,fd00::/12" for dual-stack.
+    podCIDRs: ""
 
     # Whether or not to SNAT (using the Node IP) the egress traffic from a Pod to the external network.
     # This option is for the noEncap traffic mode only, and the default value is false. In the noEncap
@@ -4240,6 +4421,10 @@ data:
       # rules enforced by each Node for local Pod traffic. By default, we use the same value as for the
       # top-level snatFullyRandomPorts configuration, but this field can be used as an override.
       snatFullyRandomPorts:
+      # Enable Egress VLAN sub-interfaces to use unique MAC addresses instead of
+      # inheriting the parent interface’s MAC. Useful in cloud environments that require
+      # unique MAC addresses per interface.
+      uniqueMACForSubInterfaces: true
 
 {% if (networking.podSubnet.split(',') | length == 2) and (networking.serviceSubnet.split(',') | length == 2) %}
 {% if networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.netcommon.next_nth_usable(2) | ip == 4 %}
@@ -4395,10 +4580,10 @@ data:
       # <HOST> to <Service namespace>/<Service name>. For example,
       # "flow-aggregator/flow-aggregator" can be provided to connect to the Antrea
       # Flow Aggregator Service.
-      # If PORT is empty, we default to 4739, the standard IPFIX port.
-      # If no PROTO is given, we consider "tls" as default. We support "tls", "tcp" and
-      # "udp" protocols. "tls" is used for securing communication between flow exporter and
-      # flow aggregator.
+      # If PORT is empty, we default to 4739. If no PROTO is given, we consider "tls" as default.
+      # We support "grpc", "tls", "tcp" and "udp" protocols. "tls" is used for securing
+      # communication between flow exporter and flow aggregator. When "grpc" is configured,
+      # mTLS will always be used.
       flowCollectorAddr: "flow-aggregator/flow-aggregator:14739:grpc"
 
       # Provide flow poll interval as a duration string. This determines how often the
@@ -4539,9 +4724,13 @@ data:
       defaultLoadBalancerMode: "nat"
       # Disables the health check server run by Antrea Proxy, which provides health information about
       # Services of type LoadBalancer with externalTrafficPolicy set to Local, when proxyAll is
-      # enabled. This avoids race conditions between kube-proxy and Antrea proxy, with both trying to
-      # bind to the same addresses, when proxyAll is enabled while kube-proxy has not been removed.
+      # enabled. This avoids race conditions between kube-proxy and Antrea Proxy, with both trying to
+      # bind to the same address, when proxyAll is enabled while kube-proxy has not been removed.
       disableServiceHealthCheckServer: false
+      # The value of the IP address and the port on which AntreaProxy health server listens when proxyAll is enabled. This
+      # server is functionally equivalent to the one of kube-proxy. If it is not specified, it will be automatically set
+      # to "0.0.0.0:10256".
+      serviceHealthCheckServerBindAddress: ""
 
     # IPsec tunnel related configurations.
     ipsec:
@@ -4597,6 +4786,19 @@ data:
       # physical interface "eth1":
       # [{bridgeName: "br1", physicalInterfaces: ["eth1"], enableMulticastSnooping: false}]
       ovsBridges:
+
+    hostNetworkAcceleration:
+      # Enable to accelerate Pod-to-Pod traffic in the Node's host network using nftables flowtable when traffic mode is
+      # noEncap or hybrid.
+      enable: true
+
+    # HostNetworkMode determines how antrea-agent implements Node host network netfilter rules required by Antrea
+    # functionalities and features, using either "iptables" or "nftables". The default value is "iptables". If "nftables"
+    # is specified, the NFTablesHostNetworkMode feature gate must be enabled; otherwise, antrea-agent will fail to start.
+    # If the above condition is met but nftables is not supported or unavailable on the Node, antrea-agent will also fail
+    # to start. Currently, nftables support is limited to the following features:
+    #   - AntreaProxy (proxyAll)
+    hostNetworkMode: "iptables"
   antrea-cni.conflist: |
     {
         "cniVersion":"0.3.0",
@@ -4957,6 +5159,14 @@ rules:
       - ippools/status
     verbs:
       - update
+  - apiGroups:
+      - crd.antrea.io
+    resources:
+      - flowexporterdestinations
+    verbs:
+      - get
+      - watch
+      - list
   - apiGroups:
       - k8s.cni.cncf.io
     resources:
@@ -5619,7 +5829,7 @@ spec:
         kubectl.kubernetes.io/default-container: antrea-agent
         # Automatically restart Pods with a RollingUpdate if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 7246ad2aecb3e83060de547adaec7ac8a140920bf60f014d92e7aa3bb83ebf51
+        checksum/config: ce43af869242f2d5f0787dd0b9643a42f005e0426c4bfd7e3f38abda8b7718bc
       labels:
         app: antrea
         component: antrea-agent
@@ -5638,7 +5848,7 @@ spec:
       serviceAccountName: antrea-agent
       initContainers:
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.3
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.5.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5675,7 +5885,7 @@ spec:
             mountPath: /var/run/antrea
       containers:
         - name: antrea-agent
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.3
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.5.0
           imagePullPolicy: IfNotPresent
           command: ["antrea-agent"]
           # Log to both "/var/log/antrea/" and stderr (so "kubectl logs" can work).-
@@ -5768,7 +5978,7 @@ spec:
           - name: host-pod-resources
             mountPath: /var/lib/kubelet/pod-resources
         - name: antrea-ovs
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.4.3
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.5.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5865,7 +6075,7 @@ spec:
       annotations:
         # Automatically restart Pod if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: 7246ad2aecb3e83060de547adaec7ac8a140920bf60f014d92e7aa3bb83ebf51
+        checksum/config: ce43af869242f2d5f0787dd0b9643a42f005e0426c4bfd7e3f38abda8b7718bc
       labels:
         app: antrea
         component: antrea-controller
@@ -5888,7 +6098,7 @@ spec:
       serviceAccountName: antrea-controller
       containers:
         - name: antrea-controller
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.4.3
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.5.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
