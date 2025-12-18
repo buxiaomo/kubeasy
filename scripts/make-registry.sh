@@ -18,17 +18,17 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull docker.io/calico/cni:v3.31.1
-docker tag docker.io/calico/cni:v3.31.1 ${REGISTRY_URL}/calico/cni:v3.31.1
-docker push ${REGISTRY_URL}/calico/cni:v3.31.1
+docker pull docker.io/calico/cni:v3.31.2
+docker tag docker.io/calico/cni:v3.31.2 ${REGISTRY_URL}/calico/cni:v3.31.2
+docker push ${REGISTRY_URL}/calico/cni:v3.31.2
 
-docker pull docker.io/calico/node:v3.31.1
-docker tag docker.io/calico/node:v3.31.1 ${REGISTRY_URL}/calico/node:v3.31.1
-docker push ${REGISTRY_URL}/calico/node:v3.31.1
+docker pull docker.io/calico/node:v3.31.2
+docker tag docker.io/calico/node:v3.31.2 ${REGISTRY_URL}/calico/node:v3.31.2
+docker push ${REGISTRY_URL}/calico/node:v3.31.2
 
-docker pull docker.io/calico/kube-controllers:v3.31.1
-docker tag docker.io/calico/kube-controllers:v3.31.1 ${REGISTRY_URL}/calico/kube-controllers:v3.31.1
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.31.1
+docker pull docker.io/calico/kube-controllers:v3.31.2
+docker tag docker.io/calico/kube-controllers:v3.31.2 ${REGISTRY_URL}/calico/kube-controllers:v3.31.2
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.31.2
 
 
 # canal
@@ -98,10 +98,10 @@ docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.17.0
 
 
 # antrea
-docker pull antrea/antrea-agent-ubuntu:v2.4.2
-docker tag antrea/antrea-agent-ubuntu:v2.4.2 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.4.2
-docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.4.2
+docker pull antrea/antrea-agent-ubuntu:v2.5.0
+docker tag antrea/antrea-agent-ubuntu:v2.5.0 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.5.0
+docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.5.0
 
-docker pull antrea/antrea-controller-ubuntu:v2.4.2
-docker tag antrea/antrea-controller-ubuntu:v2.4.2 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.4.2
-docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.4.2
+docker pull antrea/antrea-controller-ubuntu:v2.5.0
+docker tag antrea/antrea-controller-ubuntu:v2.5.0 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.5.0
+docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.5.0
