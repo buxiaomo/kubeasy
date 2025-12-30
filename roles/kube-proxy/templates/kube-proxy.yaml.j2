@@ -11,7 +11,6 @@ clientConnection:
 clusterCIDR: "{{ networking.serviceSubnet | default('10.96.0.0/12') }}"
 configSyncPeriod: 15m0s
 conntrack:
-  max: null
   maxPerCore: 32768
   min: 131072
   tcpCloseWaitTimeout: 1h0m0s
@@ -19,6 +18,9 @@ conntrack:
 enableProfiling: false
 healthzBindAddress: 127.0.0.1:10256
 # hostnameOverride: {{ hostvars[inventory_hostname].ansible_hostname | lower }}
+nftables:
+  minSyncPeriod: 0s
+  syncPeriod: 30s
 iptables:
   masqueradeAll: true
   masqueradeBit: 14
@@ -34,5 +36,3 @@ mode: "{{ networking.mode | default('iptables') }}"
 nodePortAddresses: null
 oomScoreAdj: -999
 portRange: ""
-resourceContainer: /kube-proxy
-udpIdleTimeout: 250ms
