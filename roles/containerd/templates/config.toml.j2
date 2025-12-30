@@ -47,6 +47,9 @@ imports = ['/etc/containerd/conf.d/*.toml']
     stats_collect_period = 10
     use_local_image_pull = false
 
+    [plugins.'io.containerd.cri.v1.images'.registry]
+      config_path = '/etc/containerd/certs.d'
+
     [plugins.'io.containerd.cri.v1.images'.pinned_images]
       sandbox = '{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') }}{% endif %}/google_containers/pause:3.10.1'
 
@@ -169,7 +172,6 @@ imports = ['/etc/containerd/conf.d/*.toml']
     enable_tls_streaming = false
 
     [plugins."io.containerd.grpc.v1.cri".registry]
-      config_path = "/etc/containerd/certs.d"
 
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
 {% if containerd.daemon.mirrors is defined %}

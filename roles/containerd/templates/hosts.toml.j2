@@ -1,6 +1,7 @@
 server = "{{ containerd_registry_url }}"
+
 [host."{{ containerd_registry_url }}"]
-  capabilities = ["pull", "resolve"]
+  capabilities = ["pull", "resolve", "push"]
 {% if containerd_registry_url | urlsplit('scheme') == 'http' %}
   plain_http = true
 {% elif containerd_registry_url | urlsplit('scheme') == 'https' %}
