@@ -186,6 +186,43 @@
     - upgrade
     - update
 
+- name: Create containerd registry certs.d
+  ansible.builtin.file:
+    path: /etc/containerd/certs.d
+    state: directory
+    mode: "0755"
+  tags:
+    - upgrade
+    - update
+
+- name: Create containerd registry directory
+  ansible.builtin.file:
+    path: "/etc/containerd/certs.d/{{ item | urlsplit('hostname') }}{% if item | urlsplit('port') is not none %}:{{ item | urlsplit('port') }}{% endif %}"
+    state: directory
+    mode: "0755"
+  loop: "{{ registry_urls }}"
+  when: registry_urls | length > 0
+  vars:
+    registry_urls: "{{ ((containerd.daemon.registry | default([])) + (((REGISTRY_URL is defined) and (REGISTRY_URL | string | length > 0)) | ternary([REGISTRY_URL], []))) | reject('equalto', '') | unique }}"
+  tags:
+    - upgrade
+    - update
+
+- name: Configuration Containerd registry hosts
+  ansible.builtin.template:
+    src: hosts.toml.j2
+    dest: "/etc/containerd/certs.d/{{ item | urlsplit('hostname') }}{% if item | urlsplit('port') is not none %}:{{ item | urlsplit('port') }}{% endif %}/hosts.toml"
+    mode: "0644"
+  vars:
+    containerd_registry_url: "{{ item }}"
+    registry_urls: "{{ ((containerd.daemon.registry | default([])) + (((REGISTRY_URL is defined) and (REGISTRY_URL | string | length > 0)) | ternary([REGISTRY_URL], []))) | reject('equalto', '') | unique }}"
+  loop: "{{ registry_urls }}"
+  when: registry_urls | length > 0
+  notify: restart containerd
+  tags:
+    - upgrade
+    - update
+
 - name: Install systemd file
   ansible.builtin.template:
     src: containerd.service.j2
