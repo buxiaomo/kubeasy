@@ -50,29 +50,6 @@ imports = ['/etc/containerd/conf.d/*.toml']
     [plugins.'io.containerd.cri.v1.images'.pinned_images]
       sandbox = '{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://registry.aliyuncs.com') | urlsplit('path') }}{% endif %}/google_containers/pause:3.10.1'
 
-    [plugins.'io.containerd.cri.v1.images'.registry]
-      config_path = '/etc/containerd/certs.d'
-
-      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-{% if containerd.daemon.mirrors is defined %}
-{% for r in containerd.daemon.mirrors.items() %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ r[0] | urlsplit('hostname') }}{% if r[0] | urlsplit('port') is not none %}:{{ r[0] | urlsplit('port')}}{% endif %}"]
-          endpoint = [ "{{ r[1] }}" ]
-{% endfor %}
-{% endif %}
-{% if REGISTRY_URL is defined %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}"]
-          endpoint = [ "{{ REGISTRY_URL | urlsplit('scheme') }}://{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
-          insecure_skip_verify = true
-{% endif %}
-{% if containerd.daemon.registry is defined %}
-{% for r in containerd.daemon.registry %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ r | urlsplit('hostname') }}{% if r | urlsplit('port') is not none %}:{{ r | urlsplit('port')}}{% endif %}"]
-          endpoint = [ "{{ r | urlsplit('scheme') }}://{{ r | default('https://docker.io') | urlsplit('hostname') }}{% if r | urlsplit('port') is not none %}:{{ r | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
-          insecure_skip_verify = true
-
-{% endfor %}
-{% endif %}
     [plugins.'io.containerd.cri.v1.images'.image_decryption]
       key_model = 'node'
 
@@ -190,6 +167,30 @@ imports = ['/etc/containerd/conf.d/*.toml']
     stream_server_port = '0'
     stream_idle_timeout = '4h0m0s'
     enable_tls_streaming = false
+
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      config_path = "/etc/containerd/certs.d"
+
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+{% if containerd.daemon.mirrors is defined %}
+{% for r in containerd.daemon.mirrors.items() %}
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ r[0] | urlsplit('hostname') }}{% if r[0] | urlsplit('port') is not none %}:{{ r[0] | urlsplit('port')}}{% endif %}"]
+          endpoint = [ "{{ r[1] }}" ]
+{% endfor %}
+{% endif %}
+{% if REGISTRY_URL is defined %}
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}"]
+          endpoint = [ "{{ REGISTRY_URL | urlsplit('scheme') }}://{{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
+          insecure_skip_verify = true
+{% endif %}
+{% if containerd.daemon.registry is defined %}
+{% for r in containerd.daemon.registry %}
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ r | urlsplit('hostname') }}{% if r | urlsplit('port') is not none %}:{{ r | urlsplit('port')}}{% endif %}"]
+          endpoint = [ "{{ r | urlsplit('scheme') }}://{{ r | default('https://docker.io') | urlsplit('hostname') }}{% if r | urlsplit('port') is not none %}:{{ r | default('https://docker.io') | urlsplit('port')}}{% endif %}" ]
+          insecure_skip_verify = true
+
+{% endfor %}
+{% endif %}
 
     [plugins.'io.containerd.grpc.v1.cri'.x509_key_pair_streaming]
       tls_cert_file = ''
