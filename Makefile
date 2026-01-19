@@ -15,7 +15,7 @@ CNI_VERSION:=1.9.0
 # kubernetes container runtime
 # crio, containerd
 KUBE_RUNTIME:=containerd
-DOCKER_VERSION:=20.10.17
+DOCKER_VERSION:=29.1.5
 
 CONTAINERD_VERSION:=1.7.30
 CRICTL_VERSION:=1.33.0
