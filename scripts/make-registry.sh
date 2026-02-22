@@ -54,9 +54,9 @@ docker push ${REGISTRY_URL}/flannel-io/flannel:v0.28.1
 
 
 # metrics-server
-docker pull registry.k8s.io/metrics-server/metrics-server:v0.8.0
-docker tag registry.k8s.io/metrics-server/metrics-server:v0.8.0 ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.0
-docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.0
+docker pull registry.k8s.io/metrics-server/metrics-server:v0.8.1
+docker tag registry.k8s.io/metrics-server/metrics-server:v0.8.1 ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.1
+docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.1
 
 
 # pause
