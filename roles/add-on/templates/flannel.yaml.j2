@@ -1,10 +1,18 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    k8s-app: flannel
+    pod-security.kubernetes.io/enforce: privileged
+  name: kube-flannel
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
     k8s-app: flannel
   name: flannel
-  namespace: kube-system
+  namespace: kube-flannel
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -47,7 +55,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: flannel
-  namespace: kube-system
+  namespace: kube-flannel
 ---
 apiVersion: v1
 data:
@@ -86,7 +94,7 @@ metadata:
     k8s-app: flannel
     tier: node
   name: kube-flannel-cfg
-  namespace: kube-system
+  namespace: kube-flannel
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -96,7 +104,7 @@ metadata:
     k8s-app: flannel
     tier: node
   name: kube-flannel-ds
-  namespace: kube-system
+  namespace: kube-flannel
 spec:
   selector:
     matchLabels:
@@ -137,7 +145,7 @@ spec:
           value: "5000"
         - name: CONT_WHEN_CACHE_NOT_READY
           value: "false"
-        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.27.4
+        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.28.1
         name: kube-flannel
         resources:
           requests:
@@ -164,7 +172,7 @@ spec:
         - /opt/cni/bin/flannel
         command:
         - cp
-        image: "{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel-cni-plugin:v1.8.0-flannel1"
+        image: "{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel-cni-plugin:v1.9.0-flannel1"
         name: install-cni-plugin
         volumeMounts:
         - mountPath: /opt/cni/bin
@@ -175,7 +183,7 @@ spec:
         - /etc/cni/net.d/10-flannel.conflist
         command:
         - cp
-        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.27.4
+        image: {{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://ghcr.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://ghcr.io') | urlsplit('path') }}{% endif %}/flannel-io/flannel:v0.28.1
         name: install-cni
         volumeMounts:
         - mountPath: /etc/cni/net.d
