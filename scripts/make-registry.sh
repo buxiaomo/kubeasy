@@ -92,9 +92,9 @@ docker push ${REGISTRY_URL}/cilium/cilium-envoy:v1.31.5-1737535524-fe8efeb16a7d2
 
 
 # nvidia-device-plugin
-docker pull nvcr.io/nvidia/k8s-device-plugin:v0.18.0
-docker tag nvcr.io/nvidia/k8s-device-plugin:v0.18.0 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.0
-docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.0
+docker pull nvcr.io/nvidia/k8s-device-plugin:v0.18.2
+docker tag nvcr.io/nvidia/k8s-device-plugin:v0.18.2 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.2
+docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.2
 
 
 # antrea
