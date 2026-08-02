@@ -17,11 +17,11 @@ CNI_VERSION:=1.9.1
 KUBE_RUNTIME:=containerd
 DOCKER_VERSION:=29.1.5
 
-CONTAINERD_VERSION:=2.2.1
+CONTAINERD_VERSION:=2.3.3
 CRICTL_VERSION:=1.35.0
-RUNC_VERSION:=1.3.4
+RUNC_VERSION:=1.5.1
 
-CRIO_VERSION:=1.35.3
+CRIO_VERSION:=1.35.5
 
 # kubernetes network plugin
 # flannel, calico, canal, cilium, antrea, none
