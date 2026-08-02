@@ -18,17 +18,17 @@ docker run -d --name registry \
 registry:2.8.1
 
 # calico
-docker pull docker.io/calico/cni:v3.32.0
-docker tag docker.io/calico/cni:v3.32.0 ${REGISTRY_URL}/calico/cni:v3.32.0
-docker push ${REGISTRY_URL}/calico/cni:v3.32.0
+docker pull docker.io/calico/cni:v3.32.1
+docker tag docker.io/calico/cni:v3.32.1 ${REGISTRY_URL}/calico/cni:v3.32.1
+docker push ${REGISTRY_URL}/calico/cni:v3.32.1
 
-docker pull docker.io/calico/node:v3.32.0
-docker tag docker.io/calico/node:v3.32.0 ${REGISTRY_URL}/calico/node:v3.32.0
-docker push ${REGISTRY_URL}/calico/node:v3.32.0
+docker pull docker.io/calico/node:v3.32.1
+docker tag docker.io/calico/node:v3.32.1 ${REGISTRY_URL}/calico/node:v3.32.1
+docker push ${REGISTRY_URL}/calico/node:v3.32.1
 
-docker pull docker.io/calico/kube-controllers:v3.32.0
-docker tag docker.io/calico/kube-controllers:v3.32.0 ${REGISTRY_URL}/calico/kube-controllers:v3.32.0
-docker push ${REGISTRY_URL}/calico/kube-controllers:v3.32.0
+docker pull docker.io/calico/kube-controllers:v3.32.1
+docker tag docker.io/calico/kube-controllers:v3.32.1 ${REGISTRY_URL}/calico/kube-controllers:v3.32.1
+docker push ${REGISTRY_URL}/calico/kube-controllers:v3.32.1
 
 
 # canal
@@ -44,19 +44,19 @@ docker push ${REGISTRY_URL}/coredns/coredns:v1.13.1
 
 
 # flannel
-docker pull ghcr.io/flannel-io/flannel-cni-plugin:v1.9.1-flannel1
-docker tag ghcr.io/flannel-io/flannel-cni-plugin:v1.9.1-flannel1 ${REGISTRY_URL}/flannel-io/flannel-cni-plugin:v1.9.1-flannel1
-docker push ${REGISTRY_URL}/flannel-io/flannel-cni-plugin:v1.9.1-flannel1
+docker pull ghcr.io/flannel-io/flannel-cni-plugin:v1.9.1-flannel2
+docker tag ghcr.io/flannel-io/flannel-cni-plugin:v1.9.1-flannel2 ${REGISTRY_URL}/flannel-io/flannel-cni-plugin:v1.9.1-flannel2
+docker push ${REGISTRY_URL}/flannel-io/flannel-cni-plugin:v1.9.1-flannel2
 
-docker pull ghcr.io/flannel-io/flannel:v0.28.4
-docker tag ghcr.io/flannel-io/flannel:v0.28.4 ${REGISTRY_URL}/flannel-io/flannel:v0.28.4
-docker push ${REGISTRY_URL}/flannel-io/flannel:v0.28.4
+docker pull ghcr.io/flannel-io/flannel:v0.28.8
+docker tag ghcr.io/flannel-io/flannel:v0.28.8 ${REGISTRY_URL}/flannel-io/flannel:v0.28.8
+docker push ${REGISTRY_URL}/flannel-io/flannel:v0.28.8
 
 
 # metrics-server
-docker pull registry.k8s.io/metrics-server/metrics-server:v0.8.1
-docker tag registry.k8s.io/metrics-server/metrics-server:v0.8.1 ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.1
-docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.8.1
+docker pull registry.k8s.io/metrics-server/metrics-server:v0.9.0
+docker tag registry.k8s.io/metrics-server/metrics-server:v0.9.0 ${REGISTRY_URL}/metrics-server/metrics-server:v0.9.0
+docker push ${REGISTRY_URL}/metrics-server/metrics-server:v0.9.0
 
 
 # pause
@@ -98,10 +98,10 @@ docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.2
 
 
 # antrea
-docker pull antrea/antrea-agent-ubuntu:v2.6.1
-docker tag antrea/antrea-agent-ubuntu:v2.6.1 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.6.1
-docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.6.1
+docker pull antrea/antrea-agent-ubuntu:v2.6.2
+docker tag antrea/antrea-agent-ubuntu:v2.6.2 ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.6.2
+docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.6.2
 
-docker pull antrea/antrea-controller-ubuntu:v2.6.1
-docker tag antrea/antrea-controller-ubuntu:v2.6.1 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.6.1
-docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.6.1
+docker pull antrea/antrea-controller-ubuntu:v2.6.2
+docker tag antrea/antrea-controller-ubuntu:v2.6.2 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.6.2
+docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.6.2
