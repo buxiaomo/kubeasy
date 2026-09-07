@@ -8,8 +8,8 @@ PROJECT_ENV:=dev
 DOWNLOAD_WAY:=official
 
 # kubernetes version
-KUBE_VERSION:=1.36.4
-ETCD_VERSION:=3.6.8
+KUBE_VERSION:=1.37.0
+ETCD_VERSION:=3.7.0
 CNI_VERSION:=1.9.1
 
 # kubernetes container runtime
@@ -17,11 +17,11 @@ CNI_VERSION:=1.9.1
 KUBE_RUNTIME:=containerd
 DOCKER_VERSION:=29.1.5
 
-CONTAINERD_VERSION:=2.3.3
-CRICTL_VERSION:=1.36.0
+CONTAINERD_VERSION:=2.3.5
+CRICTL_VERSION:=1.37.0
 RUNC_VERSION:=1.5.1
 
-CRIO_VERSION:=1.36.2
+CRIO_VERSION:=1.36.5
 
 # kubernetes network plugin
 # flannel, calico, canal, cilium, antrea, none
