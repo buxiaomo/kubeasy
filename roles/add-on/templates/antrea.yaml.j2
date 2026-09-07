@@ -320,6 +320,131 @@ spec:
       - aci
 
 ---
+# Source: antrea/crds/antreanodeconfig.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: antreanodeconfigs.crd.antrea.io
+  labels:
+    app: antrea
+spec:
+  group: crd.antrea.io
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required:
+          - spec
+          properties:
+            spec:
+              type: object
+              required:
+                - nodeSelector
+              properties:
+                nodeSelector:
+                  description: Selects Nodes to which this AntreaNodeConfig applies.
+                  type: object
+                  properties:
+                    matchExpressions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          key:
+                            type: string
+                          operator:
+                            type: string
+                            enum:
+                              - In
+                              - NotIn
+                              - Exists
+                              - DoesNotExist
+                          values:
+                            type: array
+                            items:
+                              type: string
+                              pattern: "^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$"
+                    matchLabels:
+                      x-kubernetes-preserve-unknown-fields: true
+                secondaryNetwork:
+                  description: Secondary network bridge configuration for the selected Nodes.
+                  type: object
+                  properties:
+                    ovsBridges:
+                      description: >-
+                        OVS bridge configurations for secondary networks.
+                        At the moment, only a single OVS bridge is supported.
+                      type: array
+                      x-kubernetes-list-type: map
+                      x-kubernetes-list-map-keys:
+                        - bridgeName
+                      maxItems: 1
+                      x-kubernetes-validations:
+                        - rule: "oldSelf.all(o, self.exists(s, s.bridgeName == o.bridgeName))"
+                          message: "bridgeName is immutable — existing bridge names cannot be removed or renamed"
+                      items:
+                        type: object
+                        required:
+                          - bridgeName
+                        properties:
+                          bridgeName:
+                            description: Name of the OVS bridge.
+                            type: string
+                            minLength: 1
+                            maxLength: 15
+                            pattern: '^[a-zA-Z0-9._-]+$'
+                          physicalInterfaces:
+                            description: >-
+                              Physical interfaces to be connected to this bridge.
+                            type: array
+                            maxItems: 8
+                            x-kubernetes-list-type: map
+                            x-kubernetes-list-map-keys:
+                              - name
+                            items:
+                              type: object
+                              required:
+                                - name
+                              properties:
+                                name:
+                                  description: Name of the physical interface.
+                                  type: string
+                                  minLength: 1
+                                  maxLength: 15
+                                  pattern: '^[a-zA-Z0-9._-]+$'
+                                allowedVLANs:
+                                  description: >-
+                                    VLAN IDs or VLAN ID ranges (e.g. "100",
+                                    "200-300") allowed on this interface.
+                                    If not specified, all VLANs are allowed.
+                                  type: array
+                                  x-kubernetes-list-type: set
+                                  items:
+                                    type: string
+                                    pattern: '^((?:[0-9]{1,3}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-4])|(?:[0-9]{1,3}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-4])-(?:[0-9]{1,3}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-4]))$'
+                          enableMulticastSnooping:
+                            description: >-
+                              Enable multicast snooping on the bridge so that
+                              multicast traffic is forwarded only to ports with
+                              interested receivers. Defaults to false.
+                            type: boolean
+                            default: false
+      additionalPrinterColumns:
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+  scope: Cluster
+  names:
+    plural: antreanodeconfigs
+    singular: antreanodeconfig
+    kind: AntreaNodeConfig
+    shortNames:
+      - anc
+
+---
 # Source: antrea/crds/bgppolicy.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -627,6 +752,10 @@ spec:
                       type:
                         type: string
                       status:
+                        type: string
+                      reason:
+                        type: string
+                      message:
                         type: string
                       lastTransitionTime:
                         type: string
@@ -2129,6 +2258,10 @@ spec:
                         type: string
                       status:
                         type: string
+                      reason:
+                        type: string
+                      message:
+                        type: string
                       lastTransitionTime:
                         type: string
       subresources:
@@ -3366,7 +3499,7 @@ spec:
                   properties:
                     url:
                       type: string
-                      pattern: 'sftp:\/\/[\w-_./]+:\d+'
+                      pattern: 'sftp:\/\/([\w-_./]+|\[[\w-_.:/]+\]):\d+'
                     hostPublicKey:
                       type: string
                       format: byte
@@ -4347,6 +4480,10 @@ data:
     # - AntreaProxy (proxyAll)
     #  NFTablesHostNetworkMode: false
 
+    # Enable support for AntreaNodeConfig CRD, which allows per-Node configuration
+    # of Antrea agent settings via nodeSelector-based policies.
+    #  AntreaNodeConfig: true
+
     # Name of the OpenVSwitch bridge antrea-agent will create and use.
     # Make sure it doesn't conflict with your existing OpenVSwitch bridges.
     ovsBridge: "br-int"
@@ -4609,6 +4746,21 @@ data:
     # membership protocol. Currently it's used only when the Egress feature is enabled.
     # Defaults to 10351.
     clusterPort: 10351
+
+    # Configuration of the gossip-based cluster membership protocol, used by the Egress and
+    # ServiceExternalIP features. The gossip traffic is authenticated and encrypted with the key from the
+    # antrea-memberlist-keys Secret, which antrea-controller creates with a randomly-generated key if it does
+    # not exist yet.
+    memberlist:
+      # Encrypt the gossip traffic sent by this Node.
+      gossipVerifyOutgoing: true
+      # Reject incoming gossip traffic which is not encrypted, which is what authenticates the other
+      # members of the cluster. Setting it to false accepts unencrypted traffic, and therefore provides
+      # no authentication.
+      # Both options must be set to false while some Nodes do not have the key yet, which is the case
+      # when upgrading from a version of Antrea which did not secure the gossip traffic. Refer to
+      # docs/egress.md for the procedure to enable them without partitioning the cluster.
+      gossipVerifyIncoming: true
 
     # Enable metrics exposure via Prometheus. Initializes Prometheus metrics listener.
     enablePrometheusMetrics: true
@@ -4921,9 +5073,16 @@ data:
     # into account application context.
     #  L7NetworkPolicy: false
 
-    # Enable the use of Network Policy APIs (https://network-policy-api.sigs.k8s.io/api-overview) which helps administrators
-    # set security postures for their clusters.
+    # DEPRECATED: Enable the deprecated v1alpha1 AdminNetworkPolicy and BaselineAdminNetworkPolicy APIs from the
+    # network-policy-api project. Users should migrate to the new ClusterNetworkPolicy feature.
+    # This feature requires the AntreaPolicy feature gate to be enabled.
     #  AdminNetworkPolicy: false
+
+    # Enable the ClusterNetworkPolicy API from the network-policy-api project
+    # (https://network-policy-api.sigs.k8s.io/api-overview)
+    # This is the successor to the deprecated AdminNetworkPolicy APIs.
+    # This feature requires the AntreaPolicy feature gate to be enabled.
+    #  ClusterNetworkPolicy: false
 
     # The port for the antrea-controller APIServer to serve on.
     # Note that if it's set to another value, the `containerPort` of the `api` port of the
@@ -5255,6 +5414,7 @@ rules:
     resourceNames:
       - antrea-bgp-passwords
       - antrea-packetcapture-fileserver-auth
+      - antrea-memberlist-keys
     verbs:
       - get
       - list
@@ -5267,6 +5427,14 @@ rules:
       - create
       - patch
       - update
+  - apiGroups:
+      - crd.antrea.io
+    resources:
+      - antreanodeconfigs
+    verbs:
+      - get
+      - watch
+      - list
 ---
 # Source: antrea/templates/antctl/clusterrole.yaml
 kind: ClusterRole
@@ -5328,8 +5496,14 @@ rules:
       - /ovsflows
       - /ovstracing
       - /podinterfaces
+      - /podmulticaststats
       - /featuregates
       - /serviceexternalip
+      - /memberlist
+      - /bgppolicy
+      - /bgppeers
+      - /bgproutes
+      - /fqdncache
       - /metrics
       - /debug/pprof
       - /debug/pprof/*
@@ -5489,6 +5663,7 @@ rules:
     resourceNames:
       - antrea-controller-tls
       - antrea-ipsec-ca
+      - antrea-memberlist-keys
     verbs:
       - get
       - update
@@ -5694,6 +5869,7 @@ rules:
     resources:
       - adminnetworkpolicies
       - baselineadminnetworkpolicies
+      - clusternetworkpolicies
     verbs:
       - get
       - list
@@ -5875,7 +6051,7 @@ spec:
         kubectl.kubernetes.io/default-container: antrea-agent
         # Automatically restart Pods with a RollingUpdate if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: ca5121f404625ca074a0c3bce23b781e7a2fb88bceb5083cc9d4883f81ce6a67
+        checksum/config: f775fbc21f892587d5fe45d620b3a6c63385cb43f9648895ddce8b4732de2ca8
       labels:
         app: antrea
         component: antrea-agent
@@ -5894,7 +6070,7 @@ spec:
       serviceAccountName: antrea-agent
       initContainers:
         - name: install-cni
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.6.2
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.7.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -5931,7 +6107,7 @@ spec:
             mountPath: /var/run/antrea
       containers:
         - name: antrea-agent
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.6.2
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.7.0
           imagePullPolicy: IfNotPresent
           command: ["antrea-agent"]
           # Log to both "/var/log/antrea/" and stderr (so "kubectl logs" can work).-
@@ -6024,7 +6200,7 @@ spec:
           - name: host-pod-resources
             mountPath: /var/lib/kubelet/pod-resources
         - name: antrea-ovs
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.6.2
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-agent-ubuntu:v2.7.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -6121,7 +6297,7 @@ spec:
       annotations:
         # Automatically restart Pod if the ConfigMap changes
         # See https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
-        checksum/config: ca5121f404625ca074a0c3bce23b781e7a2fb88bceb5083cc9d4883f81ce6a67
+        checksum/config: f775fbc21f892587d5fe45d620b3a6c63385cb43f9648895ddce8b4732de2ca8
       labels:
         app: antrea
         component: antrea-controller
@@ -6144,7 +6320,7 @@ spec:
       serviceAccountName: antrea-controller
       containers:
         - name: antrea-controller
-          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.6.2
+          image: {{ REGISTRY_URL | default('https://docker.io') | urlsplit('hostname') }}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('port') is not none %}:{{REGISTRY_URL | default('https://docker.io') | urlsplit('port')}}{% endif %}{% if REGISTRY_URL | default('https://docker.io') | urlsplit('path') is not none %}{{ REGISTRY_URL | default('https://docker.io') | urlsplit('path') }}{% endif %}/antrea/antrea-controller-ubuntu:v2.7.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -6372,34 +6548,6 @@ webhooks:
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: None
     timeoutSeconds: 5
-  - name: "anpvalidator.antrea.io"
-    clientConfig:
-      service:
-        name: "antrea"
-        namespace: kube-system
-        path: "/validate/anp"
-    rules:
-      - operations: ["CREATE", "UPDATE"]
-        apiGroups: ["policy.networking.k8s.io"]
-        apiVersions: ["v1alpha1"]
-        resources: ["adminnetworkpolicies"]
-    admissionReviewVersions: ["v1", "v1beta1"]
-    sideEffects: None
-    timeoutSeconds: 5
-  - name: "banpvalidator.antrea.io"
-    clientConfig:
-      service:
-        name: "antrea"
-        namespace: kube-system
-        path: "/validate/banp"
-    rules:
-      - operations: ["CREATE", "UPDATE"]
-        apiGroups: ["policy.networking.k8s.io"]
-        apiVersions: ["v1alpha1"]
-        resources: ["baselineadminnetworkpolicies"]
-    admissionReviewVersions: ["v1", "v1beta1"]
-    sideEffects: None
-    timeoutSeconds: 5
   - name: "clustergroupvalidator.antrea.io"
     clientConfig:
       service:
@@ -6490,6 +6638,21 @@ webhooks:
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: None
     timeoutSeconds: 5
+  - name: "packetcapturevalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: kube-system
+        path: "/validate/packetcapture"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha1"]
+        resources: ["packetcaptures"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
   - name: "traceflowvalidator.antrea.io"
     clientConfig:
       service:
@@ -6501,6 +6664,36 @@ webhooks:
         apiGroups: ["crd.antrea.io"]
         apiVersions: ["v1beta1"]
         resources: ["traceflows"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "cnpvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: kube-system
+        path: "/validate/cnp"
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: ["policy.networking.k8s.io"]
+        apiVersions: ["v1alpha2"]
+        resources: ["clusternetworkpolicies"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "antreanodeconfigvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: kube-system
+        path: "/validate/antreanodeconfig"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha1"]
+        resources: ["antreanodeconfigs"]
         scope: "Cluster"
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: None
