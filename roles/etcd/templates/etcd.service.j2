@@ -23,11 +23,11 @@ TimeoutStartSec=0
 ExecStart=/usr/local/bin/etcd \
   --name=etcd-{{ ansible_play_hosts.index(inventory_hostname) }} \
   --data-dir={{ etcd.datadir | default('/var/lib/etcd') }} \
-  --listen-client-urls=https://127.0.0.1:2379,https://{{ inventory_hostname | ip_format }}:2379 \
-  --advertise-client-urls=https://{{ inventory_hostname | ip_format }}:2379 \
-  --listen-peer-urls=https://{{ inventory_hostname | ip_format }}:2380 \
-  --initial-advertise-peer-urls=https://{{ inventory_hostname | ip_format }}:2380 \
-  --initial-cluster={% for host in etcdnode %}etcd-{{ ansible_play_hosts.index(host) }}=https://{{ host | ip_format }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
+  --listen-client-urls=https://127.0.0.1:2379,https://{{ inventory_hostname | ipwrap }}:2379 \
+  --advertise-client-urls=https://{{ inventory_hostname | ipwrap }}:2379 \
+  --listen-peer-urls=https://{{ inventory_hostname | ipwrap }}:2380 \
+  --initial-advertise-peer-urls=https://{{ inventory_hostname | ipwrap }}:2380 \
+  --initial-cluster={% for host in etcdnode %}etcd-{{ ansible_play_hosts.index(host) }}=https://{{ host | ipwrap }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
   --initial-cluster-token=kubernetes-etcd-cluster \
 {% if scale | default(false) %}
   --initial-cluster-state=existing \

@@ -120,8 +120,8 @@ class FilterModule(object):
             'version_compare': version_compare,
             'version': version_compare,
             'interception': interception,
-            'ip_format': ip_format,
-            'ip': ip,
+            'ipwrap': ip_format,
+            'ip_version': ip,
             'timeFormat': timeFormat
         }
 

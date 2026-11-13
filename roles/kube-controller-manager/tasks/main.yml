@@ -147,7 +147,7 @@
 
 - name: Health check
   uri:
-    url: "https://{{ inventory_hostname | ip_format }}:10257/healthz"
+    url: "https://{{ inventory_hostname | ipwrap }}:10257/healthz"
     validate_certs: no
     return_content: yes
     client_cert: "/etc/kubernetes/pki/kube-controller-manager.crt"

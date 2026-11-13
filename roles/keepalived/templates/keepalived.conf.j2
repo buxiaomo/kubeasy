@@ -14,18 +14,18 @@ vrrp_script haproxy-check {
 vrrp_instance haproxy-vip {
     state BACKUP
     priority 101
-{% if inventory_hostname | ip == 4 %}
+{% if inventory_hostname | ip_version == 4 %}
     interface {{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list | selectattr('device', 'defined') | selectattr('ipv4.address', 'equalto', inventory_hostname) | first | json_query('device') }}
-{% elif inventory_hostname | ip == 6 %}
+{% elif inventory_hostname | ip_version == 6 %}
     interface {{ ansible_facts | dict2items | selectattr('value.ipv6', 'defined') | map(attribute='value') | list | json_query(ipv6_query) | first | json_query('device') }}
 {% endif %}
     virtual_router_id 47
     advert_int 3
-    unicast_src_ip {{ inventory_hostname | ip_format }}
+    unicast_src_ip {{ inventory_hostname | ipwrap }}
     unicast_peer {
 {% for host in groups['master'] %}
 {% if host != inventory_hostname %}
-        {{ host | ip_format }}
+        {{ host | ipwrap }}
 {% endif %}
 {% endfor %}
     }

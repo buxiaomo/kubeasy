@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/local/bin/kube-scheduler \
-  --bind-address={{ (inventory_hostname | ip == 4) | ternary('0.0.0.0', '::') }} \
+  --bind-address={{ (inventory_hostname | ip_version == 4) | ternary('0.0.0.0', '::') }} \
   --authentication-kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
   --authorization-kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
   --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig \
