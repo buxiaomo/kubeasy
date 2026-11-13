@@ -30,15 +30,15 @@ CNI version:                {{ CNI_VERSION }}
 
 {% if inventory_hostname in groups['master'] %}
 CA Expiration time:
-Etcd:                       {{ etcd_ca_result.not_after | timeFormat }}
-Kubernetes:                 {{ k8s_ca_result.not_after | timeFormat }}
+Etcd:                       {{ (etcd_ca_result.not_after | to_datetime('%Y%m%d%H%M%SZ')).strftime('%Y-%m-%d %H:%M:%S') }}
+Kubernetes:                 {{ (k8s_ca_result.not_after | to_datetime('%Y%m%d%H%M%SZ')).strftime('%Y-%m-%d %H:%M:%S') }}
 {% endif %}
 
 {% if inventory_hostname in groups['master'] %}
 Component Certificate Expiration time:
-etcd peer:                  {{ etcd_peer_tls_result.not_after | timeFormat }}
-etcd server:                {{ etcd_server_tls_result.not_after | timeFormat }}
-kube-apiserver:             {{ apiserver_tls_result.not_after | timeFormat }}
+etcd peer:                  {{ (etcd_peer_tls_result.not_after | to_datetime('%Y%m%d%H%M%SZ')).strftime('%Y-%m-%d %H:%M:%S') }}
+etcd server:                {{ (etcd_server_tls_result.not_after | to_datetime('%Y%m%d%H%M%SZ')).strftime('%Y-%m-%d %H:%M:%S') }}
+kube-apiserver:             {{ (apiserver_tls_result.not_after | to_datetime('%Y%m%d%H%M%SZ')).strftime('%Y-%m-%d %H:%M:%S') }}
 {% endif %}
 
 The Roles of this node are:
