@@ -5,5 +5,5 @@ errorExit() {
 }
 
 if ip addr | grep -q '{{ ha.vip }}' ; then
-  curl {{ (ha.vip | ip == 4) | ternary('--ipv4', '--ipv6') }} -s --max-time 2 --insecure https://{{ ha.vip | ip_format }}:8443/healthz  -o /dev/null || errorExit "Error GET https://{{ ha.vip | ip_format }}:8443/healthz"
+  curl {{ (ha.vip | ip_version == 4) | ternary('--ipv4', '--ipv6') }} -s --max-time 2 --insecure https://{{ ha.vip | ipwrap }}:8443/healthz  -o /dev/null || errorExit "Error GET https://{{ ha.vip | ipwrap }}:8443/healthz"
 fi

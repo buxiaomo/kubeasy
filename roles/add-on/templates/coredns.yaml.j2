@@ -177,7 +177,7 @@ spec:
     k8s-app: kube-dns
 {% if (networking.podSubnet.split(',') | length == 2) and (networking.serviceSubnet.split(',') | length == 2) %}
   ipFamilyPolicy: PreferDualStack
-{% if networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.utils.next_nth_usable(2) | ip == 4 %}
+{% if networking.serviceSubnet.split(',')[0] | default('10.96.0.0/12') | ansible.utils.next_nth_usable(2) | ip_version == 4 %}
   ipFamilies:
     - IPv4
     - IPv6

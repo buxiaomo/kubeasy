@@ -135,12 +135,12 @@
 
 - name: Create User kubeconfig(Contain the certificate)
   ansible.builtin.shell: |
-    {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = inventory_hostname | ip_format, 6443 %}
+    {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = inventory_hostname | ipwrap, 6443 %}
     {% if ha is defined %}
       {% if ha.type | default("none") == "slb" %}
-        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ip_format, 8443 %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ipwrap, 8443 %}
       {% else %}
-        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ip_format, 6443 %}
+        {% set KUBE_APISERVER_ADDR, KUBE_APISERVER_PORT = ha.vip | ipwrap, 6443 %}
       {% endif %}
     {% endif %}
     kubectl config set-cluster kubernetes \

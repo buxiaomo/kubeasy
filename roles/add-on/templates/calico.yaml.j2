@@ -74,10 +74,10 @@ data:
               "assign_ipv4": "true",
               "assign_ipv6": "true"
 {% else %}
-{% if inventory_hostname | ip == 4 %}
+{% if inventory_hostname | ip_version == 4 %}
               "assign_ipv4": "true",
               "assign_ipv6": "false"
-{% elif inventory_hostname | ip == 6 %}
+{% elif inventory_hostname | ip_version == 6 %}
               "assign_ipv4": "false",
               "assign_ipv6": "true"
 {% endif %}
@@ -7640,7 +7640,7 @@ spec:
             # chosen from this range. Changing this value after installation will have
             # no effect. This should fall within `--cluster-cidr`.
 {% if (networking.podSubnet.split(',') | length == 2) and (networking.serviceSubnet.split(',') | length == 2) %}
-{% if networking.podSubnet.split(',')[0] | default('10.244.0.0/16') | ansible.netcommon.next_nth_usable(2) | ip == 4 %}
+{% if networking.podSubnet.split(',')[0] | default('10.244.0.0/16') | ansible.netcommon.next_nth_usable(2) | ip_version == 4 %}
             - name: CALICO_IPV4POOL_CIDR
               value: "{{ networking.podSubnet.split(',')[0] }}"
             - name: CALICO_IPV6POOL_CIDR
@@ -7660,7 +7660,7 @@ spec:
             - name: FELIX_IPV6SUPPORT
               value: "true"
 {% else %}
-{% if inventory_hostname | ip == 4 %}
+{% if inventory_hostname | ip_version == 4 %}
             - name: CALICO_IPV4POOL_CIDR
               value: "{{ networking.podSubnet | default('10.244.0.0/16') }}"
             # Disable IPv6 on Kubernetes.
@@ -7669,7 +7669,7 @@ spec:
             # Auto-detect the BGP IP address.
             - name: IP
               value: "autodetect"
-{% elif inventory_hostname | ip == 6 %}
+{% elif inventory_hostname | ip_version == 6 %}
             - name: CALICO_IPV6POOL_CIDR
               value: "{{ networking.podSubnet | default('2402:db8:42:d700::/64') }}"
             - name: IP6
