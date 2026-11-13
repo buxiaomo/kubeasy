@@ -189,7 +189,7 @@
 
 - name: Health check
   uri:
-    url: "http://{{ inventory_hostname | ip_format }}:10248/healthz"
+    url: "http://{{ inventory_hostname | ipwrap }}:10248/healthz"
     validate_certs: no
     return_content: yes
   register: this

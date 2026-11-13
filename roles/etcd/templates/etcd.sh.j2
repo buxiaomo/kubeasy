@@ -9,4 +9,4 @@
     {%- endfor%}
 {%- endif %}
 
-alias etcdctl="ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}{{ host | ip_format }}:2379{% if not loop.last %},{% endif %}{% endfor %} --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt --key /etc/kubernetes/pki/etcd/healthcheck-client.key"
+alias etcdctl="ETCDCTL_API=3 /usr/local/bin/etcdctl --endpoints {% for host in etcdnode %}{{ host | ipwrap }}:2379{% if not loop.last %},{% endif %}{% endfor %} --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt --key /etc/kubernetes/pki/etcd/healthcheck-client.key"

@@ -1,6 +1,6 @@
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
-bindAddress: "{{ (inventory_hostname | ip == 4) | ternary('0.0.0.0', '::') }}"
+bindAddress: "{{ (inventory_hostname | ip_version == 4) | ternary('0.0.0.0', '::') }}"
 metricsBindAddress: "0.0.0.0:10249"
 clientConnection:
   acceptContentTypes: ""

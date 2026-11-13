@@ -149,7 +149,7 @@
 
 - name: Health check
   uri:
-    url: "https://{{ inventory_hostname | ip_format }}:10259/healthz"
+    url: "https://{{ inventory_hostname | ipwrap }}:10259/healthz"
     validate_certs: no
     return_content: yes
     client_cert: "/etc/kubernetes/pki/kube-scheduler.crt"
