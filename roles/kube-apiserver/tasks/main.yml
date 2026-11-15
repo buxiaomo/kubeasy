@@ -1,7 +1,7 @@
 ---
 - name: Distribution package
   ansible.builtin.copy:
-    src: "{{ KUBE_VERSION }}/kube-apiserver"
+    src: "/usr/local/src/{{ KUBE_VERSION }}/kube-apiserver"
     dest: "/usr/local/bin/kube-apiserver"
     owner: root
     group: root

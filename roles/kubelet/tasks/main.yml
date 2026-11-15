@@ -1,7 +1,7 @@
 ---
 - name: Distribution package
   ansible.builtin.copy:
-    src: "{{ KUBE_VERSION }}/kubelet"
+    src: "/usr/local/src/{{ KUBE_VERSION }}/kubelet"
     dest: "/usr/local/bin/kubelet"
     owner: root
     group: root

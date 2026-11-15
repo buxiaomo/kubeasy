@@ -1,0 +1,39 @@
+export:
+  description: "Kubernetes 部署与维护工具"
+  env:
+    - { key: PROJECT_NAME, value: "kubeasy", description: "集群名称" }
+    - { key: PROJECT_ENV, value: "dev", description: "环境名称" }
+    - { key: DOWNLOAD_WAY, value: "official", description: "下载方式", options: ["official", "nexus"] }
+    - { key: KUBE_VERSION, value: "1.37.2", description: "Kubernetes 版本" }
+    - { key: ETCD_VERSION, value: "3.7.0", description: "ETCD 版本" }
+    - { key: CNI_VERSION, value: "1.9.1", description: "CNI 版本" }
+    - { key: KUBE_RUNTIME, value: "containerd", description: "Kubernetes 运行时" , options: ["containerd", "docker", "crio"] }
+    - { key: DOCKER_VERSION, value: "29.1.5", description: "Docker 版本" }
+    - { key: CONTAINERD_VERSION, value: "2.3.5", description: "Containerd 版本" }
+    - { key: CRICTL_VERSION, value: "1.37.0", description: "CRICTL 版本" }
+    - { key: RUNC_VERSION, value: "1.5.1", description: "RUNC 版本" }
+    - { key: CRIO_VERSION, value: "1.36.5", description: "CRIO 版本" }
+    - { key: KUBE_NETWORK, value: "flannel", description: "Kubernetes 网络" , options: ["flannel", "calico", "cilium"] }
+    - { key: REGISTRY_URL, value: "", description: "镜像仓库地址" }
+    - { key: REGISTRY_DIR, value: "/usr/local/src", description: "镜像仓库目录" }
+    - { key: NEXUS_DOMAIN_NAME, value: "", description: "Nexus 域名" }
+    - { key: NEXUS_REPOSITORY, value: "", description: "Nexus 仓库名称" }
+    - { key: NEXUS_USERNAME, value: "", description: "Nexus 用户名" }
+    - { key: NEXUS_PASSWORD, value: "", description: "Nexus 密码" }
+  actions:
+    - { key: download, description: "下载组件" , env: ["KUBE_VERSION", "ETCD_VERSION", "CNI_VERSION", "KUBE_RUNTIME", "DOCKER_VERSION", "CONTAINERD_VERSION", "CRICTL_VERSION", "RUNC_VERSION", "CRIO_VERSION"] }
+    - { key: deploy, description: "部署 Kubernetes" , env: ["KUBE_VERSION", "ETCD_VERSION", "CNI_VERSION", "KUBE_RUNTIME", "DOCKER_VERSION", "CONTAINERD_VERSION", "CRICTL_VERSION", "RUNC_VERSION", "CRIO_VERSION", "KUBE_NETWORK"] }
+    - { key: update, description: "更新 Kubernetes" , env: ["KUBE_VERSION"] }
+    - { key: upgrade, description: "升级 Kubernetes" , env: ["KUBE_VERSION"] }
+    - { key: renew, description: "更新证书" }
+    - { key: scale, description: "扩容 Kubernetes 集群" }
+  examples:
+    - |
+      # 初始化(将会导出内置 Playbook 的 group_vars、inventory)
+      runvia playbook -i <inventory> kubeasy init
+    - |
+      # 下载软件包
+      runvia playbook -i <inventory> kubeasy download -e KUBE_VERSION=1.37.2 -e ETCD_VERSION=3.7.0 -e CNI_VERSION=1.9.1 -e CONTAINERD_VERSION=2.3.5 -e CRICTL_VERSION=1.37.0 -e RUNC_VERSION=1.5.1
+    - |
+      # 部署 Kubernetes 集群
+      runvia playbook -i <inventory> kubeasy deploy -e KUBE_VERSION=1.37.2 -e ETCD_VERSION=3.7.0 -e CNI_VERSION=1.9.1 -e CONTAINERD_VERSION=2.3.5 -e CRICTL_VERSION=1.37.0 -e RUNC_VERSION=1.5.1 -e KUBE_NETWORK=flannel -e KUBE_RUNTIME=containerd
