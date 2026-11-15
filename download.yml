@@ -4,7 +4,7 @@
   gather_facts: true
   become: false
   vars:
-    download_dir: /Users/mo/tmp/k8s
+    download_dir: /usr/local/src
     arch_map:
       x86_64: amd64
       aarch64: arm64
