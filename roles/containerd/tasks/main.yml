@@ -223,6 +223,34 @@
     - upgrade
     - update
 
+- name: Create containerd mirrors directory
+  ansible.builtin.file:
+    path: "/etc/containerd/certs.d/{{ item.key | urlsplit('hostname') }}{% if item.key | urlsplit('port') is not none %}:{{ item.key | urlsplit('port') }}{% endif %}"
+    state: directory
+    mode: "0755"
+  loop: "{{ containerd.daemon.mirrors | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  tags:
+    - upgrade
+    - update
+
+- name: Configuration Containerd registry mirrors
+  ansible.builtin.template:
+    src: mirrors.toml.j2
+    dest: "/etc/containerd/certs.d/{{ item.key | urlsplit('hostname') }}{% if item.key | urlsplit('port') is not none %}:{{ item.key | urlsplit('port') }}{% endif %}/hosts.toml"
+    mode: "0644"
+  vars:
+    containerd_registry_url: "{{ item.key }}"
+    containerd_mirror_url: "{{ item.value }}"
+  loop: "{{ containerd.daemon.mirrors | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }} -> {{ item.value }}"
+  notify: restart containerd
+  tags:
+    - upgrade
+    - update
+
 - name: Install systemd file
   ansible.builtin.template:
     src: containerd.service.j2

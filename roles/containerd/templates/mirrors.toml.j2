@@ -1,0 +1,4 @@
+server = "{{ containerd_registry_url }}"
+
+[host."{{ containerd_mirror_url }}"]
+  capabilities = ["pull", "resolve"]
