@@ -1,0 +1,105 @@
+---
+- name: Download Kubernetes packages
+  hosts: all
+  gather_facts: true
+  become: false
+  vars:
+    download_dir: /Users/mo/tmp/k8s
+    arch_map:
+      x86_64: amd64
+      aarch64: arm64
+    kubernetes_binaries:
+      - kube-apiserver
+      - kube-controller-manager
+      - kube-scheduler
+      - kubectl
+      - kube-proxy
+      - kubelet
+    # 未指定版本的依赖组件不下载。
+    dependency_packages:
+      - name: docker
+        version: "{{ DOCKER_VERSION | default('') }}"
+        url: "https://download.docker.com/linux/static/stable/{{ ansible_facts['architecture'] }}/docker-{{ DOCKER_VERSION | default('') }}.tgz"
+      - name: cri-o
+        version: "{{ CRIO_VERSION | default('') }}"
+        url: "https://storage.googleapis.com/cri-o/artifacts/cri-o.{{ download_arch }}.v{{ CRIO_VERSION | default('') }}.tar.gz"
+      - name: containerd
+        version: "{{ CONTAINERD_VERSION | default('') }}"
+        url: "https://github.com/containerd/containerd/releases/download/v{{ CONTAINERD_VERSION | default('') }}/containerd-static-{{ CONTAINERD_VERSION | default('') }}-linux-{{ download_arch }}.tar.gz"
+      - name: runc
+        version: "{{ RUNC_VERSION | default('') }}"
+        url: "https://github.com/opencontainers/runc/releases/download/v{{ RUNC_VERSION | default('') }}/runc.{{ download_arch }}"
+      - name: crictl
+        version: "{{ CRICTL_VERSION | default('') }}"
+        url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ CRICTL_VERSION | default('') }}/crictl-v{{ CRICTL_VERSION | default('') }}-linux-{{ download_arch }}.tar.gz"
+      - name: etcd
+        version: "{{ ETCD_VERSION | default('') }}"
+        url: "https://github.com/coreos/etcd/releases/download/v{{ ETCD_VERSION | default('') }}/etcd-v{{ ETCD_VERSION | default('') }}-linux-{{ download_arch }}.tar.gz"
+      - name: cni
+        version: "{{ CNI_VERSION | default('') }}"
+        url: "https://github.com/containernetworking/plugins/releases/download/v{{ CNI_VERSION | default('') }}/cni-plugins{{ '-linux' if (CNI_VERSION | default('0.0.0', true)) is version('0.8.0', '>=') else '' }}-{{ download_arch }}-v{{ CNI_VERSION | default('') }}.tgz"
+
+  tasks:
+    - name: Validate node system, architecture and Kubernetes version
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['system'] == 'Linux'
+          - ansible_facts['architecture'] in arch_map
+          - KUBE_VERSION is defined
+          - KUBE_VERSION | string | length > 0
+        fail_msg: Only Linux x86_64/aarch64 nodes are supported, and KUBE_VERSION must be specified.
+
+    - name: Set download architecture and initialize file list
+      ansible.builtin.set_fact:
+        download_arch: "{{ arch_map[ansible_facts['architecture']] }}"
+        download_files: []
+
+    - name: Add Kubernetes binaries
+      ansible.builtin.set_fact:
+        download_files: >-
+          {{ download_files + [{
+            'url': 'https://dl.k8s.io/v' ~ KUBE_VERSION ~ '/bin/linux/' ~ download_arch ~ '/' ~ item,
+            'dest': download_dir ~ '/' ~ KUBE_VERSION ~ '/' ~ item
+          }] }}
+      loop: "{{ kubernetes_binaries }}"
+
+    - name: Add dependency packages with specified versions
+      ansible.builtin.set_fact:
+        download_files: >-
+          {{ download_files + [{
+            'url': item.url,
+            'dest': download_dir ~ '/' ~ (item.url | basename)
+          }] }}
+      loop: "{{ dependency_packages }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.version | string | length > 0
+
+    - name: Download packages on the control node
+      delegate_to: localhost
+      run_once: true
+      vars:
+        # 相同下载 URL 只下载一次。
+        all_download_files: >-
+          {{ ansible_play_hosts
+             | map('extract', hostvars, 'download_files')
+             | flatten
+             | unique(attribute='url')
+             | list }}
+      block:
+        - name: Create download directories
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: directory
+            mode: "0755"
+          loop: "{{ all_download_files | map(attribute='dest') | map('dirname') | unique | list }}"
+
+        - name: Download package files
+          ansible.builtin.get_url:
+            url: "{{ item.url }}"
+            dest: "{{ item.dest }}"
+            mode: "0644"
+            timeout: 300
+          loop: "{{ all_download_files }}"
+          loop_control:
+            label: "{{ item.dest }}"

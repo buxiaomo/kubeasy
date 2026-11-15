@@ -16,7 +16,7 @@
 
 - name: Distribution package
   ansible.builtin.copy:
-    src: "docker-{{ DOCKER_VERSION }}.tgz"
+    src: "/usr/local/src/docker-{{ DOCKER_VERSION }}.tgz"
     dest: "/usr/local/src/docker-{{ DOCKER_VERSION }}.tgz"
     owner: root
     group: root
