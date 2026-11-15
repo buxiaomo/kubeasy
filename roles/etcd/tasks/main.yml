@@ -2,7 +2,7 @@
 # tasks file for etcd
 - name: Distribution package
   ansible.builtin.copy:
-    src: "etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    src: "/usr/local/src/etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     dest: "/usr/local/src/etcd-v{{ ETCD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     owner: root
     group: root

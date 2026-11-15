@@ -1,7 +1,7 @@
 ---
 - name: Distribution package
   ansible.builtin.copy:
-    src: "{{ KUBE_VERSION }}/kube-proxy"
+    src: "/usr/local/src/{{ KUBE_VERSION }}/kube-proxy"
     dest: "/usr/local/bin/kube-proxy"
     owner: root
     group: root

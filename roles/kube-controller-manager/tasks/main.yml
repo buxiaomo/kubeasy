@@ -1,7 +1,7 @@
 ---
 - name: Distribution package
   ansible.builtin.copy:
-    src: "{{ KUBE_VERSION }}/kube-controller-manager"
+    src: "/usr/local/src/{{ KUBE_VERSION }}/kube-controller-manager"
     dest: "/usr/local/bin/kube-controller-manager"
     owner: root
     group: root
