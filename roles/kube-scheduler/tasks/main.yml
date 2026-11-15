@@ -1,7 +1,7 @@
 ---
 - name: Distribution package
   ansible.builtin.copy:
-    src: "{{ KUBE_VERSION }}/kube-scheduler"
+    src: "/usr/local/src/{{ KUBE_VERSION }}/kube-scheduler"
     dest: "/usr/local/bin/kube-scheduler"
     owner: root
     group: root

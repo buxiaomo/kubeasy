@@ -6,7 +6,7 @@
 
 - name: Distribution RunC package
   ansible.builtin.copy:
-    src: "runc.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}"
+    src: "/usr/local/src/runc.{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}"
     dest: "/usr/local/bin/runc"
     owner: root
     group: root
@@ -19,7 +19,7 @@
 
 - name: Distribution Containerd package
   ansible.builtin.copy:
-    src: "containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    src: "/usr/local/src/containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     dest: "/usr/local/src/containerd-static-{{ CONTAINERD_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     owner: root
     group: root
@@ -31,7 +31,7 @@
 
 - name: Distribution Crictl package
   ansible.builtin.copy:
-    src: "crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
+    src: "/usr/local/src/crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     dest: "/usr/local/src/crictl-v{{ CRICTL_VERSION }}-{{ ansible_system | lower }}-{% if ansible_architecture == 'aarch64' %}arm64{% elif ansible_architecture == 'x86_64' %}amd64{% endif %}.tar.gz"
     owner: root
     group: root
