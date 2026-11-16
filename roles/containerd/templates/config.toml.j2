@@ -77,7 +77,7 @@ imports = ['/etc/containerd/conf.d/*.toml']
     ignore_deprecation_warnings = []
 
     [plugins.'io.containerd.cri.v1.runtime'.containerd]
-{% if gpu | default(false) %}
+{% if gpu | default(false) | bool %}
       # GPU
       default_runtime_name = 'nvidia'
 {% else %}
@@ -87,7 +87,7 @@ imports = ['/etc/containerd/conf.d/*.toml']
       ignore_rdt_not_enabled_errors = false
 
       [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes]
-{% if gpu | default(false) %}
+{% if gpu | default(false) | bool %}
         # GPU
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
           base_runtime_spec = ""
