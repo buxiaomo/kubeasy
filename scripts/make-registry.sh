@@ -92,9 +92,9 @@ docker push ${REGISTRY_URL}/cilium/cilium-envoy:v1.31.5-1737535524-fe8efeb16a7d2
 
 
 # nvidia-device-plugin
-docker pull nvcr.io/nvidia/k8s-device-plugin:v0.18.2
-docker tag nvcr.io/nvidia/k8s-device-plugin:v0.18.2 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.2
-docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.18.2
+docker pull nvcr.io/nvidia/k8s-device-plugin:v0.20.1
+docker tag nvcr.io/nvidia/k8s-device-plugin:v0.20.1 ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.20.1
+docker push ${REGISTRY_URL}/nvidia/k8s-device-plugin:v0.20.1
 
 
 # antrea
@@ -105,3 +105,9 @@ docker push ${REGISTRY_URL}/antrea/antrea-agent-ubuntu:v2.7.0
 docker pull antrea/antrea-controller-ubuntu:v2.7.0
 docker tag antrea/antrea-controller-ubuntu:v2.7.0 ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.7.0
 docker push ${REGISTRY_URL}/antrea/antrea-controller-ubuntu:v2.7.0
+
+
+# node-feature-discovery
+docker pull registry.k8s.io/nfd/node-feature-discovery:v0.19.0
+docker tag registry.k8s.io/nfd/node-feature-discovery:v0.19.0 ${REGISTRY_URL}/nfd/node-feature-discovery:v0.19.0
+docker push ${REGISTRY_URL}/nfd/node-feature-discovery:v0.19.0
