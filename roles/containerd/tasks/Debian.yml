@@ -20,7 +20,7 @@
     - "deb [signed-by=/etc/apt/trusted.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
 
 - name: Install nvidia-container-runtime
-  apt:
+  ansible.builtin.apt:
     name: "nvidia-container-runtime"
     state: present
     update_cache: yes

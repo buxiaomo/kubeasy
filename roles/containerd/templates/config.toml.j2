@@ -89,7 +89,7 @@ imports = ['/etc/containerd/conf.d/*.toml']
       [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes]
 {% if gpu | default(false) | bool %}
         # GPU
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+        [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.nvidia]
           base_runtime_spec = ""
           cni_conf_dir = ""
           cni_max_conf_num = 0
@@ -103,7 +103,7 @@ imports = ['/etc/containerd/conf.d/*.toml']
           runtime_type = "io.containerd.runc.v2"
           sandbox_mode = "podsandbox"
           snapshotter = ""
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+          [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.nvidia.options]
             BinaryName = "/usr/bin/nvidia-container-runtime"
             CriuImagePath = ""
             CriuPath = ""
