@@ -82,7 +82,7 @@
 
 - name: Install nvidia-container-runtime
   include_tasks: "{{ ansible_distribution_file_variety }}.yml"
-  when: gpu | default(false)
+  when: gpu | default(false) | bool | bool
 
 - name: Configuration daemon
   ansible.builtin.template:
