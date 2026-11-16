@@ -28,6 +28,8 @@ spec:
       labels:
         name: nvidia-device-plugin-ds
     spec:
+      nodeSelector:
+        feature.node.kubernetes.io/pci-10de.present: "true"
       tolerations:
       - key: nvidia.com/gpu
         operator: Exists
