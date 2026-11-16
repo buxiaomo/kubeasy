@@ -84,7 +84,7 @@ required_plugins = []
       setup_serially = false
 
     [plugins."io.containerd.grpc.v1.cri".containerd]
-{% if gpu | default(false) %}
+{% if gpu | default(false) | bool %}
       # GPU
       default_runtime_name = "nvidia"
 {% else %}
@@ -115,7 +115,7 @@ required_plugins = []
         [plugins."io.containerd.grpc.v1.cri".containerd.default_runtime.options]
 
       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
-{% if gpu | default(false) %}
+{% if gpu | default(false) | bool %}
         # GPU
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
           base_runtime_spec = ""

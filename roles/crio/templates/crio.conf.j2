@@ -96,7 +96,7 @@
       "KILL",
     ]
     default_env = []
-{% if gpu | default(false) %}
+{% if gpu | default(false) | bool %}
     default_runtime = "nvidia"
 {% else %}
     default_runtime = "runc"
@@ -124,7 +124,7 @@
     gid_mappings = ""
 
     [crio.runtime.runtimes]
-{% if gpu | default(false) %}
+{% if gpu | default(false) | bool %}
       [crio.runtime.runtimes.nvidia]
         runtime_path = "/usr/bin/nvidia-container-runtime"
         runtime_type = "oci"
