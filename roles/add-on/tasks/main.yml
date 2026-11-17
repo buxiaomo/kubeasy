@@ -115,56 +115,30 @@
     - upgrade
     - update
 
-- name: Distribution nvidia-device-plugin manifest to the cluster
+- name: Distribution gpu manifest to the cluster
   ansible.builtin.template:
-    src: "nvidia-device-plugin.yaml.j2"
-    dest: "/etc/kubernetes/apps/nvidia-device-plugin.yaml"
-  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
+    src: "{{ item.src }}"
+    dest: "/etc/kubernetes/apps/{{ item.dest }}"
+  with_items:
+    - { "src": "nvidia-device-plugin.yaml.j2", "dest": "nvidia-device-plugin.yaml" }
+    - { "src": "gpu-feature-discovery.yaml.j2", "dest": "gpu-feature-discovery.yaml" }
+    - { "src": "node-feature-discovery.yaml.j2", "dest": "node-feature-discovery.yaml" }
+  when: 
+    - ENABLE_GPU_MANIFEST | default(true) | bool
   tags:
     - upgrade
     - update
 
-- name: Apply nvidia-device-plugin manifest to the cluster
-  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/nvidia-device-plugin.yaml"
+- name: Apply gpu manifest to the cluster
+  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/{{ item }}"
   delegate_to: "{{ groups['master'][0] }}"
   run_once: true
-  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
-  tags:
-    - upgrade
-    - update
-
-- name: Distribution gpu-feature-discovery manifest to the cluster
-  ansible.builtin.template:
-    src: "gpu-feature-discovery.yaml.j2"
-    dest: "/etc/kubernetes/apps/gpu-feature-discovery.yaml"
-  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
-  tags:
-    - upgrade
-    - update
-
-- name: Apply gpu-feature-discovery manifest to the cluster
-  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/gpu-feature-discovery.yaml"
-  delegate_to: "{{ groups['master'][0] }}"
-  run_once: true
-  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
-  tags:
-    - upgrade
-    - update
-
-- name: Distribution node-feature-discovery manifest to the cluster
-  ansible.builtin.template:
-    src: "node-feature-discovery.yaml.j2"
-    dest: "/etc/kubernetes/apps/node-feature-discovery.yaml"
-  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
-  tags:
-    - upgrade
-    - update
-
-- name: Apply node-feature-discovery manifest to the cluster
-  ansible.builtin.shell: "kubectl apply -f /etc/kubernetes/apps/node-feature-discovery.yaml"
-  delegate_to: "{{ groups['master'][0] }}"
-  run_once: true
-  when: hostvars | dict2items | selectattr('value.gpu', 'defined') | length > 0
+  with_items:
+    - "nvidia-device-plugin.yaml"
+    - "gpu-feature-discovery.yaml"
+    - "node-feature-discovery.yaml"
+  when: 
+    - ENABLE_GPU_MANIFEST | default(true) | bool
   tags:
     - upgrade
     - update
